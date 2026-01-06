@@ -39,15 +39,9 @@ const createMealSchema = z.object({
  */
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    // Check authentication
-    const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // TODO: Add authentication when ready
+    // For now, use a test user_id
+    const userId = 'bf63b5fc-523b-4224-8ffd-d22546c49f3d';
 
     // Parse and validate query parameters
     const url = new URL(request.url);
@@ -67,7 +61,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
     // Fetch meals using service
     const mealService = new MealService(locals.supabase);
-    const response = await mealService.getMealsByDate(user.id, validationResult.data.date);
+    const response = await mealService.getMealsByDate(userId, validationResult.data.date);
 
     return new Response(
       JSON.stringify(response),
@@ -92,15 +86,9 @@ export const GET: APIRoute = async ({ request, locals }) => {
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Check authentication
-    const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // TODO: Add authentication when ready
+    // For now, use a test user_id
+    const userId = 'bf63b5fc-523b-4224-8ffd-d22546c49f3d';
 
     // Parse request body
     let body: unknown;
@@ -129,7 +117,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Create meal using service
     const mealService = new MealService(locals.supabase);
     const command: CreateMealCommand = validationResult.data;
-    const createdMeal = await mealService.createMeal(user.id, command);
+    const createdMeal = await mealService.createMeal(userId, command);
 
     return new Response(
       JSON.stringify(createdMeal),

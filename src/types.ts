@@ -105,17 +105,22 @@ export interface MealListResponse {
 
 /**
  * Command to create a new meal.
- * Omits system fields (id, created_at, user_id) and updated_at.
+ * Contains required nutritional data and optional metadata.
  */
-export type CreateMealCommand = Omit<
-  Meal,
-  'id' | 'created_at' | 'updated_at' | 'user_id' | 'fiber'
-> & {
-  // Enforce fiber as number (nullable in DB, but usually required 0+ in logic, assuming optional in input means 0 or handled)
-  // However, based on API Plan logic 4.1, fiber must be >= 0.
-  // We allow null in DB, but let's make it optional in input, defaulting to null or 0 in backend.
-  fiber?: number | null; 
-};
+export interface CreateMealCommand {
+  name: string;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  consumed_at: string;
+  // Optional fields
+  fiber?: number | null;
+  ai_suggestion?: string | null;
+  original_prompt?: string | null;
+  is_image_analyzed?: boolean | null;
+  last_ai_context?: any | null;
+}
 
 /**
  * Command to update an existing meal.

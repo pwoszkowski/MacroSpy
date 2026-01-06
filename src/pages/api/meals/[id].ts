@@ -38,15 +38,9 @@ const updateMealSchema = z.object({
  */
 export const PATCH: APIRoute = async ({ params, request, locals }) => {
   try {
-    // Check authentication
-    const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // TODO: Add authentication when ready
+    // For now, use a test user_id
+    const userId = 'bf63b5fc-523b-4224-8ffd-d22546c49f3d';
 
     // Validate meal ID parameter
     const idValidation = uuidSchema.safeParse(params.id);
@@ -90,7 +84,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     // Update meal using service
     const mealService = new MealService(locals.supabase);
     const command: UpdateMealCommand = validationResult.data;
-    const updatedMeal = await mealService.updateMeal(user.id, mealId, command);
+    const updatedMeal = await mealService.updateMeal(userId, mealId, command);
 
     // Check if meal was found and updated
     if (!updatedMeal) {
@@ -123,15 +117,9 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
-    // Check authentication
-    const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // TODO: Add authentication when ready
+    // For now, use a test user_id
+    const userId = 'bf63b5fc-523b-4224-8ffd-d22546c49f3d';
 
     // Validate meal ID parameter
     const idValidation = uuidSchema.safeParse(params.id);
@@ -150,7 +138,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 
     // Delete meal using service
     const mealService = new MealService(locals.supabase);
-    const deleted = await mealService.deleteMeal(user.id, mealId);
+    const deleted = await mealService.deleteMeal(userId, mealId);
 
     // Check if meal was found and deleted
     if (!deleted) {
