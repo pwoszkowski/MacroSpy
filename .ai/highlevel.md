@@ -1,27 +1,24 @@
-# Aplikacja - MarineHard (MVP)
+# Aplikacja - MacroSpy (MVP)
 
 ## Główny problem
-Aplikacja do lepszej współpracy z klientem oraz planowania produkcji i zakupów. Klient to sieć marin w Grecji, Chorwacji, Włoszech, Francji, Turcji i innych krajach. Dla tego klienta wykonujemy modernizację słupków portowych do wersji smart a także produkujemy własne kompletne słupki portowe i różnego rodzaju oprogramowanie. Projekty wymagają kontroli przepływu finansów, realizacji zakupów oraz harmonogramowania.
+Aplikacja do łatwej rejestracji i kontroli wartości odżywczych spożywanych w ciągu dnia posiłków. Użytkownik opisuje posiłek i/lub robi jego zdjęcia a następnie AI wylicza wartości odżywcze. Są one zapisywane jak pozycja w historii w danym dniu. Wartości z danego dnia są sumowane i porównywane ze zdefiniowanym dziennym zapotrzebowaniem. Opis posiłku jest prowadzony w formie dialogu z AI w celu prawidłowego określenia wartości odżywczych.
 
 ## Najmniejszy zestaw funkcjonalności
-- (must) definiowanie klientów (różne mariny w sieci klienta)
-- (must) definiowanie projektów (konkretne zamówienia od klienta)
-- (must) definiowanie dostawców u których dokonujemy zakupów
-- (should) dzielenie projektów na mniejsze (np. dostawa słupków partiami)
-- (must) tworzenie list zakupów do projektów
-- (must) tworzenie zamówień (np. zakup wielu podzespołów od jednego dostawcy)
-- (should) łączenie zakupów do wielu projektów w jednym zamówieniu
-- (must) śledzenie statusu zamówień (statusy, planowane terminy dostawy)
-- (should) rejestracja innych kosztów (np. logistyczne, podwykonastwo)
-- (could) interfejs w języku polskim i angielskim
-- (must)ograniczony widok dla klienta z ogólnym statusem projektu i budżetem
-- (should) planowanie projektów
+- (must) ręczne określanie i aktualizacja dziennego zapotrzebowania na składniki odżwcze
+- (must) opisywanie posiłku i wyliczanie za pomocą AI wartości odżywczych
+- (should) wykorzystywanie w procesie określania posiłku zdjęć
+- (should) określanie wartości odżywczych w posiłku w formie dialogu z AI
+- (must) prezentacja dziennych spożytych wartości odżywczych vs dzienne zapotrzebowanie
+- (should) prezentacja statystyk z innych dni (widok dzienny, tygodniowy, miesięczny)
+- (could) rejestracja wagi ciała, % zawartości tłuszczu i tkanki mieśniowej w organiźmie
+- (could) asystent AI do określania i aktualizacji dziennego zapotrzebowania na składniki odżywcze
+- (should) sugestie dotyczące spożywanych posiłków (co zmodyfikować)
 
 ## Co NIE wchodzi w zakres MVP
-- narzędzia do komunikacji z klientem
-- powiadomienia mailowe
-- rejestrowanie kosztów pracy i wynagrodzeń
+- planer posiłków
+- listy zakupów
+- plany treningowe
 
 ## Kryteria sukcesu
-- zgodność wysokości kosztów w projektach na poziomie 95%
-- 80% projektów realizowanych w założonym terminie
+- 80% użytkowników rejestruje sumiennie wszystkie dzienne posiłki
+- 50% użytkowników poprawia swoje parametry (waga, tkanka tłuszczowa, mięśnie)

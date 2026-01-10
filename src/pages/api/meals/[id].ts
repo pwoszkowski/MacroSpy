@@ -1,34 +1,33 @@
-import type { APIRoute } from 'astro';
-import { z } from 'zod';
-import { MealService } from '../../../lib/services/meal.service';
-import type { UpdateMealCommand } from '../../../types';
+import type { APIRoute } from "astro";
+import { z } from "zod";
+import { MealService } from "../../../lib/services/meal.service";
+import type { UpdateMealCommand } from "../../../types";
 
 export const prerender = false;
 
 /**
  * Zod schema for validating UUID parameter
  */
-const uuidSchema = z.string().uuid('Invalid meal ID format');
+const uuidSchema = z.string().uuid("Invalid meal ID format");
 
 /**
  * Zod schema for validating UpdateMealCommand (partial update)
  */
-const updateMealSchema = z.object({
-  name: z.string().min(1, 'Name cannot be empty').max(255, 'Name too long').optional(),
-  calories: z.number().min(0, 'Calories must be non-negative').optional(),
-  protein: z.number().min(0, 'Protein must be non-negative').optional(),
-  fat: z.number().min(0, 'Fat must be non-negative').optional(),
-  carbs: z.number().min(0, 'Carbs must be non-negative').optional(),
-  fiber: z.number().min(0, 'Fiber must be non-negative').nullable().optional(),
-  consumed_at: z.string().datetime('Invalid datetime format').optional(),
-  ai_suggestion: z.string().nullable().optional(),
-  original_prompt: z.string().nullable().optional(),
-  is_image_analyzed: z.boolean().nullable().optional(),
-  last_ai_context: z.any().nullable().optional(), // Json type
-}).refine(
-  (data) => Object.keys(data).length > 0,
-  { message: 'At least one field must be provided for update' }
-);
+const updateMealSchema = z
+  .object({
+    name: z.string().min(1, "Name cannot be empty").max(255, "Name too long").optional(),
+    calories: z.number().min(0, "Calories must be non-negative").optional(),
+    protein: z.number().min(0, "Protein must be non-negative").optional(),
+    fat: z.number().min(0, "Fat must be non-negative").optional(),
+    carbs: z.number().min(0, "Carbs must be non-negative").optional(),
+    fiber: z.number().min(0, "Fiber must be non-negative").nullable().optional(),
+    consumed_at: z.string().datetime("Invalid datetime format").optional(),
+    ai_suggestion: z.string().nullable().optional(),
+    original_prompt: z.string().nullable().optional(),
+    is_image_analyzed: z.boolean().nullable().optional(),
+    last_ai_context: z.any().nullable().optional(), // Json type
+  })
+  .refine((data) => Object.keys(data).length > 0, { message: "At least one field must be provided for update" });
 
 /**
  * PATCH /api/meals/[id]
@@ -40,18 +39,18 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
   try {
     // TODO: Add authentication when ready
     // For now, use a test user_id
-    const userId = 'bf63b5fc-523b-4224-8ffd-d22546c49f3d';
+    const userId = "bf63b5fc-523b-4224-8ffd-d22546c49f3d";
 
     // Validate meal ID parameter
     const idValidation = uuidSchema.safeParse(params.id);
-    
+
     if (!idValidation.success) {
       return new Response(
-        JSON.stringify({ 
-          error: 'Invalid meal ID',
+        JSON.stringify({
+          error: "Invalid meal ID",
           details: idValidation.error.flatten().formErrors,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -62,22 +61,22 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     try {
       body = await request.json();
     } catch {
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON body' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Validate request body
     const validationResult = updateMealSchema.safeParse(body);
-    
+
     if (!validationResult.success) {
       return new Response(
-        JSON.stringify({ 
-          error: 'Validation failed',
+        JSON.stringify({
+          error: "Validation failed",
           details: validationResult.error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -88,24 +87,21 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
 
     // Check if meal was found and updated
     if (!updatedMeal) {
-      return new Response(
-        JSON.stringify({ error: 'Meal not found or unauthorized' }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: "Meal not found or unauthorized" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
-    return new Response(
-      JSON.stringify(updatedMeal),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify(updatedMeal), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (error) {
-    console.error('Error updating meal:', error);
+    console.error("Error updating meal:", error);
     return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+      JSON.stringify({
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -119,18 +115,18 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
     // TODO: Add authentication when ready
     // For now, use a test user_id
-    const userId = 'bf63b5fc-523b-4224-8ffd-d22546c49f3d';
+    const userId = "bf63b5fc-523b-4224-8ffd-d22546c49f3d";
 
     // Validate meal ID parameter
     const idValidation = uuidSchema.safeParse(params.id);
-    
+
     if (!idValidation.success) {
       return new Response(
-        JSON.stringify({ 
-          error: 'Invalid meal ID',
+        JSON.stringify({
+          error: "Invalid meal ID",
           details: idValidation.error.flatten().formErrors,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -142,23 +138,22 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 
     // Check if meal was found and deleted
     if (!deleted) {
-      return new Response(
-        JSON.stringify({ error: 'Meal not found or unauthorized' }),
-        { status: 404, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: "Meal not found or unauthorized" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Return 204 No Content on successful deletion
     return new Response(null, { status: 204 });
   } catch (error) {
-    console.error('Error deleting meal:', error);
+    console.error("Error deleting meal:", error);
     return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+      JSON.stringify({
+        error: "Internal server error",
+        message: error instanceof Error ? error.message : "Unknown error",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
-

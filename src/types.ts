@@ -1,4 +1,4 @@
-import type { Database, Json } from './db/database.types';
+import type { Database, Json } from "./db/database.types";
 
 // ==========================================
 // 1. Database Entity Helpers
@@ -7,17 +7,16 @@ import type { Database, Json } from './db/database.types';
 /**
  * Helper type to extract Row definitions from the Supabase Database type.
  */
-export type TableRow<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
+export type TableRow<T extends keyof Database["public"]["Tables"]> = Database["public"]["Tables"][T]["Row"];
 
 /**
  * Raw Database Entities
  * Directly mapped to Supabase tables.
  */
-export type Profile = TableRow<'profiles'>;
-export type DietaryGoal = TableRow<'dietary_goals'>;
-export type Meal = TableRow<'meals'>;
-export type BodyMeasurement = TableRow<'body_measurements'>;
-
+export type Profile = TableRow<"profiles">;
+export type DietaryGoal = TableRow<"dietary_goals">;
+export type Meal = TableRow<"meals">;
+export type BodyMeasurement = TableRow<"body_measurements">;
 
 // ==========================================
 // 2. AI Services (Ephemeral/Stateless)
@@ -68,7 +67,6 @@ export interface TDEECalculationResponse {
   suggested_targets: GoalTargets;
 }
 
-
 // ==========================================
 // 3. Meals (Journal)
 // ==========================================
@@ -79,15 +77,7 @@ export interface TDEECalculationResponse {
  */
 export type MealDto = Pick<
   Meal,
-  | 'id'
-  | 'name'
-  | 'calories'
-  | 'protein'
-  | 'fat'
-  | 'carbs'
-  | 'fiber'
-  | 'ai_suggestion'
-  | 'consumed_at'
+  "id" | "name" | "calories" | "protein" | "fat" | "carbs" | "fiber" | "ai_suggestion" | "consumed_at"
 >;
 
 export interface MealSummary {
@@ -127,24 +117,18 @@ export interface CreateMealCommand {
  */
 export type UpdateMealCommand = Partial<CreateMealCommand>;
 
-
 // ==========================================
 // 4. Dietary Goals & Profile
 // ==========================================
 
-export type ProfileDto = Pick<Profile, 'height' | 'gender' | 'birth_date'>;
+export type ProfileDto = Pick<Profile, "height" | "gender" | "birth_date">;
 
 /**
  * Represents the active dietary goal settings.
  */
 export type DietaryGoalDto = Pick<
   DietaryGoal,
-  | 'calories_target'
-  | 'protein_target'
-  | 'fat_target'
-  | 'carbs_target'
-  | 'fiber_target'
-  | 'start_date'
+  "calories_target" | "protein_target" | "fat_target" | "carbs_target" | "fiber_target" | "start_date"
 >;
 
 export interface UserProfileResponse {
@@ -156,21 +140,16 @@ export type UpdateProfileCommand = ProfileDto;
 
 export type SetDietaryGoalCommand = DietaryGoalDto;
 
-
 // ==========================================
 // 5. Body Measurements
 // ==========================================
 
 export type MeasurementDto = Pick<
   BodyMeasurement,
-  'id' | 'date' | 'weight' | 'body_fat_percentage' | 'muscle_percentage'
+  "id" | "date" | "weight" | "body_fat_percentage" | "muscle_percentage"
 >;
 
 /**
  * Command to log a new measurement.
  */
-export type LogMeasurementCommand = Omit<
-  BodyMeasurement,
-  'id' | 'created_at' | 'user_id'
->;
-
+export type LogMeasurementCommand = Omit<BodyMeasurement, "id" | "created_at" | "user_id">;
