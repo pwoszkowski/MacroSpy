@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { HistoryView } from "../components/history/HistoryView";
+
+// Get Supabase client from middleware
+const supabase = Astro.locals.supabase;
+
+// TODO: Uncomment when auth is implemented
+// Check authentication
+// const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+// if (sessionError || !session?.user) {
+//   return Astro.redirect('/onboarding');
+// }
+
+// Note: HistoryView manages its own data fetching via useHistoryMeals hook
+// No need to fetch data server-side
+---
+
+<Layout title="MacroSpy - Historia Posiłków">
+  <HistoryView client:load />
+</Layout>

@@ -58,4 +58,21 @@ export class MeasurementService {
 
     return measurement as MeasurementDto;
   }
+
+  /**
+   * Delete a body measurement for a user.
+   * @param userId - User ID from authenticated session
+   * @param measurementId - ID of the measurement to delete
+   */
+  async deleteMeasurement(userId: string, measurementId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from("body_measurements")
+      .delete()
+      .eq("id", measurementId)
+      .eq("user_id", userId);
+
+    if (error) {
+      throw new Error(`Failed to delete measurement: ${error.message}`);
+    }
+  }
 }

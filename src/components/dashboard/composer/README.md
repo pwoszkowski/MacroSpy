@@ -7,7 +7,8 @@ Zestaw komponentów do interaktywnego dodawania posiłków z wykorzystaniem AI. 
 ```
 composer/
 ├── AddMealDialog.tsx          # Główny kontener (orkiestrator)
-├── MealInputView.tsx          # Widok wejściowy (tekst + zdjęcia)
+├── MealInputView.tsx          # Widok wejściowy (AI / Manual mode switcher)
+├── ManualEntryForm.tsx        # Formularz ręcznego wprowadzania
 ├── AnalysisLoadingView.tsx    # Ekran ładowania podczas analizy AI
 ├── MealReviewView.tsx         # Widok weryfikacji i edycji
 ├── AIResponseSummary.tsx      # Dymek z komentarzem AI
@@ -67,18 +68,43 @@ Główny kontener modala. Automatycznie wybiera Dialog (desktop) lub Drawer (mob
 
 ### MealInputView
 
-Formularz wejściowy do wprowadzania opisu i zdjęć posiłku.
+Formularz wejściowy z przełącznikiem między trybem AI a ręcznym wprowadzaniem.
 
 **Props:**
 - `initialText?: string` - Początkowa wartość tekstu
 - `initialImages?: string[]` - Początkowe zdjęcia (base64)
-- `onSubmit: (text: string, images: string[]) => void` - Callback wysłania
+- `onSubmit: (text: string, images: string[]) => void` - Callback analizy AI
+- `onManualSubmit: (data: ManualEntryData) => void` - Callback ręcznego wprowadzenia
 - `isSubmitting: boolean` - Stan ładowania
 
-**Walidacja:**
+**Tryby:**
+- **Analiza AI** - Użytkownik opisuje posiłek tekstem i/lub zdjęciami, AI analizuje
+- **Ręczne dodanie** - Użytkownik samodzielnie wypełnia nazwę i makroskładniki
+
+**Walidacja (tryb AI):**
 - Minimum 2 znaki w opisie LUB przynajmniej 1 zdjęcie
 - Maksymalnie 5 zdjęć
 - Akceptowane formaty: JPG, PNG, WEBP
+
+**Walidacja (tryb ręczny):**
+- Nazwa posiłku: minimum 2 znaki
+- Makroskładniki: wartości >= 0
+
+### ManualEntryForm
+
+Formularz do bezpośredniego wprowadzania nazwy posiłku i makroskładników bez użycia AI.
+
+**Props:**
+- `onSubmit: (data: ManualEntryData) => void` - Callback wysłania danych
+- `isSubmitting: boolean` - Stan ładowania
+
+**Pola formularza:**
+- Nazwa posiłku (text, wymagane)
+- Kalorie (number, kcal)
+- Białko (number, g)
+- Tłuszcze (number, g)
+- Węglowodany (number, g)
+- Błonnik (number, g)
 
 ### MealReviewView
 
@@ -102,19 +128,20 @@ Custom hook zarządzający całą logiką biznesową procesu dodawania posiłku.
 
 ```tsx
 const {
-  status,           // 'idle' | 'analyzing' | 'refining' | 'review' | 'saving' | 'success'
-  inputText,        // Tekst z inputa
-  selectedImages,   // Wybrane zdjęcia (base64[])
-  candidate,        // Dane posiłku po analizie
-  interactions,     // Historia czatu
-  error,            // Komunikat błędu
-  setInputText,     // Ustawienie tekstu
-  setSelectedImages,// Ustawienie zdjęć
-  analyze,          // Analiza posiłku przez AI
-  refine,           // Korekta przez AI
-  updateCandidate,  // Ręczna edycja pól
-  save,             // Zapis do bazy
-  reset,            // Reset stanu
+  status,            // 'idle' | 'analyzing' | 'refining' | 'review' | 'saving' | 'success'
+  inputText,         // Tekst z inputa
+  selectedImages,    // Wybrane zdjęcia (base64[])
+  candidate,         // Dane posiłku po analizie
+  interactions,      // Historia czatu
+  error,             // Komunikat błędu
+  setInputText,      // Ustawienie tekstu
+  setSelectedImages, // Ustawienie zdjęć
+  analyze,           // Analiza posiłku przez AI
+  createManualEntry, // Utworzenie wpisu ręcznego (pomija AI)
+  refine,            // Korekta przez AI
+  updateCandidate,   // Ręczna edycja pól
+  save,              // Zapis do bazy
+  reset,             // Reset stanu
 } = useMealComposer(onSuccess);
 ```
 
@@ -195,13 +222,26 @@ interface InteractionLog {
 
 ## Przepływ użytkownika
 
+### Przepływ A: Analiza AI
+
 1. **Otwarcie modala** - Użytkownik klika FAB "+"
-2. **Input** - Wpisuje opis ("Jajecznica z dwóch jajek") i/lub dodaje zdjęcia
-3. **Analiza** - Klika "Analizuj", widzi skeleton loading
-4. **Review** - AI wypełnia formularz, pokazuje dymek z komentarzem
-5. **Korekta (opcjonalnie)**:
+2. **Wybór trybu** - Domyślnie "Analiza AI"
+3. **Input** - Wpisuje opis ("Jajecznica z dwóch jajek") i/lub dodaje zdjęcia
+4. **Analiza** - Klika "Analizuj", widzi skeleton loading
+5. **Review** - AI wypełnia formularz, pokazuje dymek z komentarzem
+6. **Korekta (opcjonalnie)**:
    - Użytkownik może ręcznie edytować wartości
    - Lub wpisać korektę dla AI: "zmień masło na olej"
+7. **Zapis** - Klika "Zapisz posiłek"
+8. **Sukces** - Toast + zamknięcie modala + odświeżenie dashboardu
+
+### Przepływ B: Ręczne dodanie
+
+1. **Otwarcie modala** - Użytkownik klika FAB "+"
+2. **Wybór trybu** - Przełącza na "Ręczne dodanie"
+3. **Wypełnienie formularza** - Wprowadza nazwę i makroskładniki
+4. **Review** - Klika "Przejdź do podsumowania", widzi formularz weryfikacji
+5. **Weryfikacja** - Sprawdza dane, może dokonać korekt
 6. **Zapis** - Klika "Zapisz posiłek"
 7. **Sukces** - Toast + zamknięcie modala + odświeżenie dashboardu
 
@@ -245,10 +285,10 @@ import { ToastProvider } from '../components/ToastProvider';
 
 ## Przykłady
 
-### Pełny przepływ z hookiem
+### Przepływ z AI
 
 ```tsx
-function CustomMealComposer() {
+function AIComposer() {
   const {
     status,
     candidate,
@@ -271,6 +311,46 @@ function CustomMealComposer() {
   }
 
   return <p>Ładowanie...</p>;
+}
+```
+
+### Przepływ ręczny
+
+```tsx
+function ManualComposer() {
+  const {
+    status,
+    candidate,
+    createManualEntry,
+    save,
+  } = useMealComposer(() => console.log('Saved!'));
+
+  if (status === 'idle') {
+    return (
+      <button onClick={() => createManualEntry({
+        name: 'Jajecznica',
+        calories: 300,
+        protein: 20,
+        fat: 15,
+        carbs: 5,
+        fiber: 1
+      })}>
+        Dodaj ręcznie
+      </button>
+    );
+  }
+
+  if (status === 'review' && candidate) {
+    return (
+      <div>
+        <h2>{candidate.name}</h2>
+        <p>Kalorie: {candidate.calories}</p>
+        <button onClick={save}>Zapisz</button>
+      </div>
+    );
+  }
+
+  return null;
 }
 ```
 
@@ -300,6 +380,21 @@ function CustomMealComposer() {
 - Obsługa klawiatury: Enter w `RefineInputBar`
 - Focus management w modalach (automatyczne przez Dialog/Drawer)
 
+## Funkcjonalności
+
+### Zrealizowane ✅
+
+- [x] Analiza AI (tekst + zdjęcia)
+- [x] Ręczne wprowadzanie danych
+- [x] Interaktywna korekta AI (refine)
+- [x] Ręczna edycja makroskładników
+- [x] Historia interakcji z AI
+- [x] Responsywność (Dialog/Drawer)
+- [x] Toast notifications
+- [x] Walidacja formularzy
+- [x] Obsługa błędów
+- [x] Przełącznik AI / Manual mode
+
 ## TODO / Możliwe rozszerzenia
 
 - [ ] Dodanie obsługi głosu (Web Speech API)
@@ -308,3 +403,5 @@ function CustomMealComposer() {
 - [ ] Skanowanie kodów kreskowych
 - [ ] Integracja z bazą produktów
 - [ ] Batch add (wiele posiłków na raz)
+- [ ] Import z pliku (CSV, Excel)
+- [ ] Szablony posiłków (zapisane ulubione)

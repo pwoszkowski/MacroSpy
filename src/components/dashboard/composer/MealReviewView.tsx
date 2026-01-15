@@ -1,10 +1,10 @@
-import { Button } from '@/components/ui/button';
-import { AIResponseSummary } from './AIResponseSummary';
-import { MacroEditableStats } from './MacroEditableStats';
-import { RefineInputBar } from './RefineInputBar';
-import { InteractionHistory } from './InteractionHistory';
-import type { MealCandidateViewModel, InteractionLog } from './types';
-import { Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { AIResponseSummary } from "./AIResponseSummary";
+import { MacroEditableStats } from "./MacroEditableStats";
+import { RefineInputBar } from "./RefineInputBar";
+import { InteractionHistory } from "./InteractionHistory";
+import type { MealCandidateViewModel, InteractionLog } from "./types";
+import { Loader2 } from "lucide-react";
 
 interface MealReviewViewProps {
   candidate: MealCandidateViewModel;
@@ -32,54 +32,44 @@ export function MealReviewView({
   isSaving,
 }: MealReviewViewProps) {
   const isProcessing = isRefining || isSaving;
+  const isManualEntry = !candidate.assistant_response && !candidate.ai_context;
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      {/* Dymek AI */}
+      {/* Dymek AI - tylko dla wpisów z AI */}
       {candidate.assistant_response && (
-        <AIResponseSummary
-          response={candidate.assistant_response}
-          suggestion={candidate.ai_suggestion}
-        />
+        <AIResponseSummary response={candidate.assistant_response} suggestion={candidate.ai_suggestion} />
+      )}
+
+      {/* Informacja o ręcznym wpisie */}
+      {isManualEntry && (
+        <div className="rounded-lg bg-muted/50 border border-border p-3">
+          <p className="text-sm text-muted-foreground">Posiłek dodany ręcznie. Sprawdź wartości przed zapisem.</p>
+        </div>
       )}
 
       {/* Edytowalne pola makro */}
-      <MacroEditableStats
-        candidate={candidate}
-        onChange={onManualChange}
-        disabled={isProcessing}
-      />
+      <MacroEditableStats candidate={candidate} onChange={onManualChange} disabled={isProcessing} />
 
-      {/* Historia interakcji (tylko jeśli są korekty) */}
-      {interactions.length > 2 && (
-        <InteractionHistory interactions={interactions} />
-      )}
+      {/* Historia interakcji (tylko dla AI i jeśli są korekty) */}
+      {!isManualEntry && interactions.length > 2 && <InteractionHistory interactions={interactions} />}
 
-      {/* Pasek korekty AI */}
-      <RefineInputBar onRefine={onRefine} isRefining={isRefining} />
+      {/* Pasek korekty AI - tylko dla wpisów z AI */}
+      {!isManualEntry && <RefineInputBar onRefine={onRefine} isRefining={isRefining} />}
 
       {/* Przyciski akcji */}
       <div className="flex gap-2 pt-4 border-t">
-        <Button
-          variant="outline"
-          onClick={onCancel}
-          disabled={isProcessing}
-          className="flex-1"
-        >
+        <Button variant="outline" onClick={onCancel} disabled={isProcessing} className="flex-1">
           Anuluj
         </Button>
-        <Button
-          onClick={onSave}
-          disabled={isProcessing || !candidate.name.trim()}
-          className="flex-1"
-        >
+        <Button onClick={onSave} disabled={isProcessing || !candidate.name.trim()} className="flex-1">
           {isSaving ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               Zapisuję...
             </>
           ) : (
-            'Zapisz posiłek'
+            "Zapisz posiłek"
           )}
         </Button>
       </div>

@@ -1,26 +1,41 @@
-import { useState, useRef, type ChangeEvent } from 'react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { useState, useRef, type ChangeEvent } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { X, Image as ImageIcon, Loader2, Sparkles, Edit3 } from "lucide-react";
+import { ManualEntryForm } from "./ManualEntryForm";
+
+type InputMode = "ai" | "manual";
+
+interface ManualEntryData {
+  name: string;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  fiber: number;
+}
 
 interface MealInputViewProps {
   initialText?: string;
   initialImages?: string[];
   onSubmit: (text: string, images: string[]) => void;
+  onManualSubmit: (data: ManualEntryData) => void;
   isSubmitting: boolean;
 }
 
 const MAX_IMAGES = 5;
 const MIN_TEXT_LENGTH = 2;
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-export function MealInputView({ 
-  initialText = '', 
-  initialImages = [], 
-  onSubmit, 
-  isSubmitting 
+export function MealInputView({
+  initialText = "",
+  initialImages = [],
+  onSubmit,
+  onManualSubmit,
+  isSubmitting,
 }: MealInputViewProps) {
+  const [mode, setMode] = useState<InputMode>("ai");
   const [text, setText] = useState(initialText);
   const [images, setImages] = useState<string[]>(initialImages);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +48,7 @@ export function MealInputView({
       reader.onload = () => {
         const result = reader.result as string;
         // Usuń prefix "data:image/...;base64," aby zostać tylko z base64
-        const base64 = result.split(',')[1];
+        const base64 = result.split(",")[1];
         resolve(base64);
       };
       reader.onerror = (error) => reject(error);
@@ -53,31 +68,29 @@ export function MealInputView({
     }
 
     // Walidacja typów plików
-    const invalidFiles = Array.from(files).filter(
-      file => !ACCEPTED_IMAGE_TYPES.includes(file.type)
-    );
+    const invalidFiles = Array.from(files).filter((file) => !ACCEPTED_IMAGE_TYPES.includes(file.type));
 
     if (invalidFiles.length > 0) {
-      setError('Obsługiwane formaty: JPG, PNG, WEBP');
+      setError("Obsługiwane formaty: JPG, PNG, WEBP");
       return;
     }
 
     try {
-      const base64Promises = Array.from(files).map(file => convertToBase64(file));
+      const base64Promises = Array.from(files).map((file) => convertToBase64(file));
       const base64Images = await Promise.all(base64Promises);
-      setImages(prev => [...prev, ...base64Images]);
+      setImages((prev) => [...prev, ...base64Images]);
     } catch (err) {
-      setError('Błąd podczas wczytywania zdjęć');
+      setError("Błąd podczas wczytywania zdjęć");
     }
 
     // Reset input
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
     setError(null);
   };
 
@@ -100,93 +113,116 @@ export function MealInputView({
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      {/* Textarea */}
-      <div className="space-y-2">
-        <Label htmlFor="meal-description">Opisz swój posiłek</Label>
-        <Textarea
-          id="meal-description"
-          placeholder="np. Jajecznica z dwóch jajek, pomidor, chleb..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          disabled={isSubmitting}
-          rows={4}
-          className="resize-none"
-        />
-        <p className="text-xs text-muted-foreground">
-          Możesz też dodać zdjęcia, aby AI mogło lepiej oszacować wartości odżywcze
-        </p>
-      </div>
-
-      {/* Galeria miniatur */}
-      {images.length > 0 && (
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-          {images.map((img, index) => (
-            <div key={index} className="relative aspect-square rounded-md overflow-hidden border bg-muted">
-              <img 
-                src={`data:image/jpeg;base64,${img}`}
-                alt={`Zdjęcie ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => handleRemoveImage(index)}
-                disabled={isSubmitting}
-                className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 transition-colors disabled:opacity-50"
-                aria-label="Usuń zdjęcie"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Przycisk dodawania zdjęć */}
-      <div className="flex gap-2">
+      {/* Mode Switcher */}
+      <div className="flex gap-2 p-1 bg-muted rounded-lg">
         <Button
           type="button"
-          variant="outline"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={images.length >= MAX_IMAGES || isSubmitting}
+          variant={mode === "ai" ? "default" : "ghost"}
+          onClick={() => setMode("ai")}
           className="flex-1"
+          disabled={isSubmitting}
         >
-          <ImageIcon className="w-4 h-4 mr-2" />
-          Dodaj zdjęcie ({images.length}/{MAX_IMAGES})
+          <Sparkles className="w-4 h-4 mr-2" />
+          Analiza AI
         </Button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={ACCEPTED_IMAGE_TYPES.join(',')}
-          multiple
-          onChange={handleImageSelect}
-          className="hidden"
-          aria-label="Wybierz zdjęcia"
-        />
+        <Button
+          type="button"
+          variant={mode === "manual" ? "default" : "ghost"}
+          onClick={() => setMode("manual")}
+          className="flex-1"
+          disabled={isSubmitting}
+        >
+          <Edit3 className="w-4 h-4 mr-2" />
+          Ręczne dodanie
+        </Button>
       </div>
 
-      {/* Błędy */}
-      {error && (
-        <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-          {error}
-        </div>
-      )}
+      {/* AI Mode */}
+      {mode === "ai" ? (
+        <>
+          {/* Textarea */}
+          <div className="space-y-2">
+            <Label htmlFor="meal-description">Opisz swój posiłek</Label>
+            <Textarea
+              id="meal-description"
+              placeholder="np. Jajecznica z dwóch jajek, pomidor, chleb..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              disabled={isSubmitting}
+              rows={4}
+              className="resize-none"
+            />
+            <p className="text-xs text-muted-foreground">
+              Możesz też dodać zdjęcia, aby AI mogło lepiej oszacować wartości odżywcze
+            </p>
+          </div>
 
-      {/* Przycisk Submit */}
-      <Button
-        onClick={handleSubmit}
-        disabled={!canSubmit}
-        className="w-full"
-        size="lg"
-      >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Analizuję...
-          </>
-        ) : (
-          'Analizuj posiłek'
-        )}
-      </Button>
+          {/* Galeria miniatur */}
+          {images.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {images.map((img, index) => (
+                <div key={index} className="relative aspect-square rounded-md overflow-hidden border bg-muted">
+                  <img
+                    src={`data:image/jpeg;base64,${img}`}
+                    alt={`Zdjęcie ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    disabled={isSubmitting}
+                    className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90 transition-colors disabled:opacity-50"
+                    aria-label="Usuń zdjęcie"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Przycisk dodawania zdjęć */}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={images.length >= MAX_IMAGES || isSubmitting}
+              className="flex-1"
+            >
+              <ImageIcon className="w-4 h-4 mr-2" />
+              Dodaj zdjęcie ({images.length}/{MAX_IMAGES})
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ACCEPTED_IMAGE_TYPES.join(",")}
+              multiple
+              onChange={handleImageSelect}
+              className="hidden"
+              aria-label="Wybierz zdjęcia"
+            />
+          </div>
+
+          {/* Błędy */}
+          {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</div>}
+
+          {/* Przycisk Submit */}
+          <Button onClick={handleSubmit} disabled={!canSubmit} className="w-full" size="lg">
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Analizuję...
+              </>
+            ) : (
+              "Analizuj posiłek"
+            )}
+          </Button>
+        </>
+      ) : (
+        /* Manual Mode */
+        <ManualEntryForm onSubmit={onManualSubmit} isSubmitting={isSubmitting} />
+      )}
     </div>
   );
 }

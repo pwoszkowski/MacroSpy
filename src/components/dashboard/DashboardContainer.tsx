@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { DateHeader } from './DateHeader';
+import { PageLayout } from '@/components/layout';
+import { TodayHeader } from './TodayHeader';
 import { NutritionSummary } from './NutritionSummary';
 import { MealList } from './MealList';
 import { AddMealFAB } from './AddMealFAB';
@@ -16,16 +17,12 @@ interface DashboardContainerProps {
 
 /**
  * Main Dashboard container component.
- * Manages state for selected date and coordinates all dashboard subcomponents.
+ * Always displays today's data. Use History view to browse other dates.
  */
 export function DashboardContainer({ initialMeals, userProfile }: DashboardContainerProps) {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { data, isLoading, error, refetch } = useDashboardData(selectedDate, initialMeals);
-
-  const handleDateChange = (newDate: Date) => {
-    setSelectedDate(newDate);
-  };
+  const today = new Date();
+  const { data, isLoading, error, refetch } = useDashboardData(today, initialMeals);
 
   const handleAddMeal = () => {
     setIsDialogOpen(true);
@@ -49,29 +46,34 @@ export function DashboardContainer({ initialMeals, userProfile }: DashboardConta
   // Error state
   if (error && !data) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="text-6xl mb-4">⚠️</div>
-          <h3 className="text-lg font-semibold mb-2">Błąd wczytywania danych</h3>
-          <p className="text-muted-foreground text-sm max-w-sm mb-4">{error}</p>
-          <button
-            onClick={() => refetch()}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-          >
-            Spróbuj ponownie
-          </button>
+      <PageLayout currentPath="/" showAddMealButton={false}>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-lg font-semibold mb-2">Błąd wczytywania danych</h3>
+            <p className="text-muted-foreground text-sm max-w-sm mb-4">{error}</p>
+            <button
+              onClick={() => refetch()}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Spróbuj ponownie
+            </button>
+          </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Sticky Date Header */}
-      <DateHeader selectedDate={selectedDate} onDateChange={handleDateChange} />
+    <PageLayout 
+      currentPath="/"
+      showAddMealButton={false}
+    >
+      {/* Today's date header */}
+      <TodayHeader />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 pb-24">
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
         {/* Nutrition Summary Section */}
         {isLoading && !data ? (
           <SkeletonNutritionSummary />
@@ -98,7 +100,7 @@ export function DashboardContainer({ initialMeals, userProfile }: DashboardConta
         ) : data ? (
           <MealList meals={data.data} onMealClick={handleMealClick} />
         ) : null}
-      </main>
+      </div>
 
       {/* Floating Action Button */}
       <AddMealFAB onClick={handleAddMeal} />
@@ -109,6 +111,6 @@ export function DashboardContainer({ initialMeals, userProfile }: DashboardConta
         onClose={handleDialogClose}
         onSuccess={handleMealSaved}
       />
-    </div>
+    </PageLayout>
   );
 }

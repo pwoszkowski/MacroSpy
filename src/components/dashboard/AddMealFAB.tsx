@@ -7,17 +7,18 @@ interface AddMealFABProps {
 
 /**
  * Floating Action Button for quick meal addition.
- * Positioned at bottom-right corner of the viewport.
+ * Mobile: Centered above bottom navigation bar
+ * Desktop: Fixed in bottom-right corner
  */
 export function AddMealFAB({ onClick }: AddMealFABProps) {
   return (
     <Button
       size="lg"
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 rounded-full w-14 h-14 sm:w-16 sm:h-16 shadow-lg hover:shadow-xl transition-shadow z-50"
+      className="fixed bottom-20 left-1/2 -translate-x-1/2 md:bottom-8 md:right-8 md:left-auto md:translate-x-0 rounded-full w-14 h-14 md:w-16 md:h-16 shadow-lg hover:shadow-xl transition-all z-50"
       onClick={onClick}
       aria-label="Dodaj posiłek"
     >
-      <Plus className="h-6 w-6 sm:h-7 sm:w-7" />
+      <Plus className="h-6 w-6 md:h-7 md:w-7" />
     </Button>
   );
 }

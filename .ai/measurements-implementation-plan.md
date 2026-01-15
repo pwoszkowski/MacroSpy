@@ -22,6 +22,11 @@ Dodaje nowy wpis pomiaru ciała.
   }
   ```
 
+### DELETE `/api/measurements/[id]`
+Usuwa istniejący pomiar ciała.
+- **Parametry URL:**
+  - `id` (wymagany, string): UUID pomiaru do usunięcia.
+
 ## 3. Wykorzystywane typy
 Wszystkie typy są już zdefiniowane w `src/types.ts` i `src/db/database.types.ts`.
 
@@ -54,27 +59,32 @@ Wszystkie typy są już zdefiniowane w `src/types.ts` i `src/db/database.types.t
 - **POST (201 Created):**
   Zwraca utworzony obiekt pomiaru (struktura jak w GET, pojedynczy obiekt).
 
+- **DELETE (204 No Content):**
+  Pomiar został pomyślnie usunięty. Brak zawartości w odpowiedzi.
+
 ### Błędy
-- **400 Bad Request:** Błąd walidacji danych wejściowych (np. ujemna waga, zły format daty).
+- **400 Bad Request:** Błąd walidacji danych wejściowych (np. ujemna waga, zły format daty, brak ID).
 - **401 Unauthorized:** Użytkownik nie jest zalogowany.
+- **404 Not Found:** Pomiar o podanym ID nie istnieje lub nie należy do użytkownika.
 - **500 Internal Server Error:** Błąd bazy danych lub serwera.
 
 ## 5. Przepływ danych
 
-1.  **Klient** wysyła żądanie do `/api/measurements`.
-2.  **Astro API Route** (`src/pages/api/measurements/index.ts`):
+1.  **Klient** wysyła żądanie do `/api/measurements` lub `/api/measurements/[id]`.
+2.  **Astro API Route** (`src/pages/api/measurements/index.ts` lub `src/pages/api/measurements/[id].ts`):
     *   Sprawdza autentykację użytkownika (`context.locals.user`).
-    *   Parsuje i waliduje dane wejściowe za pomocą **Zod**.
+    *   Parsuje i waliduje dane wejściowe za pomocą **Zod** (dla POST).
+    *   Waliduje parametr `id` z URL (dla DELETE).
 3.  **Service Layer** (`src/lib/services/measurement.service.ts`):
     *   Otrzymuje `SupabaseClient` oraz zwalidowane dane.
-    *   Wywołuje odpowiednią metodę Supabase (`select` lub `insert`).
+    *   Wywołuje odpowiednią metodę Supabase (`select`, `insert` lub `delete`).
 4.  **Database (Supabase):**
     *   Wykonuje operację na tabeli `body_measurements`.
     *   Polityki RLS (Row Level Security) zapewniają, że użytkownik ma dostęp tylko do swoich danych.
     *   Constrainty bazy danych (np. `weight > 0`) są ostateczną linią obrony integralności danych.
 5.  **Astro API Route**:
     *   Mapuje wynik z bazy na DTO (jeśli konieczne, choć struktura jest tożsama).
-    *   Zwraca odpowiedź JSON.
+    *   Zwraca odpowiedź JSON (lub 204 No Content dla DELETE).
 
 ## 6. Względy bezpieczeństwa
 
@@ -95,26 +105,34 @@ Wszystkie typy są już zdefiniowane w `src/types.ts` i `src/db/database.types.t
 
 1.  **Utworzenie serwisu:**
     *   Plik: `src/lib/services/measurement.service.ts`
-    *   Implementacja funkcji `getMeasurements` (pobieranie z limitem).
-    *   Implementacja funkcji `logMeasurement` (insert).
+    *   Implementacja funkcji `getMeasurements` (pobieranie z limitem). ✅
+    *   Implementacja funkcji `logMeasurement` (insert). ✅
+    *   Implementacja funkcji `deleteMeasurement` (delete). ✅
 
 2.  **Utworzenie API Endpointu:**
-    *   Plik: `src/pages/api/measurements/index.ts`
+    *   Plik: `src/pages/api/measurements/index.ts` ✅
+    *   Plik: `src/pages/api/measurements/[id].ts` ✅
     *   Konfiguracja: `export const prerender = false`.
 
 3.  **Implementacja metody GET:**
-    *   Pobranie `user.id` z `locals`.
-    *   Odczyt parametru `limit` z URL.
-    *   Wywołanie serwisu.
-    *   Zwrot danych JSON.
+    *   Pobranie `user.id` z `locals`. ✅
+    *   Odczyt parametru `limit` z URL. ✅
+    *   Wywołanie serwisu. ✅
+    *   Zwrot danych JSON. ✅
 
 4.  **Implementacja metody POST:**
-    *   Definicja schematu Zod dla `LogMeasurementCommand`.
-    *   Parsowanie body żądania.
-    *   Walidacja Zod.
-    *   Wywołanie serwisu.
-    *   Zwrot kodu 201 i utworzonego zasobu.
+    *   Definicja schematu Zod dla `LogMeasurementCommand`. ✅
+    *   Parsowanie body żądania. ✅
+    *   Walidacja Zod. ✅
+    *   Wywołanie serwisu. ✅
+    *   Zwrot kodu 201 i utworzonego zasobu. ✅
 
-5.  **Weryfikacja:**
-    *   Sprawdzenie lintera.
-    *   Manualne testy endpointu.
+5.  **Implementacja metody DELETE:**
+    *   Walidacja parametru `id` z URL. ✅
+    *   Sprawdzenie autoryzacji (RLS). ✅
+    *   Wywołanie serwisu. ✅
+    *   Zwrot kodu 204 No Content. ✅
+
+6.  **Weryfikacja:**
+    *   Sprawdzenie lintera. ✅
+    *   Manualne testy endpointów. ⏳

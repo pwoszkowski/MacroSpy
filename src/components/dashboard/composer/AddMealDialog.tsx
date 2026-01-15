@@ -1,23 +1,11 @@
-import React, { useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from '@/components/ui/drawer';
-import { MealInputView } from './MealInputView';
-import { AnalysisLoadingView } from './AnalysisLoadingView';
-import { MealReviewView } from './MealReviewView';
-import { useMealComposer } from './useMealComposer';
-import { toast } from 'sonner';
+import React, { useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import { MealInputView } from "./MealInputView";
+import { AnalysisLoadingView } from "./AnalysisLoadingView";
+import { MealReviewView } from "./MealReviewView";
+import { useMealComposer } from "./useMealComposer";
+import { toast } from "sonner";
 
 interface AddMealDialogProps {
   isOpen: boolean;
@@ -28,18 +16,16 @@ interface AddMealDialogProps {
 // Hook do wykrywania urządzeń mobilnych
 function useIsMobile() {
   // W środowisku SSR zawsze zwracamy false
-  if (typeof window === 'undefined') return false;
-  
-  const [isMobile, setIsMobile] = React.useState(
-    window.matchMedia('(max-width: 768px)').matches
-  );
+  if (typeof window === "undefined") return false;
+
+  const [isMobile, setIsMobile] = React.useState(window.matchMedia("(max-width: 768px)").matches);
 
   React.useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
+
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   return isMobile;
@@ -54,7 +40,7 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
   const isMobile = useIsMobile();
 
   const handleSuccess = () => {
-    toast.success('Posiłek został zapisany');
+    toast.success("Posiłek został zapisany");
     if (onSuccess) {
       onSuccess();
     }
@@ -71,6 +57,7 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
     setInputText,
     setSelectedImages,
     analyze,
+    createManualEntry,
     refine,
     updateCandidate,
     save,
@@ -87,10 +74,8 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
   // Reset po zamknięciu
   const handleClose = () => {
     // Jeśli są niezapisane dane, poproś o potwierdzenie
-    if (status === 'review' && candidate) {
-      const confirmed = window.confirm(
-        'Masz niezapisane zmiany. Czy na pewno chcesz zamknąć?'
-      );
+    if (status === "review" && candidate) {
+      const confirmed = window.confirm("Masz niezapisane zmiany. Czy na pewno chcesz zamknąć?");
       if (!confirmed) return;
     }
 
@@ -101,7 +86,7 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
   // Renderuj odpowiedni widok na podstawie stanu
   const renderContent = () => {
     switch (status) {
-      case 'idle':
+      case "idle":
         return (
           <MealInputView
             initialText={inputText}
@@ -111,15 +96,18 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
               setSelectedImages(images);
               analyze(text, images);
             }}
+            onManualSubmit={(data) => {
+              createManualEntry(data);
+            }}
             isSubmitting={false}
           />
         );
 
-      case 'analyzing':
+      case "analyzing":
         return <AnalysisLoadingView />;
 
-      case 'refining':
-      case 'review':
+      case "refining":
+      case "review":
         return candidate ? (
           <MealReviewView
             candidate={candidate}
@@ -128,12 +116,12 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
             onSave={save}
             onCancel={handleClose}
             onManualChange={updateCandidate}
-            isRefining={status === 'refining'}
-            isSaving={status === 'saving'}
+            isRefining={status === "refining"}
+            isSaving={status === "saving"}
           />
         ) : null;
 
-      case 'saving':
+      case "saving":
         return candidate ? (
           <MealReviewView
             candidate={candidate}
@@ -152,17 +140,14 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
     }
   };
 
-  const title = status === 'idle' 
-    ? 'Dodaj posiłek' 
-    : status === 'analyzing' 
-    ? 'Analiza...' 
-    : 'Sprawdź wyniki';
+  const title = status === "idle" ? "Dodaj posiłek" : status === "analyzing" ? "Analiza..." : "Sprawdź wyniki";
 
-  const description = status === 'idle'
-    ? 'Opisz swój posiłek słowami lub dodaj zdjęcie'
-    : status === 'analyzing'
-    ? 'AI analizuje Twój posiłek i oblicza makroskładniki'
-    : 'Zweryfikuj dane i wprowadź ewentualne poprawki';
+  const description =
+    status === "idle"
+      ? "Opisz swój posiłek słowami lub dodaj zdjęcie"
+      : status === "analyzing"
+        ? "AI analizuje Twój posiłek i oblicza makroskładniki"
+        : "Zweryfikuj dane i wprowadź ewentualne poprawki";
 
   // Mobile: użyj Drawer
   if (isMobile) {
@@ -173,9 +158,7 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="max-h-[70vh] overflow-y-auto">
-            {renderContent()}
-          </div>
+          <div className="max-h-[70vh] overflow-y-auto">{renderContent()}</div>
         </DrawerContent>
       </Drawer>
     );

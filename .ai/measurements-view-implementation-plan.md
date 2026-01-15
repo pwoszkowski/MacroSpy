@@ -56,9 +56,15 @@ src/pages/measurements/index.astro (Page Wrapper)
 - **Props:** `isOpen: boolean`, `onClose: () => void`, `onSuccess: () => void`.
 
 ### 5. `MeasurementsHistory`
-- **Opis:** Tabela lub lista (na mobile) wyświetlająca historię pomiarów.
-- **Główne elementy:** `Table`, `TableHeader`, `TableRow`, `TableCell` (Shadcn).
-- **Props:** `data: MeasurementDto[]`.
+- **Opis:** Tabela lub lista (na mobile) wyświetlająca historię pomiarów z możliwością usuwania.
+- **Główne elementy:** `Table`, `TableHeader`, `TableRow`, `TableCell`, `AlertDialog` (Shadcn), przycisk usuwania z ikoną `Trash2` (lucide-react).
+- **Props:** `data: MeasurementDto[]`, `onDelete: (measurementId: string) => Promise<void>`.
+- **Funkcjonalności:**
+  - Wyświetlanie kolumn: Data, Waga (kg), Tłuszcz (%), Mięśnie (%), Akcje.
+  - Przycisk usuwania w każdym wierszu.
+  - AlertDialog z potwierdzeniem przed usunięciem.
+  - Wyświetlanie szczegółów pomiaru w dialogu potwierdzenia.
+  - Stan ładowania podczas usuwania.
 
 ## 5. Typy
 
@@ -91,6 +97,7 @@ Zalecane użycie customowego hooka `useMeasurements` wewnątrz `MeasurementsDash
 - **Methods:**
   - `fetchMeasurements()`: Pobiera dane z GET `/api/measurements`.
   - `addMeasurement(data: LogMeasurementCommand)`: Wysyła POST `/api/measurements`.
+  - `removeMeasurement(measurementId: string)`: Wysyła DELETE `/api/measurements/[id]`.
 
 ## 7. Integracja API
 
@@ -113,6 +120,12 @@ Zalecane użycie customowego hooka `useMeasurements` wewnątrz `MeasurementsDash
 - **Success:** Odświeżenie listy pomiarów, zamknięcie modala, toast success.
 - **Error:** Wyświetlenie błędu w formularzu lub toast error.
 
+### Usuwanie danych (DELETE)
+- **Endpoint:** `/api/measurements/{id}`
+- **Response:** `204 No Content`
+- **Success:** Odświeżenie listy pomiarów, zamknięcie dialogu potwierdzenia, toast success.
+- **Error:** Toast error z komunikatem z API.
+
 ## 8. Interakcje użytkownika
 
 1. **Wejście na stronę:** Automatyczne pobranie ostatnich 30 pomiarów. Wyświetlenie wykresu i listy.
@@ -124,7 +137,14 @@ Zalecane użycie customowego hooka `useMeasurements` wewnątrz `MeasurementsDash
    - Walidacja front-end.
    - Wysłanie żądania do API.
    - Po sukcesie: zamknięcie modala, odświeżenie danych na wykresie i liście.
-3. **Przełączanie wykresu:** Zmiana widoku z "Waga" na "Skład ciała" za pomocą zakładek nad wykresem.
+3. **Usunięcie pomiaru:**
+   - Kliknięcie ikony kosza w wierszu tabeli historii.
+   - Otwarcie AlertDialog z potwierdzeniem.
+   - Wyświetlenie szczegółów pomiaru (data, waga).
+   - Kliknięcie "Usuń" lub "Anuluj".
+   - Po potwierdzeniu: wysłanie żądania DELETE do API.
+   - Po sukcesie: zamknięcie dialogu, odświeżenie danych, toast success.
+4. **Przełączanie wykresu:** Zmiana widoku z "Waga" na "Skład ciała" za pomocą zakładek nad wykresem.
 
 ## 9. Warunki i walidacja
 
@@ -139,35 +159,47 @@ Zalecane użycie customowego hooka `useMeasurements` wewnątrz `MeasurementsDash
 - **Błąd zapisu:**
   - Błąd walidacji API (400): Wyświetlenie komunikatu pod odpowiednim polem formularza.
   - Błąd serwera (500): Wyświetlenie ogólnego toasta z błędem "Wystąpił błąd podczas zapisywania".
+- **Błąd usuwania:**
+  - Błąd serwera (500): Wyświetlenie toasta z błędem "Nie udało się usunąć pomiaru".
+  - Błąd 404: Wyświetlenie toasta "Pomiar nie istnieje lub został już usunięty".
 
 ## 11. Kroki implementacji
 
-1. **Przygotowanie środowiska:**
+1. **Przygotowanie środowiska:** ✅
    - Upewnij się, że `recharts` jest zainstalowane (`npm install recharts`).
-   - Upewnij się, że komponenty UI (Dialog, Input, Button, Table, Card) są dostępne w `src/components/ui`.
+   - Upewnij się, że komponenty UI (Dialog, Input, Button, Table, Card, AlertDialog) są dostępne w `src/components/ui`.
 
-2. **Stworzenie serwisu API (Frontend):**
-   - Dodaj metody `getMeasurements` i `logMeasurement` w `src/lib/services/measurement.service.ts` (lub utwórz nowy plik api clienta dla frontendu, np. `src/lib/api.ts`).
+2. **Stworzenie serwisu API (Frontend):** ✅
+   - Dodaj metody `getMeasurements`, `logMeasurement` i `deleteMeasurement` w `src/lib/api.ts`.
 
-3. **Implementacja `MeasurementForm`:**
+3. **Implementacja `MeasurementForm`:** ✅
    - Stwórz komponent formularza z użyciem `react-hook-form` i `zod`.
    - Podłącz walidację.
 
-4. **Implementacja `MeasurementsChart`:**
+4. **Implementacja `MeasurementsChart`:** ✅
    - Skonfiguruj wykres liniowy Recharts.
    - Dodaj obsługę pustego stanu (brak danych).
+   - Dodaj wyraźne punkty pomiarowe.
 
-5. **Implementacja `MeasurementsDashboard`:**
-   - Złóż komponenty (Chart, List, Dialog).
-   - Zaimplementuj logikę pobierania i dodawania danych.
+5. **Implementacja `MeasurementsDashboard`:** ✅
+   - Złóż komponenty (Chart, Summary, History, Dialog).
+   - Zaimplementuj logikę pobierania, dodawania i usuwania danych.
+   - Dodaj custom hook `useMeasurements`.
 
-6. **Stworzenie strony Astro:**
-   - Utwórz `src/pages/measurements/index.astro`.
+6. **Implementacja `MeasurementsHistory` z funkcją usuwania:** ✅
+   - Dodaj przycisk usuwania w każdym wierszu.
+   - Implementuj AlertDialog z potwierdzeniem.
+   - Obsłuż stan ładowania podczas usuwania.
+
+7. **Stworzenie strony Astro:** ✅
+   - Utwórz `src/pages/measurements.astro`.
    - Dodaj sprawdzenie sesji (middleware).
    - Wyrenderuj `MeasurementsDashboard` jako `<MeasurementsDashboard client:load />`.
 
-7. **Testowanie manualne:**
+8. **Testowanie manualne:** ⏳
    - Sprawdź dodawanie pomiaru z dzisiejszą datą.
    - Sprawdź dodawanie pomiaru z datą wsteczną.
+   - Sprawdź usuwanie pomiaru z potwierdzeniem.
+   - Sprawdź anulowanie usuwania.
    - Zweryfikuj poprawność wykresu.
    - Sprawdź walidację błędnych danych.

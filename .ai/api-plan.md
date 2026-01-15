@@ -232,6 +232,12 @@ Calculates caloric needs based on biometrics (Onboarding).
   }
   ```
 
+#### **Delete Measurement**
+- **Method:** `DELETE`
+- **URL:** `/api/measurements/{id}`
+- **Response:** `204 No Content`
+- **Description:** Usuwa pomiar ciała. Wymaga autoryzacji - tylko właściciel może usunąć swój pomiar.
+
 ---
 
 ## 3. Authentication & Authorization

@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { ProfileView } from "../components/profile";
+
+// Get Supabase client from middleware
+const supabase = Astro.locals.supabase;
+
+// TODO: Uncomment when auth is implemented
+// Check authentication
+// const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+// if (sessionError || !session?.user) {
+//   return Astro.redirect('/onboarding');
+// }
+// const userId = session.user.id;
+
+// TEMPORARY: Mock user ID for testing
+// const userId = "test-user-123";
+
+// Note: Data will be fetched on the client-side by the ProfileView component
+// This keeps the page simple and allows for better interactivity
+---
+
+<Layout title="MacroSpy - Profil">
+  <ProfileView client:load />
+</Layout>

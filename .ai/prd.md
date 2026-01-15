@@ -14,9 +14,12 @@ Tradycyjne aplikacje do liczenia kalorii wymagają żmudnego, ręcznego wyszukiw
 - Możliwość ręcznej edycji celów żywieniowych (kalorie, białko, tłuszcze, węglowodany, błonnik).
 
 ### 3.2 Rejestracja Posiłków (Core Feature)
-- Multimodalne wprowadzanie danych: możliwość jednoczesnego użycia tekstu/głosu oraz jednego lub wielu zdjęć w ramach jednego zapytania.
-- Przetwarzanie danych przez AI (grok-4.1-fast) w celu identyfikacji składników i gramatury.
-- Interfejs czatu z AI umożliwiający korektę rozpoznanego posiłku (np. "zmień kurczaka na tofu") przed ostatecznym zapisaniem.
+- **Dwa tryby wprowadzania**:
+  - **Tryb AI**: Multimodalne wprowadzanie danych (tekst/głos + zdjęcia) z automatyczną analizą przez AI (grok-4.1-fast).
+  - **Tryb ręczny**: Bezpośrednie wprowadzanie nazwy posiłku i wartości makroskładników bez użycia AI.
+- Przetwarzanie danych przez AI (grok-4.1-fast) w celu identyfikacji składników i gramatury (tryb AI).
+- Interfejs czatu z AI umożliwiający korektę rozpoznanego posiłku (np. "zmień kurczaka na tofu") przed ostatecznym zapisaniem (tryb AI).
+- Możliwość ręcznej edycji wszystkich wartości odżywczych w obu trybach.
 - Wymagany krok weryfikacji danych przez użytkownika przed dodaniem do historii.
 - Zdjęcia są przetwarzane ulotnie (nie są trwale archiwizowane).
 
@@ -77,13 +80,14 @@ Poniższe funkcjonalności są wyłączone z zakresu MVP:
 
 ### Główny proces (Rejestracja posiłków)
 
-#### US-004 Dodawanie posiłku (Tekst)
-- Tytuł: Opisanie posiłku tekstem
+#### US-004 Dodawanie posiłku (Tekst - Tryb AI)
+- Tytuł: Opisanie posiłku tekstem z analizą AI
 - Opis: Jako użytkownik chcę wpisać opis zjedzonego posiłku, aby AI oszacowało jego wartości odżywcze.
 - Kryteria akceptacji:
-  1. Dostępne pole tekstowe do wpisania opisu (np. "jajecznica z 3 jaj na maśle").
-  2. Po zatwierdzeniu zapytanie jest wysyłane do modelu grok-4.1-fast.
-  3. System prezentuje zidentyfikowane składniki i wartości odżywcze do weryfikacji.
+  1. Dostępny przełącznik wyboru trybu: "Analiza AI" lub "Ręczne dodanie".
+  2. W trybie AI dostępne pole tekstowe do wpisania opisu (np. "jajecznica z 3 jaj na maśle").
+  3. Po zatwierdzeniu zapytanie jest wysyłane do modelu grok-4.1-fast.
+  4. System prezentuje zidentyfikowane składniki i wartości odżywcze do weryfikacji.
 
 #### US-005 Multimodalna analiza posiłku (Zdjęcia + Tekst)
 - Tytuł: Analiza posiłku ze zdjęć i opisu
@@ -102,18 +106,27 @@ Poniższe funkcjonalności są wyłączone z zakresu MVP:
   2. Wpisanie komendy (np. "to było bez masła") powoduje przeliczenie wartości przez AI.
   3. Zaktualizowane wartości są natychmiast prezentowane na ekranie podglądu.
 
-#### US-007 Zatwierdzenie posiłku
+#### US-007 Dodawanie posiłku (Tryb ręczny)
+- Tytuł: Ręczne wprowadzanie wartości odżywczych
+- Opis: Jako użytkownik chcę móc ręcznie wprowadzić nazwę posiłku i wartości makroskładników, aby szybko dodać dane na podstawie etykiety produktu lub własnej wiedzy.
+- Kryteria akceptacji:
+  1. Po wybraniu trybu "Ręczne dodanie" dostępny jest formularz z polami: nazwa, kalorie, białko, tłuszcze, węglowodany, błonnik.
+  2. Walidacja wymaga wypełnienia nazwy (min. 2 znaki) oraz zapewnia, że wartości liczbowe są >= 0.
+  3. Przycisk "Przejdź do podsumowania" prowadzi do ekranu weryfikacji.
+  4. W trybie ręcznym niedostępne są funkcje AI (refine, sugestie dietetyczne).
+
+#### US-008 Zatwierdzenie posiłku
 - Tytuł: Zapisanie posiłku do dziennika
 - Opis: Jako użytkownik chcę jednym przyciskiem zatwierdzić zweryfikowane dane, aby zaktualizować mój dzienny bilans.
 - Kryteria akceptacji:
-  1. Przycisk "Zapisz" jest dostępny po otrzymaniu danych z AI.
+  1. Przycisk "Zapisz" jest dostępny po otrzymaniu danych z AI lub wprowadzeniu ręcznym.
   2. Kliknięcie dodaje posiłek do listy "Dzisiaj".
   3. Paski postępu na dashboardzie aktualizują się natychmiastowo.
-  4. Wyświetla się pasywna sugestia (dymek), jeśli AI ją wygenerowało.
+  4. Wyświetla się pasywna sugestia (dymek), jeśli AI ją wygenerowało (tylko tryb AI).
 
 ### Zarządzanie i Historia
 
-#### US-008 Dashboard dzienny
+#### US-009 Dashboard dzienny
 - Tytuł: Podgląd postępów dnia
 - Opis: Jako użytkownik chcę widzieć ile kalorii i makroskładników zostało mi do spożycia w danym dniu, aby kontrolować dietę.
 - Kryteria akceptacji:
@@ -121,7 +134,7 @@ Poniższe funkcjonalności są wyłączone z zakresu MVP:
   2. Liczbowe przedstawienie wartości (zjedzone / cel).
   3. Lista posiłków posortowana chronologicznie.
 
-#### US-009 Zarządzanie historią (Dodawanie/Edycja/Usuwanie)
+#### US-010 Zarządzanie historią (Dodawanie/Edycja/Usuwanie)
 - Tytuł: Zarządzanie wpisami historycznymi
 - Opis: Jako użytkownik chcę móc dodać zaległy posiłek, usunąć błędny lub edytować istniejący w przeszłości, aby utrzymać porządek w dzienniku.
 - Kryteria akceptacji:
@@ -130,7 +143,7 @@ Poniższe funkcjonalności są wyłączone z zakresu MVP:
   3. Opcja edycji i usuwania istniejących posiłków historycznych.
   4. Wszelkie zmiany aktualizują sumy dla danego dnia historycznego.
 
-#### US-010 Śledzenie parametrów ciała (Should Have)
+#### US-011 Śledzenie parametrów ciała (Should Have)
 - Tytuł: Rejestracja pomiarów ciała
 - Opis: Jako użytkownik chcę zapisywać swoją wagę oraz skład ciała, aby monitorować postępy zdrowotne.
 - Kryteria akceptacji:
@@ -138,7 +151,7 @@ Poniższe funkcjonalności są wyłączone z zakresu MVP:
   2. Pomiary są przypisane do konkretnej daty.
   3. Możliwość podglądu historii pomiarów.
 
-#### US-011 Edycja celów i danych profilowych
+#### US-012 Edycja celów i danych profilowych
 - Tytuł: Aktualizacja celów dietetycznych i parametrów
 - Opis: Jako użytkownik chcę mieć możliwość zmiany moich danych (np. waga, aktywność) i przeliczenia celów na nowo lub ręcznej edycji limitów kalorii i makroskładników, aby dostosować aplikację do zmieniających się potrzeb.
 - Kryteria akceptacji:

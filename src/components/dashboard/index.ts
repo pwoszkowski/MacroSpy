@@ -1,5 +1,6 @@
 export { DashboardContainer } from './DashboardContainer';
 export { DateHeader } from './DateHeader';
+export { TodayHeader } from './TodayHeader';
 export { NutritionSummary } from './NutritionSummary';
 export { MealList } from './MealList';
 export { MealCard } from './MealCard';
