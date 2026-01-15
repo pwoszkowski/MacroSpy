@@ -138,6 +138,15 @@ Poniższe funkcjonalności są wyłączone z zakresu MVP:
   2. Pomiary są przypisane do konkretnej daty.
   3. Możliwość podglądu historii pomiarów.
 
+#### US-011 Edycja celów i danych profilowych
+- Tytuł: Aktualizacja celów dietetycznych i parametrów
+- Opis: Jako użytkownik chcę mieć możliwość zmiany moich danych (np. waga, aktywność) i przeliczenia celów na nowo lub ręcznej edycji limitów kalorii i makroskładników, aby dostosować aplikację do zmieniających się potrzeb.
+- Kryteria akceptacji:
+  1. Dostęp do edycji danych profilowych (waga, wzrost, wiek, płeć, poziom aktywności).
+  2. Przycisk umożliwiający ponowne przeliczenie zapotrzebowania (TDEE/BMR) na podstawie zaktualizowanych danych.
+  3. Możliwość ręcznej edycji docelowych wartości kalorii i makroskładników (białko, tłuszcze, węglowodany) niezależnie od kalkulatora.
+  4. Zapisanie zmian aktualizuje cele widoczne na dashboardzie (od bieżącego momentu).
+
 ## 6. Metryki sukcesu
 - Retencja (Aktywność): 80% użytkowników loguje minimum 3 posiłki dziennie przez 5 dni w tygodniu.
 - Efektywność (Cel zdrowotny): 50% aktywnych użytkowników poprawia swoje wskaźniki (np. obniżenie tkanki tłuszczowej, poprawa tkanki mięśniowej, pozytywna zmiana wagi) w ciągu 30 dni.

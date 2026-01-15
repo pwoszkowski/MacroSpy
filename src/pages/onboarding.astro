@@ -1,0 +1,18 @@
+---
+/**
+ * Strona Onboarding - wieloetapowy kreator konfiguracji konta
+ * Dostępna dla zalogowanych użytkowników bez aktywnego celu dietetycznego
+ */
+
+import Layout from "../layouts/Layout.astro";
+import { OnboardingWizard } from "../components/onboarding";
+
+export const prerender = false;
+
+// Tutaj można dodać middleware sprawdzające, czy użytkownik jest zalogowany
+// i czy nie ma jeszcze aktywnego celu
+---
+
+<Layout title="Konfiguracja konta - MacroSpy">
+  <OnboardingWizard client:load redirectUrl="/" />
+</Layout>

@@ -1,8 +1,121 @@
 ---
-import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
+import { DashboardContainer } from "../components/dashboard";
+import { MealService } from "../lib/services/meal.service";
+import { ProfileService } from "../lib/services/profile.service";
+import { GoalService } from "../lib/services/goal.service";
+import type { MealListResponse, UserProfileResponse } from "../types";
+
+// Get Supabase client from middleware
+const supabase = Astro.locals.supabase;
+
+// TODO: Uncomment when auth is implemented
+// Check authentication
+// const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+// if (sessionError || !session?.user) {
+//   return Astro.redirect('/onboarding');
+// }
+// const userId = session.user.id;
+
+// TEMPORARY: Mock user ID for testing
+const userId = "test-user-123";
+
+// Initialize services
+const mealService = new MealService(supabase);
+const profileService = new ProfileService(supabase);
+const goalService = new GoalService(supabase);
+
+// Fetch data in parallel for better performance
+let mealsData: MealListResponse;
+let profile;
+let currentGoal;
+
+try {
+  [mealsData, profile, currentGoal] = await Promise.all([
+    mealService.getMealsByDate(userId), // Defaults to today
+    profileService.getProfile(userId),
+    goalService.getCurrentGoal(userId),
+  ]);
+} catch {
+  // Use mock data if DB fails (for testing without auth)
+  // eslint-disable-next-line no-console
+  console.log("Using mock data for dashboard");
+  const now = new Date();
+  mealsData = {
+    data: [
+      {
+        id: "1",
+        name: "Owsianka z owocami",
+        calories: 450,
+        protein: 15,
+        fat: 12,
+        carbs: 65,
+        fiber: 8,
+        ai_suggestion: "Doskonały posiłek na początek dnia!",
+        consumed_at: new Date(now.setHours(8, 30, 0, 0)).toISOString(),
+      },
+      {
+        id: "2",
+        name: "Kurczak z ryżem i warzywami",
+        calories: 650,
+        protein: 55,
+        fat: 15,
+        carbs: 70,
+        fiber: 6,
+        ai_suggestion: "Świetne źródło białka",
+        consumed_at: new Date(now.setHours(13, 0, 0, 0)).toISOString(),
+      },
+      {
+        id: "3",
+        name: "Shake proteinowy",
+        calories: 280,
+        protein: 30,
+        fat: 8,
+        carbs: 25,
+        fiber: 3,
+        ai_suggestion: null,
+        consumed_at: new Date(now.setHours(16, 30, 0, 0)).toISOString(),
+      },
+    ],
+    summary: {
+      total_calories: 1380,
+      total_protein: 100,
+      total_fat: 35,
+      total_carbs: 160,
+      total_fiber: 17,
+    },
+  };
+  profile = null;
+  currentGoal = null;
+}
+
+// Prepare user profile response with mock data for testing
+const userProfile: UserProfileResponse = {
+  profile: profile || {
+    height: 180,
+    gender: "male",
+    birth_date: "1990-01-01",
+  },
+  current_goal: currentGoal || {
+    calories_target: 2500,
+    protein_target: 150,
+    fat_target: 80,
+    carbs_target: 250,
+    fiber_target: 30,
+    start_date: new Date().toISOString().split("T")[0],
+  },
+};
+
+// TODO: Uncomment when onboarding is ready
+// If profile or goal is missing, redirect to onboarding
+// if (!profile || !currentGoal) {
+//   return Astro.redirect('/onboarding');
+// }
+
+// Prepare initial meals data
+const initialMeals: MealListResponse = mealsData;
 ---
 
-<Layout>
-  <Welcome />
+<Layout title="MacroSpy - Dashboard">
+  <DashboardContainer client:load initialMeals={initialMeals} userProfile={userProfile} />
 </Layout>
