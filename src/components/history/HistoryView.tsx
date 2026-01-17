@@ -10,11 +10,18 @@ import { useHistoryMeals } from "./useHistoryMeals";
 import type { MealDto, CreateMealCommand, UpdateMealCommand } from "@/types";
 import type { MealFormValues } from "./schemas";
 
+interface HistoryViewProps {
+  user?: {
+    id: string;
+    email: string;
+  } | null;
+}
+
 /**
  * Main container for History view.
  * Manages state and coordinates all history subcomponents.
  */
-export function HistoryView() {
+export function HistoryView({ user }: HistoryViewProps = {}) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMeal, setEditingMeal] = useState<MealDto | null>(null);
@@ -91,7 +98,7 @@ export function HistoryView() {
   // Error state
   if (error && meals.length === 0) {
     return (
-      <PageLayout currentPath="/history" showAddMealButton={false}>
+      <PageLayout currentPath="/history" showAddMealButton={false} user={user}>
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="text-6xl mb-4" role="img" aria-label="Błąd">
@@ -112,7 +119,7 @@ export function HistoryView() {
   }
 
   return (
-    <PageLayout currentPath="/history" showAddMealButton={false}>
+    <PageLayout currentPath="/history" showAddMealButton={false} user={user}>
       {/* Date Selector - sticky below header */}
       <div className="sticky top-14 md:top-16 z-30 bg-background border-b shadow-sm">
         <div className="container mx-auto px-4 py-3">

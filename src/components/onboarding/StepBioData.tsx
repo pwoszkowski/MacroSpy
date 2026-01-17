@@ -81,9 +81,9 @@ export function StepBioData({ data, onUpdate, errors = {} }: StepBioDataProps) {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Twoje dane biometryczne</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Witaj w MacroSpy! 👋</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Potrzebujemy kilku informacji, aby obliczyć Twoje zapotrzebowanie kaloryczne
+          Twoje konto jest gotowe. Teraz potrzebujemy kilku informacji o Tobie, aby nasz algorytm AI mógł precyzyjnie obliczyć Twoje dzienne zapotrzebowanie kaloryczne i pomóc Ci w osiągnięciu celów.
         </p>
       </div>
 

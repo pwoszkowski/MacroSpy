@@ -1,4 +1,4 @@
-import { Home, History, Scale, User } from 'lucide-react';
+import { Home, History, Scale } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -26,12 +26,6 @@ const navItems: NavItem[] = [
     label: 'Pomiary',
     icon: Scale,
     ariaLabel: 'Pomiary ciała',
-  },
-  {
-    href: '/profile',
-    label: 'Profil',
-    icon: User,
-    ariaLabel: 'Profil użytkownika',
   },
 ];
 

@@ -24,9 +24,9 @@ export function StepActivity({ value, onChange, error }: StepActivityProps) {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Poziom aktywności</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Jak aktywny jest Twój dzień?</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Wybierz opcję, która najlepiej opisuje Twój typowy poziom aktywności fizycznej
+          Twój poziom aktywności ma ogromny wpływ na zapotrzebowanie energetyczne. Wybierz opcję, która najlepiej oddaje Twój styl życia.
         </p>
       </div>
 

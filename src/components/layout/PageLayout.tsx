@@ -14,6 +14,11 @@ interface PageLayoutProps {
   onAddMealClick?: () => void;
   /** Whether to show the add meal button in desktop nav */
   showAddMealButton?: boolean;
+  /** User information for authentication state */
+  user?: {
+    id: string;
+    email: string;
+  } | null;
 }
 
 /**
@@ -22,24 +27,26 @@ interface PageLayoutProps {
  * - Mobile: Top bar with logo, main content, bottom navigation
  * - Desktop: Top nav with logo and links, main content (centered)
  */
-export function PageLayout({ 
-  currentPath, 
-  children, 
+export function PageLayout({
+  currentPath,
+  children,
   mobileRightSlot,
   desktopRightSlot,
   onAddMealClick,
   showAddMealButton = true,
+  user,
 }: PageLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile Top Bar */}
-      <MobileTopBar rightSlot={mobileRightSlot} />
-      
+      <MobileTopBar rightSlot={mobileRightSlot} user={user} />
+
       {/* Desktop Top Navigation */}
-      <DesktopTopNav 
+      <DesktopTopNav
         currentPath={currentPath}
         onAddMealClick={showAddMealButton ? onAddMealClick : undefined}
         rightSlot={desktopRightSlot}
+        user={user}
       />
       
       {/* Main Content */}

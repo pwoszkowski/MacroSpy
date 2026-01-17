@@ -33,9 +33,15 @@ const logMeasurementSchema = z.object({
  */
 export const GET: APIRoute = async ({ url, locals }) => {
   try {
-    // TODO: Add authentication when ready
-    // For now, use a test user_id
-    const userId = "d9622d1a-756c-442a-aba9-ef94ad49b174";
+    // Ensure user is authenticated
+    if (!locals.user?.id) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = locals.user.id;
 
     // Parse and validate query parameter
     const limitParam = url.searchParams.get("limit");
@@ -82,9 +88,15 @@ export const GET: APIRoute = async ({ url, locals }) => {
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // TODO: Add authentication when ready
-    // For now, use a test user_id
-    const userId = "d9622d1a-756c-442a-aba9-ef94ad49b174";
+    // Ensure user is authenticated
+    if (!locals.user?.id) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = locals.user.id;
 
     // Parse request body
     let body: unknown;

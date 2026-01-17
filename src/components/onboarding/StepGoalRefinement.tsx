@@ -51,9 +51,9 @@ export function StepGoalRefinement({
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Twoje zapotrzebowanie</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Twoje spersonalizowane cele</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Obliczyliśmy Twoje dzienne zapotrzebowanie. Możesz dostosować cele do swoich potrzeb.
+          Na podstawie Twoich danych obliczyliśmy optymalne zapotrzebowanie. Możesz teraz zaakceptować nasze sugestie lub dostosować je do swoich preferencji.
         </p>
       </div>
 

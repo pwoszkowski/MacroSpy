@@ -15,11 +15,36 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps) {
+  const [formError, setFormError] = useState<string | null>(null);
+
   const submitHandler = onSubmit || (async (data: LoginFormValues) => {
-    // Placeholder - backend będzie zaimplementowany później
-    console.log("Login attempt:", data);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Symulacja API call
+    setFormError(null);
+    console.log('Submitting login form:', data);
+
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.log('Error data:', errorData);
+      throw new Error(errorData.error || 'Wystąpił błąd podczas logowania');
+    }
+
+    const successData = await response.json();
+    console.log('Success data:', successData);
+
+    // Successful login - redirect will be handled by page refresh or navigation
+    window.location.reload(); // Reload to trigger middleware redirect
   });
+
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -36,9 +61,14 @@ export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps
 
   const onSubmitHandler = async (data: LoginFormValues) => {
     try {
+      setFormError(null);
       await submitHandler(data);
+      toast.success("Zalogowano pomyślnie!");
     } catch (error) {
       console.error("Login form submission error:", error);
+      const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas logowania';
+      setFormError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
@@ -53,11 +83,11 @@ export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps
       </div>
 
       {/* Formularz */}
-      <form onSubmit={handleSubmit(onSubmitHandler)} className="space-y-4">
+      <form method="post" onSubmit={handleSubmit(onSubmitHandler)} className="space-y-4">
         {/* Błąd ogólny */}
-        {error && (
+        {(error || formError) && (
           <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/50 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-md">
-            {error}
+            {error || formError}
           </div>
         )}
 

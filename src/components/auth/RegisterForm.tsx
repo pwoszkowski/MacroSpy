@@ -15,11 +15,46 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ onSubmit, isLoading = false, error }: RegisterFormProps) {
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
   const submitHandler = onSubmit || (async (data: RegisterFormValues) => {
-    // Placeholder - backend będzie zaimplementowany później
-    console.log("Register attempt:", data);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Symulacja API call
+    setFormError(null);
+    console.log('Submitting register form:', data);
+
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: data.email,
+        password: data.password,
+      }),
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.log('Error data:', errorData);
+      throw new Error(errorData.error || 'Wystąpił błąd podczas rejestracji');
+    }
+
+    const successData = await response.json();
+    console.log('Success data:', successData);
+
+    // If registration requires email confirmation, show success message
+    if (successData.requiresConfirmation) {
+      setRegistrationSuccess(true);
+      toast.success("Konto zostało utworzone! Sprawdź swoją skrzynkę email i kliknij w link potwierdzający.");
+    } else {
+      // If no confirmation needed, redirect will be handled by page refresh or navigation
+      window.location.reload(); // Reload to trigger middleware redirect
+    }
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -38,11 +73,44 @@ export function RegisterForm({ onSubmit, isLoading = false, error }: RegisterFor
 
   const onSubmitHandler = async (data: RegisterFormValues) => {
     try {
+      setFormError(null);
       await submitHandler(data);
     } catch (error) {
       console.error("Register form submission error:", error);
+      const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas rejestracji';
+      setFormError(errorMessage);
+      toast.error(errorMessage);
     }
   };
+
+  // Show success message after successful registration
+  if (registrationSuccess) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-4">
+          <div className="mx-auto w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+            <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-green-600 dark:text-green-400">
+            Konto zostało utworzone!
+          </h2>
+          <p className="text-muted-foreground">
+            Wysłaliśmy link potwierdzający na Twój adres email. Kliknij w niego, aby aktywować konto i móc się zalogować.
+          </p>
+          <div className="pt-4">
+            <a
+              href="/login"
+              className="text-primary hover:underline font-medium"
+            >
+              Przejdź do logowania
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -57,9 +125,9 @@ export function RegisterForm({ onSubmit, isLoading = false, error }: RegisterFor
       {/* Formularz */}
       <form onSubmit={handleSubmit(onSubmitHandler)} className="space-y-4">
         {/* Błąd ogólny */}
-        {error && (
+        {(error || formError) && (
           <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/50 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-md">
-            {error}
+            {error || formError}
           </div>
         )}
 

@@ -6,6 +6,7 @@
 import { useReducer, useEffect } from "react";
 import { WizardProgress } from "./WizardProgress";
 import { WizardNavigation } from "./WizardNavigation";
+import { OnboardingTopBar } from "./OnboardingTopBar";
 import { StepBioData } from "./StepBioData";
 import { StepActivity } from "./StepActivity";
 import { StepGoalRefinement } from "./StepGoalRefinement";
@@ -93,9 +94,13 @@ function onboardingReducer(
 
 interface OnboardingWizardProps {
   redirectUrl?: string;
+  user?: {
+    id: string;
+    email: string;
+  } | null;
 }
 
-export function OnboardingWizard({ redirectUrl = "/" }: OnboardingWizardProps) {
+export function OnboardingWizard({ redirectUrl = "/", user }: OnboardingWizardProps) {
   const [state, dispatch] = useReducer(onboardingReducer, initialState);
 
   /**
@@ -110,26 +115,26 @@ export function OnboardingWizard({ redirectUrl = "/" }: OnboardingWizardProps) {
     }
 
     const age = calculateAge(birthDate);
-    if (age < 10 || age > 120) {
+    if (age < 13 || age > 120) {
       dispatch({
         type: "SET_ERROR",
-        payload: "Wiek musi być między 10 a 120 lat",
+        payload: "Wiek musi być między 13 a 120 lat",
       });
       return false;
     }
 
-    if (height < 50 || height > 300) {
+    if (height < 100 || height > 300) {
       dispatch({
         type: "SET_ERROR",
-        payload: "Wzrost musi być między 50 a 300 cm",
+        payload: "Wzrost musi być między 100 a 300 cm",
       });
       return false;
     }
 
-    if (weight < 10 || weight > 500) {
+    if (weight < 20 || weight > 500) {
       dispatch({
         type: "SET_ERROR",
-        payload: "Waga musi być między 10 a 500 kg",
+        payload: "Waga musi być między 20 a 500 kg",
       });
       return false;
     }
@@ -251,7 +256,8 @@ export function OnboardingWizard({ redirectUrl = "/" }: OnboardingWizardProps) {
       });
 
       if (!profileResponse.ok) {
-        throw new Error("Nie udało się zapisać profilu");
+        const errorData = await profileResponse.json();
+        throw new Error(errorData.message || "Nie udało się zapisać profilu");
       }
 
       // 2. Utworzenie celu dietetycznego
@@ -261,16 +267,17 @@ export function OnboardingWizard({ redirectUrl = "/" }: OnboardingWizardProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           start_date: today,
-          calories_target: state.finalGoals.calories,
-          protein_target: state.finalGoals.protein,
-          fat_target: state.finalGoals.fat,
-          carbs_target: state.finalGoals.carbs,
-          fiber_target: state.finalGoals.fiber,
+          calories_target: Math.round(state.finalGoals.calories),
+          protein_target: Math.round(state.finalGoals.protein),
+          fat_target: Math.round(state.finalGoals.fat),
+          carbs_target: Math.round(state.finalGoals.carbs),
+          fiber_target: Math.round(state.finalGoals.fiber),
         }),
       });
 
       if (!goalsResponse.ok) {
-        throw new Error("Nie udało się zapisać celów");
+        const errorData = await goalsResponse.json();
+        throw new Error(errorData.message || "Nie udało się zapisać celów");
       }
 
       // 3. Zapis wagi początkowej
@@ -284,13 +291,22 @@ export function OnboardingWizard({ redirectUrl = "/" }: OnboardingWizardProps) {
       });
 
       if (!measurementResponse.ok) {
-        throw new Error("Nie udało się zapisać pomiaru wagi");
+        const errorData = await measurementResponse.json();
+        throw new Error(errorData.message || "Nie udało się zapisać pomiaru wagi");
       }
 
-      // Sukces - przekieruj na dashboard
-      window.location.href = redirectUrl;
+      // Sukces - przekieruj na dashboard (bez ostrzeżenia przeglądarki)
+      console.log('All API calls successful, redirecting to:', redirectUrl);
+      window.location.replace(redirectUrl);
     } catch (error) {
       console.error("Submit error:", error);
+
+      // Szczegółowe logowanie błędów API
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+      }
+
       dispatch({
         type: "SET_ERROR",
         payload:
@@ -304,11 +320,11 @@ export function OnboardingWizard({ redirectUrl = "/" }: OnboardingWizardProps) {
   };
 
   /**
-   * Ostrzeżenie przed opuszczeniem strony
+   * Ostrzeżenie przed opuszczeniem strony (tylko podczas onboardingu)
    */
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (state.step > 1) {
+      if (state.step > 1 && state.step < 3) {
         e.preventDefault();
         e.returnValue = "";
       }
@@ -337,13 +353,17 @@ export function OnboardingWizard({ redirectUrl = "/" }: OnboardingWizardProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <div className="w-full max-w-2xl">
-        <div className="mb-6 sm:mb-8">
-          <WizardProgress currentStep={state.step} totalSteps={TOTAL_STEPS} />
-        </div>
+    <div className="min-h-screen bg-background">
+      {/* Top bar z logo i menu profilu */}
+      <OnboardingTopBar user={user} />
 
-        <div className="bg-card rounded-lg shadow-lg border p-4 sm:p-6 md:p-8">
+      <div className="flex items-center justify-center p-4">
+        <div className="w-full max-w-2xl">
+          <div className="mb-6 sm:mb-8">
+            <WizardProgress currentStep={state.step} totalSteps={TOTAL_STEPS} />
+          </div>
+
+          <div className="bg-card rounded-lg shadow-lg border p-4 sm:p-6 md:p-8">
           {/* Renderowanie kroków z animacją */}
           <div className="min-h-[400px] sm:min-h-[500px]">
             {state.step === 1 && (
@@ -409,6 +429,7 @@ export function OnboardingWizard({ redirectUrl = "/" }: OnboardingWizardProps) {
             isNextDisabled={isNextDisabled()}
             isSubmitting={state.isSubmitting}
           />
+          </div>
         </div>
       </div>
     </div>

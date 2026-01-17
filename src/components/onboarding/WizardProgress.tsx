@@ -9,7 +9,7 @@ interface WizardProgressProps {
   totalSteps: number;
 }
 
-const STEP_LABELS = ["Dane biometryczne", "Aktywność", "Cele dietetyczne"];
+const STEP_LABELS = ["O Tobie", "Aktywność", "Twoje cele"];
 
 export function WizardProgress({ currentStep, totalSteps }: WizardProgressProps) {
   return (

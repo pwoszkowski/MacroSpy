@@ -11,8 +11,9 @@ export const prerender = false;
 
 // Tutaj można dodać middleware sprawdzające, czy użytkownik jest zalogowany
 // i czy nie ma jeszcze aktywnego celu
+const user = Astro.locals.user || null;
 ---
 
 <Layout title="Konfiguracja konta - MacroSpy">
-  <OnboardingWizard client:load redirectUrl="/" />
+  <OnboardingWizard client:load redirectUrl="/" {user} />
 </Layout>

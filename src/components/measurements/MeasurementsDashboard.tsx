@@ -12,7 +12,14 @@ import { MeasurementsHistory } from "./MeasurementsHistory";
 import { useMeasurements } from "./useMeasurements";
 import type { MeasurementFormValues } from "./schemas";
 
-export function MeasurementsDashboard() {
+interface MeasurementsDashboardProps {
+  user?: {
+    id: string;
+    email: string;
+  } | null;
+}
+
+export function MeasurementsDashboard({ user }: MeasurementsDashboardProps = {}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { measurements, isLoading, error, addMeasurement, removeMeasurement, fetchMeasurements } =
     useMeasurements(30);
@@ -55,7 +62,7 @@ export function MeasurementsDashboard() {
 
   if (error) {
     return (
-      <PageLayout currentPath="/measurements" showAddMealButton={false}>
+      <PageLayout currentPath="/measurements" showAddMealButton={false} user={user}>
         <div className="container mx-auto px-4 py-8">
           <Card className="p-6">
             <div className="flex flex-col items-center gap-4 text-center">
@@ -73,7 +80,7 @@ export function MeasurementsDashboard() {
   }
 
   return (
-    <PageLayout currentPath="/measurements" showAddMealButton={false}>
+    <PageLayout currentPath="/measurements" showAddMealButton={false} user={user}>
       <div className="container mx-auto px-4 py-6 md:py-8 max-w-6xl">
         <div className="space-y-6">
           {/* Header */}

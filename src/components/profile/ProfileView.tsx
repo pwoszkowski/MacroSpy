@@ -11,7 +11,14 @@ import type { UpdateProfileCommand, SetDietaryGoalCommand } from "@/types";
 import { toast } from "sonner";
 import { User } from "lucide-react";
 
-export function ProfileView() {
+interface ProfileViewProps {
+  user?: {
+    id: string;
+    email: string;
+  } | null;
+}
+
+export function ProfileView({ user }: ProfileViewProps = {}) {
   const { profile, currentGoal, isLoading, error, refetch } = useProfileData();
   const [activeTab, setActiveTab] = useState("profile");
 
@@ -45,7 +52,7 @@ export function ProfileView() {
 
   if (isLoading) {
     return (
-      <PageLayout currentPath="/profile" showAddMealButton={false}>
+      <PageLayout currentPath="/profile" showAddMealButton={false} user={user}>
         <div className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-4">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -58,7 +65,7 @@ export function ProfileView() {
 
   if (error) {
     return (
-      <PageLayout currentPath="/profile" showAddMealButton={false}>
+      <PageLayout currentPath="/profile" showAddMealButton={false} user={user}>
         <div className="flex items-center justify-center p-4 py-12">
           <Card className="w-full max-w-md">
             <CardHeader>
@@ -76,7 +83,7 @@ export function ProfileView() {
 
   if (!profile) {
     return (
-      <PageLayout currentPath="/profile" showAddMealButton={false}>
+      <PageLayout currentPath="/profile" showAddMealButton={false} user={user}>
         <div className="flex items-center justify-center p-4 py-12">
           <Card className="w-full max-w-md">
             <CardHeader>

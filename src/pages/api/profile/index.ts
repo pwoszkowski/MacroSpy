@@ -25,9 +25,9 @@ const updateProfileSchema = z.object({
         const birthDate = new Date(date);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
-        return age >= 10 && age <= 120;
+        return age >= 13 && age <= 120;
       },
-      { message: "Age must be between 10 and 120 years" }
+      { message: "Age must be between 13 and 120 years" }
     ),
 });
 
@@ -38,9 +38,15 @@ const updateProfileSchema = z.object({
  */
 export const PUT: APIRoute = async ({ request, locals }) => {
   try {
-    // TODO: Add authentication when ready
-    // For now, use a test user_id
-    const userId = "d9622d1a-756c-442a-aba9-ef94ad49b174";
+    // Ensure user is authenticated
+    if (!locals.user?.id) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = locals.user.id;
 
     // Parse request body
     let body: unknown;

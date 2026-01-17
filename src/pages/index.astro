@@ -9,16 +9,8 @@ import type { MealListResponse, UserProfileResponse } from "../types";
 // Get Supabase client from middleware
 const supabase = Astro.locals.supabase;
 
-// TODO: Uncomment when auth is implemented
-// Check authentication
-// const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-// if (sessionError || !session?.user) {
-//   return Astro.redirect('/onboarding');
-// }
-// const userId = session.user.id;
-
-// TEMPORARY: Mock user ID for testing
-const userId = "test-user-123";
+// Check authentication - user is available from middleware
+const user = Astro.locals.user;
 
 // Initialize services
 const mealService = new MealService(supabase);
@@ -117,5 +109,5 @@ const initialMeals: MealListResponse = mealsData;
 ---
 
 <Layout title="MacroSpy - Dashboard">
-  <DashboardContainer client:load initialMeals={initialMeals} userProfile={userProfile} />
+  <DashboardContainer client:load initialMeals={initialMeals} userProfile={userProfile} user={user} />
 </Layout>

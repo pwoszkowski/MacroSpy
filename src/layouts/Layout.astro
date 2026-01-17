@@ -7,6 +7,9 @@ interface Props {
 }
 
 const { title = "10x Astro Starter" } = Astro.props;
+
+// Sprawdź stan użytkownika - dostępne przez middleware
+const user = Astro.locals.user || null;
 ---
 
 <!doctype html>
@@ -28,7 +31,7 @@ const { title = "10x Astro Starter" } = Astro.props;
     </script>
   </head>
   <body>
-    <slot />
+    <slot {user} />
     <ToastProvider client:load />
   </body>
 </html>

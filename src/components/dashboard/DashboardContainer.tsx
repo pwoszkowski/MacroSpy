@@ -13,13 +13,17 @@ import type { MealListResponse, UserProfileResponse } from '@/types';
 interface DashboardContainerProps {
   initialMeals: MealListResponse;
   userProfile: UserProfileResponse;
+  user?: {
+    id: string;
+    email: string;
+  } | null;
 }
 
 /**
  * Main Dashboard container component.
  * Always displays today's data. Use History view to browse other dates.
  */
-export function DashboardContainer({ initialMeals, userProfile }: DashboardContainerProps) {
+export function DashboardContainer({ initialMeals, userProfile, user }: DashboardContainerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const today = new Date();
   const { data, isLoading, error, refetch } = useDashboardData(today, initialMeals);
@@ -46,7 +50,7 @@ export function DashboardContainer({ initialMeals, userProfile }: DashboardConta
   // Error state
   if (error && !data) {
     return (
-      <PageLayout currentPath="/" showAddMealButton={false}>
+      <PageLayout currentPath="/" showAddMealButton={false} user={user}>
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="text-6xl mb-4">⚠️</div>
@@ -65,9 +69,10 @@ export function DashboardContainer({ initialMeals, userProfile }: DashboardConta
   }
 
   return (
-    <PageLayout 
+    <PageLayout
       currentPath="/"
       showAddMealButton={false}
+      user={user}
     >
       {/* Today's date header */}
       <TodayHeader />
