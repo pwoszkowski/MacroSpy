@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import type { MealDto } from '@/types';
-import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import type { MealDto } from "@/types";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
 
 interface MealCardProps {
   meal: MealDto;
@@ -14,14 +14,14 @@ interface MealCardProps {
  * Shows meal name, time, macros, and optional AI suggestion.
  */
 export function MealCard({ meal, onClick }: MealCardProps) {
-  const consumedTime = format(new Date(meal.consumed_at), 'HH:mm', { locale: pl });
+  const consumedTime = format(new Date(meal.consumed_at), "HH:mm", { locale: pl });
 
   return (
-    <Card 
+    <Card
       className="cursor-pointer hover:bg-accent/50 transition-colors focus-visible:ring-2 focus-visible:ring-ring"
       onClick={onClick}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onClick?.();
         }
@@ -60,9 +60,7 @@ export function MealCard({ meal, onClick }: MealCardProps) {
           <div className="space-y-1">
             <div className="text-muted-foreground text-xs">Błonnik</div>
             <div className="font-semibold">
-              {meal.fiber !== null && meal.fiber !== undefined 
-                ? `${Math.round(meal.fiber)}g` 
-                : '-'}
+              {meal.fiber !== null && meal.fiber !== undefined ? `${Math.round(meal.fiber)}g` : "-"}
             </div>
           </div>
         </div>

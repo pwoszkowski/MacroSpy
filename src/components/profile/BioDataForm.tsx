@@ -3,13 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { bioDataSchema, type BioDataFormValues } from "./schemas";
 import type { ProfileDto, UpdateProfileCommand } from "@/types";
 
@@ -48,13 +42,7 @@ export function BioDataForm({ initialData, onSave }: BioDataFormProps) {
     <form onSubmit={handleSubmit(onSubmitHandler)} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="height">Wzrost (cm) *</Label>
-        <Input
-          id="height"
-          type="number"
-          placeholder="np. 175"
-          {...register("height")}
-          aria-invalid={!!errors.height}
-        />
+        <Input id="height" type="number" placeholder="np. 175" {...register("height")} aria-invalid={!!errors.height} />
         {errors.height && <p className="text-sm text-red-500">{errors.height.message}</p>}
       </div>
 
@@ -77,12 +65,7 @@ export function BioDataForm({ initialData, onSave }: BioDataFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="birth_date">Data urodzenia *</Label>
-        <Input
-          id="birth_date"
-          type="date"
-          {...register("birth_date")}
-          aria-invalid={!!errors.birth_date}
-        />
+        <Input id="birth_date" type="date" {...register("birth_date")} aria-invalid={!!errors.birth_date} />
         {errors.birth_date && <p className="text-sm text-red-500">{errors.birth_date.message}</p>}
       </div>
 

@@ -1,5 +1,5 @@
-import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 
 /**
  * Ekran oczekiwania na odpowiedź AI podczas analizy posiłku.
@@ -34,25 +34,25 @@ export function AnalysisLoadingView() {
           <Skeleton className="h-4 w-16" />
           <Skeleton className="h-10 w-full" />
         </div>
-        
+
         {/* Białko */}
         <div className="space-y-2">
           <Skeleton className="h-4 w-16" />
           <Skeleton className="h-10 w-full" />
         </div>
-        
+
         {/* Tłuszcze */}
         <div className="space-y-2">
           <Skeleton className="h-4 w-16" />
           <Skeleton className="h-10 w-full" />
         </div>
-        
+
         {/* Węglowodany */}
         <div className="space-y-2">
           <Skeleton className="h-4 w-16" />
           <Skeleton className="h-10 w-full" />
         </div>
-        
+
         {/* Błonnik */}
         <div className="space-y-2">
           <Skeleton className="h-4 w-16" />

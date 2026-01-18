@@ -48,10 +48,7 @@ const initialState: OnboardingState = {
 /**
  * Reducer zarządzający stanem Onboarding
  */
-function onboardingReducer(
-  state: OnboardingState,
-  action: OnboardingAction
-): OnboardingState {
+function onboardingReducer(state: OnboardingState, action: OnboardingAction): OnboardingState {
   switch (action.type) {
     case "SET_STEP":
       return { ...state, step: action.payload, error: null };
@@ -192,10 +189,7 @@ export function OnboardingWizard({ redirectUrl = "/", user }: OnboardingWizardPr
       console.error("TDEE calculation error:", error);
       dispatch({
         type: "SET_ERROR",
-        payload:
-          error instanceof Error
-            ? error.message
-            : "Nie udało się obliczyć zapotrzebowania. Spróbuj ponownie.",
+        payload: error instanceof Error ? error.message : "Nie udało się obliczyć zapotrzebowania. Spróbuj ponownie.",
       });
       return false;
     } finally {
@@ -296,7 +290,7 @@ export function OnboardingWizard({ redirectUrl = "/", user }: OnboardingWizardPr
       }
 
       // Sukces - przekieruj na dashboard (bez ostrzeżenia przeglądarki)
-      console.log('All API calls successful, redirecting to:', redirectUrl);
+      console.log("All API calls successful, redirecting to:", redirectUrl);
       window.location.replace(redirectUrl);
     } catch (error) {
       console.error("Submit error:", error);
@@ -309,10 +303,7 @@ export function OnboardingWizard({ redirectUrl = "/", user }: OnboardingWizardPr
 
       dispatch({
         type: "SET_ERROR",
-        payload:
-          error instanceof Error
-            ? error.message
-            : "Nie udało się zapisać danych. Spróbuj ponownie.",
+        payload: error instanceof Error ? error.message : "Nie udało się zapisać danych. Spróbuj ponownie.",
       });
     } finally {
       dispatch({ type: "SET_SUBMITTING", payload: false });
@@ -339,12 +330,7 @@ export function OnboardingWizard({ redirectUrl = "/", user }: OnboardingWizardPr
    */
   const isNextDisabled = () => {
     if (state.step === 1) {
-      return (
-        !state.bioData.gender ||
-        !state.bioData.birthDate ||
-        !state.bioData.height ||
-        !state.bioData.weight
-      );
+      return !state.bioData.gender || !state.bioData.birthDate || !state.bioData.height || !state.bioData.weight;
     }
     if (state.step === 2) {
       return !state.activityLevel;
@@ -364,71 +350,65 @@ export function OnboardingWizard({ redirectUrl = "/", user }: OnboardingWizardPr
           </div>
 
           <div className="bg-card rounded-lg shadow-lg border p-4 sm:p-6 md:p-8">
-          {/* Renderowanie kroków z animacją */}
-          <div className="min-h-[400px] sm:min-h-[500px]">
-            {state.step === 1 && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                <StepBioData
-                  data={state.bioData}
-                  onUpdate={(data: Partial<BioData>) =>
-                    dispatch({ type: "UPDATE_BIO_DATA", payload: data })
-                  }
-                />
-              </div>
-            )}
+            {/* Renderowanie kroków z animacją */}
+            <div className="min-h-[400px] sm:min-h-[500px]">
+              {state.step === 1 && (
+                <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                  <StepBioData
+                    data={state.bioData}
+                    onUpdate={(data: Partial<BioData>) => dispatch({ type: "UPDATE_BIO_DATA", payload: data })}
+                  />
+                </div>
+              )}
 
-            {state.step === 2 && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                <StepActivity
-                  value={state.activityLevel}
-                  onChange={(level: ActivityLevel) =>
-                    dispatch({ type: "SET_ACTIVITY_LEVEL", payload: level })
-                  }
-                  error={state.error || undefined}
-                />
-              </div>
-            )}
+              {state.step === 2 && (
+                <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                  <StepActivity
+                    value={state.activityLevel}
+                    onChange={(level: ActivityLevel) => dispatch({ type: "SET_ACTIVITY_LEVEL", payload: level })}
+                    error={state.error || undefined}
+                  />
+                </div>
+              )}
 
-            {state.step === 3 && state.calculationResult && (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                <StepGoalRefinement
-                  tdeeResult={state.calculationResult}
-                  goals={state.finalGoals}
-                  onUpdate={(goals: Partial<GoalTargets>) =>
-                    dispatch({ type: "UPDATE_GOALS", payload: goals })
-                  }
-                  error={state.error || undefined}
-                />
-              </div>
-            )}
+              {state.step === 3 && state.calculationResult && (
+                <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                  <StepGoalRefinement
+                    tdeeResult={state.calculationResult}
+                    goals={state.finalGoals}
+                    onUpdate={(goals: Partial<GoalTargets>) => dispatch({ type: "UPDATE_GOALS", payload: goals })}
+                    error={state.error || undefined}
+                  />
+                </div>
+              )}
 
-            {/* Loading state podczas kalkulacji TDEE */}
-            {state.step === 3 && !state.calculationResult && state.isSubmitting && (
-              <div className="animate-in fade-in duration-300 flex flex-col items-center justify-center py-20">
-                <div className="size-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
-                <p className="text-lg font-medium">Obliczam Twoje zapotrzebowanie...</p>
-                <p className="text-sm text-muted-foreground mt-2">To może potrwać chwilę</p>
-              </div>
-            )}
-          </div>
-
-          {/* Komunikat błędu globalny */}
-          {state.error && state.step !== 2 && state.step !== 3 && (
-            <div className="mt-4 p-4 rounded-md bg-destructive/10 border border-destructive animate-in fade-in duration-200">
-              <p className="text-sm text-destructive">{state.error}</p>
+              {/* Loading state podczas kalkulacji TDEE */}
+              {state.step === 3 && !state.calculationResult && state.isSubmitting && (
+                <div className="animate-in fade-in duration-300 flex flex-col items-center justify-center py-20">
+                  <div className="size-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
+                  <p className="text-lg font-medium">Obliczam Twoje zapotrzebowanie...</p>
+                  <p className="text-sm text-muted-foreground mt-2">To może potrwać chwilę</p>
+                </div>
+              )}
             </div>
-          )}
 
-          {/* Nawigacja */}
-          <WizardNavigation
-            currentStep={state.step}
-            totalSteps={TOTAL_STEPS}
-            onBack={handleBack}
-            onNext={handleNext}
-            onSubmit={handleSubmit}
-            isNextDisabled={isNextDisabled()}
-            isSubmitting={state.isSubmitting}
-          />
+            {/* Komunikat błędu globalny */}
+            {state.error && state.step !== 2 && state.step !== 3 && (
+              <div className="mt-4 p-4 rounded-md bg-destructive/10 border border-destructive animate-in fade-in duration-200">
+                <p className="text-sm text-destructive">{state.error}</p>
+              </div>
+            )}
+
+            {/* Nawigacja */}
+            <WizardNavigation
+              currentStep={state.step}
+              totalSteps={TOTAL_STEPS}
+              onBack={handleBack}
+              onNext={handleNext}
+              onSubmit={handleSubmit}
+              isNextDisabled={isNextDisabled()}
+              isSubmitting={state.isSubmitting}
+            />
           </div>
         </div>
       </div>

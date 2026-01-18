@@ -141,11 +141,7 @@ export function ProfileView({ user }: ProfileViewProps = {}) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <DietaryGoalsForm
-                  initialGoal={currentGoal}
-                  userProfile={profile}
-                  onSave={handleGoalUpdate}
-                />
+                <DietaryGoalsForm initialGoal={currentGoal} userProfile={profile} onSave={handleGoalUpdate} />
               </CardContent>
             </Card>
           </TabsContent>

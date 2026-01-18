@@ -1,6 +1,6 @@
-import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
-import { Calendar } from 'lucide-react';
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
+import { Calendar } from "lucide-react";
 
 /**
  * Simple header showing today's date.
@@ -8,7 +8,7 @@ import { Calendar } from 'lucide-react';
  */
 export function TodayHeader() {
   const today = new Date();
-  const formattedDate = format(today, 'EEEE, d MMMM yyyy', { locale: pl });
+  const formattedDate = format(today, "EEEE, d MMMM yyyy", { locale: pl });
 
   return (
     <div className="sticky top-14 md:top-16 z-30 bg-background border-b shadow-sm">

@@ -24,6 +24,11 @@ Traditional calorie counting apps often lead to user burnout due to the tedious 
 *   **Backend-as-a-Service**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Realtime)
 *   **AI Integration**: [OpenRouter.ai](https://openrouter.ai/) (Access to LLMs)
 
+### Testing & Quality Assurance
+*   **Unit & Integration Testing**: [Vitest](https://vitest.dev/) with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+*   **End-to-End Testing**: [Playwright](https://playwright.dev/)
+*   **Code Quality**: ESLint, Prettier, Husky (pre-commit hooks)
+
 ### Infrastructure
 *   **CI/CD**: GitHub Actions
 *   **Hosting**: DigitalOcean (Dockerized)
@@ -78,6 +83,8 @@ Traditional calorie counting apps often lead to user burnout due to the tedious 
 | `npm run lint` | Runs ESLint to check for code quality issues. |
 | `npm run lint:fix` | Runs ESLint and automatically fixes fixable issues. |
 | `npm run format` | Formats code using Prettier. |
+| `npm test` | Runs unit and integration tests with Vitest. |
+| `npm run test:e2e` | Runs end-to-end tests with Playwright. |
 
 ## Project Scope
 

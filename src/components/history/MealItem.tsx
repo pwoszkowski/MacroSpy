@@ -36,12 +36,7 @@ export function MealItem({ meal, onEdit, onDelete }: MealItemProps) {
             </time>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  aria-label={`Akcje dla posiłku ${meal.name}`}
-                >
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Akcje dla posiłku ${meal.name}`}>
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -50,10 +45,7 @@ export function MealItem({ meal, onEdit, onDelete }: MealItemProps) {
                   <Pencil className="mr-2 h-4 w-4" />
                   Edytuj
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onDelete(meal.id)}
-                  className="text-destructive focus:text-destructive"
-                >
+                <DropdownMenuItem onClick={() => onDelete(meal.id)} className="text-destructive focus:text-destructive">
                   <Trash2 className="mr-2 h-4 w-4" />
                   Usuń
                 </DropdownMenuItem>
@@ -84,9 +76,7 @@ export function MealItem({ meal, onEdit, onDelete }: MealItemProps) {
           <div className="space-y-1">
             <div className="text-muted-foreground text-xs">Błonnik</div>
             <div className="font-semibold">
-              {meal.fiber !== null && meal.fiber !== undefined
-                ? `${Math.round(meal.fiber)}g`
-                : "-"}
+              {meal.fiber !== null && meal.fiber !== undefined ? `${Math.round(meal.fiber)}g` : "-"}
             </div>
           </div>
         </div>

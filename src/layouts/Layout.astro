@@ -22,10 +22,10 @@ const user = Astro.locals.user || null;
     <title>{title}</title>
     <script is:inline>
       // Inicjalizacja motywu przed renderowaniem, aby uniknąć flashowania
-      (function() {
-        const theme = localStorage.getItem('theme') || 'system';
-        if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
+      (function () {
+        const theme = localStorage.getItem("theme") || "system";
+        if (theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark");
         }
       })();
     </script>

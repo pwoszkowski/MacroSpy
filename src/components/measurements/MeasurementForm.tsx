@@ -66,9 +66,7 @@ export function MeasurementForm({ onSubmit, onCancel }: MeasurementFormProps) {
           })}
           aria-invalid={!!errors.body_fat_percentage}
         />
-        {errors.body_fat_percentage && (
-          <p className="text-sm text-red-500">{errors.body_fat_percentage.message}</p>
-        )}
+        {errors.body_fat_percentage && <p className="text-sm text-red-500">{errors.body_fat_percentage.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -83,9 +81,7 @@ export function MeasurementForm({ onSubmit, onCancel }: MeasurementFormProps) {
           })}
           aria-invalid={!!errors.muscle_percentage}
         />
-        {errors.muscle_percentage && (
-          <p className="text-sm text-red-500">{errors.muscle_percentage.message}</p>
-        )}
+        {errors.muscle_percentage && <p className="text-sm text-red-500">{errors.muscle_percentage.message}</p>}
       </div>
 
       <div className="flex justify-end gap-2 pt-4">

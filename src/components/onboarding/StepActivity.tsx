@@ -26,7 +26,8 @@ export function StepActivity({ value, onChange, error }: StepActivityProps) {
       <div>
         <h2 className="text-xl sm:text-2xl font-semibold mb-2">Jak aktywny jest Twój dzień?</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Twój poziom aktywności ma ogromny wpływ na zapotrzebowanie energetyczne. Wybierz opcję, która najlepiej oddaje Twój styl życia.
+          Twój poziom aktywności ma ogromny wpływ na zapotrzebowanie energetyczne. Wybierz opcję, która najlepiej oddaje
+          Twój styl życia.
         </p>
       </div>
 
@@ -59,21 +60,15 @@ export function StepActivity({ value, onChange, error }: StepActivityProps) {
                   <div
                     className={cn(
                       "mt-0.5 size-4 sm:size-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
-                      isSelected
-                        ? "border-primary bg-primary"
-                        : "border-muted-foreground/30"
+                      isSelected ? "border-primary bg-primary" : "border-muted-foreground/30"
                     )}
                     aria-hidden="true"
                   >
-                    {isSelected && (
-                      <div className="size-1.5 sm:size-2 rounded-full bg-white" />
-                    )}
+                    {isSelected && <div className="size-1.5 sm:size-2 rounded-full bg-white" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium mb-0.5 sm:mb-1 text-sm sm:text-base">{label}</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {description}
-                    </p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{description}</p>
                   </div>
                 </div>
               </CardContent>
@@ -82,9 +77,7 @@ export function StepActivity({ value, onChange, error }: StepActivityProps) {
         })}
       </div>
 
-      {error && (
-        <p className="text-sm text-destructive animate-in fade-in duration-200">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive animate-in fade-in duration-200">{error}</p>}
     </div>
   );
 }

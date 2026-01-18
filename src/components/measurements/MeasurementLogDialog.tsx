@@ -1,10 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MeasurementForm } from "./MeasurementForm";
 import type { MeasurementFormValues } from "./schemas";
 
@@ -25,9 +19,7 @@ export function MeasurementLogDialog({ isOpen, onClose, onSuccess }: Measurement
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Dodaj pomiar</DialogTitle>
-          <DialogDescription>
-            Wprowadź swoją wagę i opcjonalnie procent tłuszczu i mięśni.
-          </DialogDescription>
+          <DialogDescription>Wprowadź swoją wagę i opcjonalnie procent tłuszczu i mięśni.</DialogDescription>
         </DialogHeader>
         <MeasurementForm onSubmit={handleSubmit} onCancel={onClose} />
       </DialogContent>

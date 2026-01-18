@@ -15,32 +15,21 @@ export function CaloriesRing({ current, target }: CaloriesRingProps) {
 
   // Color based on percentage: green (ok), yellow (close), red (exceeded)
   const getColor = () => {
-    if (percentage >= 100) return 'stroke-red-500';
-    if (percentage >= 85) return 'stroke-yellow-500';
-    return 'stroke-green-500';
+    if (percentage >= 100) return "stroke-red-500";
+    if (percentage >= 85) return "stroke-yellow-500";
+    return "stroke-green-500";
   };
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <div 
+      <div
         className="relative w-40 h-40 sm:w-48 sm:h-48"
         role="img"
         aria-label={`Spożyte kalorie: ${Math.round(current)} z ${target}, ${Math.round(percentage)}%`}
       >
-        <svg 
-          className="w-full h-full -rotate-90" 
-          viewBox="0 0 160 160"
-          aria-hidden="true"
-        >
+        <svg className="w-full h-full -rotate-90" viewBox="0 0 160 160" aria-hidden="true">
           {/* Background circle */}
-          <circle
-            cx="80"
-            cy="80"
-            r={radius}
-            className="stroke-muted"
-            strokeWidth="12"
-            fill="none"
-          />
+          <circle cx="80" cy="80" r={radius} className="stroke-muted" strokeWidth="12" fill="none" />
           {/* Progress circle */}
           <circle
             cx="80"

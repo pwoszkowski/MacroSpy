@@ -12,13 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { calculatorInputsSchema, type CalculatorInputs } from "./schemas";
 import type { ProfileDto, GoalTargets } from "@/types";
 import { toast } from "sonner";
@@ -141,8 +135,7 @@ export function TdeeCalculatorDialog({ profile, onApply, trigger }: TdeeCalculat
         <DialogHeader>
           <DialogTitle>Kalkulator zapotrzebowania kalorycznego (TDEE)</DialogTitle>
           <DialogDescription>
-            Oblicz swoje dzienne zapotrzebowanie kaloryczne na podstawie danych biometrycznych i poziomu
-            aktywności.
+            Oblicz swoje dzienne zapotrzebowanie kaloryczne na podstawie danych biometrycznych i poziomu aktywności.
           </DialogDescription>
         </DialogHeader>
 
@@ -182,9 +175,7 @@ export function TdeeCalculatorDialog({ profile, onApply, trigger }: TdeeCalculat
                   ))}
                 </SelectContent>
               </Select>
-              {errors.activity_level && (
-                <p className="text-sm text-red-500">{errors.activity_level.message}</p>
-              )}
+              {errors.activity_level && <p className="text-sm text-red-500">{errors.activity_level.message}</p>}
             </div>
 
             <div className="flex justify-end gap-2 pt-4">

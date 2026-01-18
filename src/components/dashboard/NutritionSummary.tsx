@@ -1,7 +1,7 @@
-import { CaloriesRing } from './CaloriesRing';
-import { MacroBars } from './MacroBars';
-import { Card, CardContent } from '@/components/ui/card';
-import type { MealSummary, DietaryGoalDto } from '@/types';
+import { CaloriesRing } from "./CaloriesRing";
+import { MacroBars } from "./MacroBars";
+import { Card, CardContent } from "@/components/ui/card";
+import type { MealSummary, DietaryGoalDto } from "@/types";
 
 interface NutritionSummaryProps {
   current: MealSummary;
@@ -18,11 +18,12 @@ export function NutritionSummary({ current, targets }: NutritionSummaryProps) {
     return (
       <Card className="mb-6">
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="text-6xl mb-4" role="img" aria-label="Cel">🎯</div>
+          <div className="text-6xl mb-4" role="img" aria-label="Cel">
+            🎯
+          </div>
           <h2 className="text-lg font-semibold mb-2">Ustaw swoje cele</h2>
           <p className="text-muted-foreground text-sm max-w-sm">
-            Przejdź do profilu, aby zdefiniować dzienne zapotrzebowanie kaloryczne
-            i makroskładniki
+            Przejdź do profilu, aby zdefiniować dzienne zapotrzebowanie kaloryczne i makroskładniki
           </p>
         </CardContent>
       </Card>
@@ -34,10 +35,7 @@ export function NutritionSummary({ current, targets }: NutritionSummaryProps) {
       <CardContent className="pt-6">
         {/* Calorie ring */}
         <div className="flex justify-center mb-6">
-          <CaloriesRing 
-            current={current.total_calories} 
-            target={targets.calories_target} 
-          />
+          <CaloriesRing current={current.total_calories} target={targets.calories_target} />
         </div>
 
         {/* Macro bars */}

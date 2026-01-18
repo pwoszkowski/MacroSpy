@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
-import { CalendarIcon } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
 
 interface CompactDateSelectorProps {
   selectedDate: Date;
@@ -15,12 +15,12 @@ interface CompactDateSelectorProps {
  * Shows only the selected date with a calendar icon.
  */
 export function CompactDateSelector({ selectedDate, onSelect }: CompactDateSelectorProps) {
-  const formattedDate = format(selectedDate, 'd MMM yyyy', { locale: pl });
+  const formattedDate = format(selectedDate, "d MMM yyyy", { locale: pl });
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button 
+        <Button
           variant="outline"
           className="gap-2 min-w-[140px]"
           aria-label={`Wybrana data: ${formattedDate}. Kliknij aby zmienić.`}

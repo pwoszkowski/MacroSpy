@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Send, Loader2, Mic } from 'lucide-react';
-import { useVoiceInput } from '../../hooks';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Send, Loader2, Mic } from "lucide-react";
+import { useVoiceInput } from "../../hooks";
+import { toast } from "sonner";
 
 interface RefineInputBarProps {
   onRefine: (prompt: string) => Promise<void>;
@@ -15,7 +15,7 @@ interface RefineInputBarProps {
  * Znajduje się na dole widoku Review.
  */
 export function RefineInputBar({ onRefine, isRefining }: RefineInputBarProps) {
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
 
   // Voice input hook
   const {
@@ -36,11 +36,11 @@ export function RefineInputBar({ onRefine, isRefining }: RefineInputBarProps) {
     if (!prompt.trim() || isRefining) return;
 
     await onRefine(prompt.trim());
-    setPrompt(''); // Wyczyść po wysłaniu
+    setPrompt(""); // Wyczyść po wysłaniu
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
@@ -68,23 +68,15 @@ export function RefineInputBar({ onRefine, isRefining }: RefineInputBarProps) {
             size="icon"
             onClick={isListening ? stopListening : () => startListening(setPrompt)}
             disabled={isRefining}
-            className={isListening ? 'animate-pulse' : ''}
+            className={isListening ? "animate-pulse" : ""}
             title={isListening ? "Zatrzymaj nagrywanie" : "Nagraj głosem"}
             aria-label={isListening ? "Zatrzymaj nagrywanie głosu" : "Rozpocznij nagrywanie głosu"}
           >
             <Mic className="w-4 h-4" />
           </Button>
         )}
-        <Button
-          onClick={handleSubmit}
-          disabled={!prompt.trim() || isRefining}
-          size="icon"
-        >
-          {isRefining ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
-          )}
+        <Button onClick={handleSubmit} disabled={!prompt.trim() || isRefining} size="icon">
+          {isRefining ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         </Button>
       </div>
     </div>

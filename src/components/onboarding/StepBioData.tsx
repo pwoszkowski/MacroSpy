@@ -46,7 +46,7 @@ export function StepBioData({ data, onUpdate, errors = {} }: StepBioDataProps) {
   const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     onUpdate({ birthDate: value });
-    
+
     if (value) {
       const error = validateBirthDate(value);
       setValidationErrors((prev) => ({ ...prev, birthDate: error || undefined }));
@@ -57,7 +57,7 @@ export function StepBioData({ data, onUpdate, errors = {} }: StepBioDataProps) {
     const value = parseFloat(e.target.value);
     const height = isNaN(value) ? 0 : value;
     onUpdate({ height });
-    
+
     if (e.target.value) {
       const error = validateHeight(height);
       setValidationErrors((prev) => ({ ...prev, height: error || undefined }));
@@ -68,7 +68,7 @@ export function StepBioData({ data, onUpdate, errors = {} }: StepBioDataProps) {
     const value = parseFloat(e.target.value);
     const weight = isNaN(value) ? 0 : value;
     onUpdate({ weight });
-    
+
     if (e.target.value) {
       const error = validateWeight(weight);
       setValidationErrors((prev) => ({ ...prev, weight: error || undefined }));
@@ -83,7 +83,8 @@ export function StepBioData({ data, onUpdate, errors = {} }: StepBioDataProps) {
       <div>
         <h2 className="text-xl sm:text-2xl font-semibold mb-2">Witaj w MacroSpy! 👋</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Twoje konto jest gotowe. Teraz potrzebujemy kilku informacji o Tobie, aby nasz algorytm AI mógł precyzyjnie obliczyć Twoje dzienne zapotrzebowanie kaloryczne i pomóc Ci w osiągnięciu celów.
+          Twoje konto jest gotowe. Teraz potrzebujemy kilku informacji o Tobie, aby nasz algorytm AI mógł precyzyjnie
+          obliczyć Twoje dzienne zapotrzebowanie kaloryczne i pomóc Ci w osiągnięciu celów.
         </p>
       </div>
 

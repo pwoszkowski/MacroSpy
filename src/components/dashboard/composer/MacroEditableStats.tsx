@@ -1,6 +1,6 @@
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import type { MealCandidateViewModel } from './types';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { MealCandidateViewModel } from "./types";
 
 interface MacroEditableStatsProps {
   candidate: MealCandidateViewModel;
@@ -17,7 +17,7 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
     const numValue = parseFloat(value);
     if (!isNaN(numValue) && numValue >= 0) {
       onChange(field, numValue);
-    } else if (value === '' || value === '-') {
+    } else if (value === "" || value === "-") {
       onChange(field, 0);
     }
   };
@@ -31,7 +31,7 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
           id="meal-name"
           type="text"
           value={candidate.name}
-          onChange={(e) => onChange('name', e.target.value)}
+          onChange={(e) => onChange("name", e.target.value)}
           disabled={disabled}
           placeholder="np. Jajecznica z warzywami"
           required
@@ -51,7 +51,7 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             step="0.1"
             min="0"
             value={candidate.calories}
-            onChange={(e) => handleNumberChange('calories', e.target.value)}
+            onChange={(e) => handleNumberChange("calories", e.target.value)}
             disabled={disabled}
           />
         </div>
@@ -67,7 +67,7 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             step="0.1"
             min="0"
             value={candidate.protein}
-            onChange={(e) => handleNumberChange('protein', e.target.value)}
+            onChange={(e) => handleNumberChange("protein", e.target.value)}
             disabled={disabled}
           />
         </div>
@@ -83,7 +83,7 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             step="0.1"
             min="0"
             value={candidate.fat}
-            onChange={(e) => handleNumberChange('fat', e.target.value)}
+            onChange={(e) => handleNumberChange("fat", e.target.value)}
             disabled={disabled}
           />
         </div>
@@ -99,7 +99,7 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             step="0.1"
             min="0"
             value={candidate.carbs}
-            onChange={(e) => handleNumberChange('carbs', e.target.value)}
+            onChange={(e) => handleNumberChange("carbs", e.target.value)}
             disabled={disabled}
           />
         </div>
@@ -115,7 +115,7 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             step="0.1"
             min="0"
             value={candidate.fiber}
-            onChange={(e) => handleNumberChange('fiber', e.target.value)}
+            onChange={(e) => handleNumberChange("fiber", e.target.value)}
             disabled={disabled}
           />
         </div>

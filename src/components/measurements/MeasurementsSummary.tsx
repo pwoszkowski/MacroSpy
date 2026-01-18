@@ -8,10 +8,7 @@ interface MeasurementsSummaryProps {
   previous: MeasurementDto | null;
 }
 
-export const MeasurementsSummary = memo(function MeasurementsSummary({
-  latest,
-  previous,
-}: MeasurementsSummaryProps) {
+export const MeasurementsSummary = memo(function MeasurementsSummary({ latest, previous }: MeasurementsSummaryProps) {
   if (!latest) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -39,9 +36,7 @@ export const MeasurementsSummary = memo(function MeasurementsSummary({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{latest.weight.toFixed(1)} kg</div>
-          <p className="text-xs text-muted-foreground">
-            {new Date(latest.date).toLocaleDateString("pl-PL")}
-          </p>
+          <p className="text-xs text-muted-foreground">{new Date(latest.date).toLocaleDateString("pl-PL")}</p>
         </CardContent>
       </Card>
 
@@ -56,9 +51,7 @@ export const MeasurementsSummary = memo(function MeasurementsSummary({
             )}
           </CardHeader>
           <CardContent>
-            <div
-              className={`text-2xl font-bold ${weightChange > 0 ? "text-red-500" : "text-green-500"}`}
-            >
+            <div className={`text-2xl font-bold ${weightChange > 0 ? "text-red-500" : "text-green-500"}`}>
               {weightChange > 0 ? "+" : ""}
               {weightChange.toFixed(1)} kg
             </div>

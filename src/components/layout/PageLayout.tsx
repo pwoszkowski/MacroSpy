@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { MobileBottomNav, MobileTopBar, DesktopTopNav } from '@/components/navigation';
+import type { ReactNode } from "react";
+import { MobileBottomNav, MobileTopBar, DesktopTopNav } from "@/components/navigation";
 
 interface PageLayoutProps {
   /** Current page path for active navigation state */
@@ -48,12 +48,10 @@ export function PageLayout({
         rightSlot={desktopRightSlot}
         user={user}
       />
-      
+
       {/* Main Content */}
-      <main className="pb-20 md:pb-6">
-        {children}
-      </main>
-      
+      <main className="pb-20 md:pb-6">{children}</main>
+
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav currentPath={currentPath} />
     </div>

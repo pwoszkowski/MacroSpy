@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { LogOut, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Logo } from '../navigation/Logo';
+import { useState } from "react";
+import { LogOut, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Logo } from "../navigation/Logo";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 interface OnboardingTopBarProps {
   user?: {
@@ -28,25 +28,25 @@ export function OnboardingTopBar({ user }: OnboardingTopBarProps) {
     setIsLoggingOut(true);
 
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (response.ok) {
         // Przekierowanie do strony logowania po wylogowaniu
-        window.location.href = '/login';
+        window.location.href = "/login";
       } else {
         const errorData = await response.json();
-        toast.error('Błąd wylogowania', {
-          description: errorData.error || 'Wystąpił błąd podczas wylogowywania.',
+        toast.error("Błąd wylogowania", {
+          description: errorData.error || "Wystąpił błąd podczas wylogowywania.",
         });
       }
     } catch (error) {
-      toast.error('Błąd połączenia', {
-        description: 'Nie udało się nawiązać połączenia z serwerem.',
+      toast.error("Błąd połączenia", {
+        description: "Nie udało się nawiązać połączenia z serwerem.",
       });
     } finally {
       setIsLoggingOut(false);
@@ -66,12 +66,7 @@ export function OnboardingTopBar({ user }: OnboardingTopBarProps) {
           <div className="flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  aria-label="Menu użytkownika"
-                >
+                <Button variant="outline" size="sm" className="gap-2" aria-label="Menu użytkownika">
                   <User className="h-4 w-4" />
                   <span className="hidden sm:inline">{user?.email}</span>
                 </Button>
@@ -83,7 +78,7 @@ export function OnboardingTopBar({ user }: OnboardingTopBarProps) {
                   className="cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  {isLoggingOut ? 'Wylogowywanie...' : 'Wyloguj się'}
+                  {isLoggingOut ? "Wylogowywanie..." : "Wyloguj się"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

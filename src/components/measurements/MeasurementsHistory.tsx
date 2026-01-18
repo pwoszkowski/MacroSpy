@@ -1,14 +1,7 @@
 import { memo, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,10 +20,7 @@ interface MeasurementsHistoryProps {
   onDelete: (measurementId: string) => Promise<void>;
 }
 
-export const MeasurementsHistory = memo(function MeasurementsHistory({
-  data,
-  onDelete,
-}: MeasurementsHistoryProps) {
+export const MeasurementsHistory = memo(function MeasurementsHistory({ data, onDelete }: MeasurementsHistoryProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [measurementToDelete, setMeasurementToDelete] = useState<MeasurementDto | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -100,14 +90,10 @@ export const MeasurementsHistory = memo(function MeasurementsHistory({
                   </TableCell>
                   <TableCell className="text-right">{measurement.weight.toFixed(1)}</TableCell>
                   <TableCell className="text-right">
-                    {measurement.body_fat_percentage !== null
-                      ? measurement.body_fat_percentage.toFixed(1)
-                      : "-"}
+                    {measurement.body_fat_percentage !== null ? measurement.body_fat_percentage.toFixed(1) : "-"}
                   </TableCell>
                   <TableCell className="text-right">
-                    {measurement.muscle_percentage !== null
-                      ? measurement.muscle_percentage.toFixed(1)
-                      : "-"}
+                    {measurement.muscle_percentage !== null ? measurement.muscle_percentage.toFixed(1) : "-"}
                   </TableCell>
                   <TableCell>
                     <Button
@@ -141,8 +127,8 @@ export const MeasurementsHistory = memo(function MeasurementsHistory({
                       day: "numeric",
                     })}
                   </strong>{" "}
-                  (waga: {measurementToDelete.weight.toFixed(1)} kg) zostanie trwale usunięty. Tej
-                  operacji nie można cofnąć.
+                  (waga: {measurementToDelete.weight.toFixed(1)} kg) zostanie trwale usunięty. Tej operacji nie można
+                  cofnąć.
                 </>
               )}
             </AlertDialogDescription>

@@ -21,8 +21,7 @@ interface MeasurementsDashboardProps {
 
 export function MeasurementsDashboard({ user }: MeasurementsDashboardProps = {}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { measurements, isLoading, error, addMeasurement, removeMeasurement, fetchMeasurements } =
-    useMeasurements(30);
+  const { measurements, isLoading, error, addMeasurement, removeMeasurement, fetchMeasurements } = useMeasurements(30);
 
   const handleAddMeasurement = useCallback(
     async (data: MeasurementFormValues) => {
@@ -87,9 +86,7 @@ export function MeasurementsDashboard({ user }: MeasurementsDashboardProps = {})
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Pomiary ciała</h1>
-              <p className="text-sm text-muted-foreground">
-                Monitoruj swoją wagę i skład ciała w czasie
-              </p>
+              <p className="text-sm text-muted-foreground">Monitoruj swoją wagę i skład ciała w czasie</p>
             </div>
             <Button onClick={() => setIsDialogOpen(true)} className="flex-shrink-0">
               <Plus className="mr-2 h-4 w-4" />

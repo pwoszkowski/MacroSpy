@@ -1,5 +1,5 @@
-import type { InteractionLog } from './types';
-import { User, Bot } from 'lucide-react';
+import type { InteractionLog } from "./types";
+import { User, Bot } from "lucide-react";
 
 interface InteractionHistoryProps {
   interactions: InteractionLog[];
@@ -25,25 +25,17 @@ export function InteractionHistory({ interactions }: InteractionHistoryProps) {
         {refinementInteractions.map((interaction) => (
           <div
             key={interaction.id}
-            className={`flex gap-2 ${
-              interaction.role === 'user' ? 'justify-end' : 'justify-start'
-            }`}
+            className={`flex gap-2 ${interaction.role === "user" ? "justify-end" : "justify-start"}`}
           >
-            {interaction.role === 'assistant' && (
-              <Bot className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
-            )}
+            {interaction.role === "assistant" && <Bot className="w-5 h-5 text-primary mt-1 flex-shrink-0" />}
             <div
               className={`rounded-lg px-3 py-2 max-w-[80%] text-sm ${
-                interaction.role === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted'
+                interaction.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
               }`}
             >
               {interaction.content}
             </div>
-            {interaction.role === 'user' && (
-              <User className="w-5 h-5 text-muted-foreground mt-1 flex-shrink-0" />
-            )}
+            {interaction.role === "user" && <User className="w-5 h-5 text-muted-foreground mt-1 flex-shrink-0" />}
           </div>
         ))}
       </div>

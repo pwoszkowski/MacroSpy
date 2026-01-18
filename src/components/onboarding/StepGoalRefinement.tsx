@@ -16,12 +16,7 @@ interface StepGoalRefinementProps {
   error?: string;
 }
 
-export function StepGoalRefinement({
-  tdeeResult,
-  goals,
-  onUpdate,
-  error,
-}: StepGoalRefinementProps) {
+export function StepGoalRefinement({ tdeeResult, goals, onUpdate, error }: StepGoalRefinementProps) {
   const [targetCalories, setTargetCalories] = useState(goals.calories);
 
   const handleCaloriesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,15 +40,16 @@ export function StepGoalRefinement({
   const calorieGoalText = isDeficit
     ? `Deficyt ${Math.abs(calorieDifference).toFixed(0)} kcal`
     : calorieDifference > 0
-    ? `Nadwyżka ${calorieDifference.toFixed(0)} kcal`
-    : "Utrzymanie wagi";
+      ? `Nadwyżka ${calorieDifference.toFixed(0)} kcal`
+      : "Utrzymanie wagi";
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
         <h2 className="text-xl sm:text-2xl font-semibold mb-2">Twoje spersonalizowane cele</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Na podstawie Twoich danych obliczyliśmy optymalne zapotrzebowanie. Możesz teraz zaakceptować nasze sugestie lub dostosować je do swoich preferencji.
+          Na podstawie Twoich danych obliczyliśmy optymalne zapotrzebowanie. Możesz teraz zaakceptować nasze sugestie
+          lub dostosować je do swoich preferencji.
         </p>
       </div>
 
@@ -66,9 +62,7 @@ export function StepGoalRefinement({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl sm:text-2xl font-bold">
-              {Math.round(tdeeResult.bmr)} kcal
-            </p>
+            <p className="text-xl sm:text-2xl font-bold">{Math.round(tdeeResult.bmr)} kcal</p>
           </CardContent>
         </Card>
 
@@ -79,9 +73,7 @@ export function StepGoalRefinement({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl sm:text-2xl font-bold">
-              {Math.round(tdeeResult.tdee)} kcal
-            </p>
+            <p className="text-xl sm:text-2xl font-bold">{Math.round(tdeeResult.tdee)} kcal</p>
           </CardContent>
         </Card>
       </div>
@@ -104,27 +96,14 @@ export function StepGoalRefinement({
       {/* Podział makroskładników */}
       <div className="space-y-3">
         <h3 className="font-medium">Podział makroskładników</h3>
-        <MacroSplitSlider
-          totalCalories={targetCalories}
-          goals={goals}
-          onUpdate={onUpdate}
-        />
+        <MacroSplitSlider totalCalories={targetCalories} goals={goals} onUpdate={onUpdate} />
       </div>
 
       {/* Błonnik */}
       <div className="space-y-2">
         <Label htmlFor="fiber">Cel błonnika (g/dzień)</Label>
-        <Input
-          id="fiber"
-          type="number"
-          min="0"
-          step="1"
-          value={goals.fiber}
-          onChange={handleFiberChange}
-        />
-        <p className="text-sm text-muted-foreground">
-          Zalecane: 25-35g dziennie
-        </p>
+        <Input id="fiber" type="number" min="0" step="1" value={goals.fiber} onChange={handleFiberChange} />
+        <p className="text-sm text-muted-foreground">Zalecane: 25-35g dziennie</p>
       </div>
 
       {/* Podsumowanie */}
@@ -139,15 +118,21 @@ export function StepGoalRefinement({
           </div>
           <div className="flex justify-between text-sm">
             <span>Białko:</span>
-            <span className="font-medium">{Math.round(goals.protein)}g ({Math.round(goals.protein * 4 * 100 / goals.calories)}%)</span>
+            <span className="font-medium">
+              {Math.round(goals.protein)}g ({Math.round((goals.protein * 4 * 100) / goals.calories)}%)
+            </span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Tłuszcze:</span>
-            <span className="font-medium">{Math.round(goals.fat)}g ({Math.round(goals.fat * 9 * 100 / goals.calories)}%)</span>
+            <span className="font-medium">
+              {Math.round(goals.fat)}g ({Math.round((goals.fat * 9 * 100) / goals.calories)}%)
+            </span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Węglowodany:</span>
-            <span className="font-medium">{Math.round(goals.carbs)}g ({Math.round(goals.carbs * 4 * 100 / goals.calories)}%)</span>
+            <span className="font-medium">
+              {Math.round(goals.carbs)}g ({Math.round((goals.carbs * 4 * 100) / goals.calories)}%)
+            </span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Błonnik:</span>

@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from "lucide-react";
 
 interface AIResponseSummaryProps {
   response: string;
@@ -17,9 +17,7 @@ export function AIResponseSummary({ response, suggestion }: AIResponseSummaryPro
         <div className="flex-1 space-y-2">
           <p className="text-sm leading-relaxed">{response}</p>
           {suggestion && (
-            <p className="text-sm text-muted-foreground italic border-l-2 border-primary/40 pl-3">
-              {suggestion}
-            </p>
+            <p className="text-sm text-muted-foreground italic border-l-2 border-primary/40 pl-3">{suggestion}</p>
           )}
         </div>
       </div>

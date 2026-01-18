@@ -4,7 +4,10 @@ import { z } from "zod";
  * Zod schema dla formularza danych biometrycznych
  */
 export const bioDataSchema = z.object({
-  height: z.coerce.number().min(50, "Wzrost musi być większy niż 50 cm").max(300, "Wzrost musi być mniejszy niż 300 cm"),
+  height: z.coerce
+    .number()
+    .min(50, "Wzrost musi być większy niż 50 cm")
+    .max(300, "Wzrost musi być mniejszy niż 300 cm"),
   gender: z.enum(["male", "female"], {
     errorMap: () => ({ message: "Wybierz płeć" }),
   }),
@@ -17,7 +20,8 @@ export const bioDataSchema = z.object({
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        const calculatedAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+        const calculatedAge =
+          monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
         return calculatedAge >= 10 && calculatedAge <= 120;
       },
       { message: "Wiek musi być w przedziale 10-120 lat" }

@@ -14,20 +14,12 @@ export type Gender = "male" | "female";
  * Poziomy aktywności fizycznej używane do kalkulacji TDEE
  * Mapowane na wartości akceptowane przez API
  */
-export type ActivityLevel =
-  | "sedentary"
-  | "lightly_active"
-  | "moderately_active"
-  | "very_active"
-  | "extremely_active";
+export type ActivityLevel = "sedentary" | "lightly_active" | "moderately_active" | "very_active" | "extremely_active";
 
 /**
  * Etykiety i opisy poziomów aktywności dla UI
  */
-export const ACTIVITY_LEVEL_LABELS: Record<
-  ActivityLevel,
-  { label: string; description: string }
-> = {
+export const ACTIVITY_LEVEL_LABELS: Record<ActivityLevel, { label: string; description: string }> = {
   sedentary: {
     label: "Siedzący tryb życia",
     description: "Brak lub bardzo mało ćwiczeń",
@@ -118,12 +110,8 @@ export function calculateAge(birthDate: string): number {
  * @param totalCalories - Całkowita pula kalorii
  * @param caloriesPerGram - Kalorie na gram (4 dla B/W, 9 dla T)
  */
-export function percentToGrams(
-  percentage: number,
-  totalCalories: number,
-  caloriesPerGram: number
-): number {
-  return Math.round((percentage / 100) * totalCalories / caloriesPerGram);
+export function percentToGrams(percentage: number, totalCalories: number, caloriesPerGram: number): number {
+  return Math.round(((percentage / 100) * totalCalories) / caloriesPerGram);
 }
 
 /**
@@ -132,10 +120,6 @@ export function percentToGrams(
  * @param caloriesPerGram - Kalorie na gram (4 dla B/W, 9 dla T)
  * @param totalCalories - Całkowita pula kalorii
  */
-export function gramsToPercent(
-  grams: number,
-  caloriesPerGram: number,
-  totalCalories: number
-): number {
+export function gramsToPercent(grams: number, caloriesPerGram: number, totalCalories: number): number {
   return Math.round((grams * caloriesPerGram * 100) / totalCalories);
 }

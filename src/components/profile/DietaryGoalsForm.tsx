@@ -56,9 +56,7 @@ export function DietaryGoalsForm({ initialGoal, userProfile, onSave }: DietaryGo
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold">Cele makroskładnikowe</h3>
-        <p className="text-sm text-muted-foreground mb-3">
-          Ustaw dzienne cele lub skorzystaj z kalkulatora
-        </p>
+        <p className="text-sm text-muted-foreground mb-3">Ustaw dzienne cele lub skorzystaj z kalkulatora</p>
         <TdeeCalculatorDialog profile={userProfile} onApply={handleApplyCalculatorResults} />
       </div>
 
@@ -72,9 +70,7 @@ export function DietaryGoalsForm({ initialGoal, userProfile, onSave }: DietaryGo
             {...register("calories_target", { valueAsNumber: true })}
             aria-invalid={!!errors.calories_target}
           />
-          {errors.calories_target && (
-            <p className="text-sm text-red-500">{errors.calories_target.message}</p>
-          )}
+          {errors.calories_target && <p className="text-sm text-red-500">{errors.calories_target.message}</p>}
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -87,9 +83,7 @@ export function DietaryGoalsForm({ initialGoal, userProfile, onSave }: DietaryGo
               {...register("protein_target", { valueAsNumber: true })}
               aria-invalid={!!errors.protein_target}
             />
-            {errors.protein_target && (
-              <p className="text-sm text-red-500">{errors.protein_target.message}</p>
-            )}
+            {errors.protein_target && <p className="text-sm text-red-500">{errors.protein_target.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -113,9 +107,7 @@ export function DietaryGoalsForm({ initialGoal, userProfile, onSave }: DietaryGo
               {...register("carbs_target", { valueAsNumber: true })}
               aria-invalid={!!errors.carbs_target}
             />
-            {errors.carbs_target && (
-              <p className="text-sm text-red-500">{errors.carbs_target.message}</p>
-            )}
+            {errors.carbs_target && <p className="text-sm text-red-500">{errors.carbs_target.message}</p>}
           </div>
 
           <div className="space-y-2">

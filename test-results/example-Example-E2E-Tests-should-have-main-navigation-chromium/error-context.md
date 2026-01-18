@@ -1,0 +1,49 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e6]: M
+        - heading "MacroSpy" [level=1] [ref=e7]
+    - main [ref=e8]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - heading "Witaj ponownie" [level=2] [ref=e13]
+          - paragraph [ref=e14]: Zaloguj się do swojego konta MacroSpy
+        - generic [ref=e15]:
+          - generic [ref=e16]:
+            - generic [ref=e17]: Email
+            - textbox "Email" [ref=e18]:
+              - /placeholder: twoj@email.com
+          - generic [ref=e19]:
+            - generic [ref=e20]: Hasło
+            - generic [ref=e21]:
+              - textbox "Hasło" [ref=e22]:
+                - /placeholder: Wprowadź hasło
+              - button [ref=e23]:
+                - img [ref=e24]
+          - button "Zaloguj się" [ref=e27]
+        - generic [ref=e28]:
+          - paragraph [ref=e29]:
+            - text: Nie masz konta?
+            - link "Zarejestruj się" [ref=e30] [cursor=pointer]:
+              - /url: /register
+          - paragraph [ref=e31]:
+            - link "Zapomniałeś hasła?" [ref=e32] [cursor=pointer]:
+              - /url: /forgot-password
+  - generic [ref=e35]:
+    - button "Menu" [ref=e36]:
+      - img [ref=e38]
+      - generic: Menu
+    - button "Inspect" [ref=e42]:
+      - img [ref=e44]
+      - generic: Inspect
+    - button "Audit" [ref=e46]:
+      - img [ref=e48]
+      - generic: Audit
+    - button "Settings" [ref=e51]:
+      - img [ref=e53]
+      - generic: Settings
+```

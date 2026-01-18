@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { PageLayout } from '@/components/layout';
-import { TodayHeader } from './TodayHeader';
-import { NutritionSummary } from './NutritionSummary';
-import { MealList } from './MealList';
-import { AddMealFAB } from './AddMealFAB';
-import { SkeletonNutritionSummary } from './SkeletonNutritionSummary';
-import { SkeletonMealCard } from './SkeletonMealCard';
-import { AddMealDialog } from './composer/AddMealDialog';
-import { useDashboardData } from '@/components/hooks/useDashboardData';
-import type { MealListResponse, UserProfileResponse } from '@/types';
+import { useState } from "react";
+import { PageLayout } from "@/components/layout";
+import { TodayHeader } from "./TodayHeader";
+import { NutritionSummary } from "./NutritionSummary";
+import { MealList } from "./MealList";
+import { AddMealFAB } from "./AddMealFAB";
+import { SkeletonNutritionSummary } from "./SkeletonNutritionSummary";
+import { SkeletonMealCard } from "./SkeletonMealCard";
+import { AddMealDialog } from "./composer/AddMealDialog";
+import { useDashboardData } from "@/components/hooks/useDashboardData";
+import type { MealListResponse, UserProfileResponse } from "@/types";
 
 interface DashboardContainerProps {
   initialMeals: MealListResponse;
@@ -43,7 +43,7 @@ export function DashboardContainer({ initialMeals, userProfile, user }: Dashboar
 
   const handleMealClick = (mealId: string) => {
     // Navigate to meal details/edit (optional in MVP)
-    console.log('Meal clicked:', mealId);
+    console.log("Meal clicked:", mealId);
     // Future: navigate to meal detail/edit page
   };
 
@@ -69,11 +69,7 @@ export function DashboardContainer({ initialMeals, userProfile, user }: Dashboar
   }
 
   return (
-    <PageLayout
-      currentPath="/"
-      showAddMealButton={false}
-      user={user}
-    >
+    <PageLayout currentPath="/" showAddMealButton={false} user={user}>
       {/* Today's date header */}
       <TodayHeader />
 
@@ -84,13 +80,15 @@ export function DashboardContainer({ initialMeals, userProfile, user }: Dashboar
           <SkeletonNutritionSummary />
         ) : (
           <NutritionSummary
-            current={data?.summary || {
-              total_calories: 0,
-              total_protein: 0,
-              total_fat: 0,
-              total_carbs: 0,
-              total_fiber: 0,
-            }}
+            current={
+              data?.summary || {
+                total_calories: 0,
+                total_protein: 0,
+                total_fat: 0,
+                total_carbs: 0,
+                total_fiber: 0,
+              }
+            }
             targets={userProfile.current_goal}
           />
         )}
@@ -111,11 +109,7 @@ export function DashboardContainer({ initialMeals, userProfile, user }: Dashboar
       <AddMealFAB onClick={handleAddMeal} />
 
       {/* Add Meal Dialog */}
-      <AddMealDialog
-        isOpen={isDialogOpen}
-        onClose={handleDialogClose}
-        onSuccess={handleMealSaved}
-      />
+      <AddMealDialog isOpen={isDialogOpen} onClose={handleDialogClose} onSuccess={handleMealSaved} />
     </PageLayout>
   );
 }

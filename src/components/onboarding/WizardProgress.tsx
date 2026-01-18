@@ -15,12 +15,18 @@ export function WizardProgress({ currentStep, totalSteps }: WizardProgressProps)
   return (
     <nav className="w-full" aria-label="Postęp onboardingu">
       {/* Wizualny pasek postępu */}
-      <div className="flex items-center justify-between mb-2" role="progressbar" aria-valuenow={currentStep} aria-valuemin={1} aria-valuemax={totalSteps}>
+      <div
+        className="flex items-center justify-between mb-2"
+        role="progressbar"
+        aria-valuenow={currentStep}
+        aria-valuemin={1}
+        aria-valuemax={totalSteps}
+      >
         {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => {
           const stepLabel = STEP_LABELS[step - 1];
           const isCompleted = step < currentStep;
           const isCurrent = step === currentStep;
-          
+
           return (
             <div key={step} className="flex items-center flex-1">
               {/* Kółko z numerem kroku */}
@@ -30,8 +36,8 @@ export function WizardProgress({ currentStep, totalSteps }: WizardProgressProps)
                   isCompleted
                     ? "bg-primary text-primary-foreground scale-100"
                     : isCurrent
-                    ? "bg-primary text-primary-foreground ring-4 ring-primary/20 scale-110"
-                    : "bg-muted text-muted-foreground"
+                      ? "bg-primary text-primary-foreground ring-4 ring-primary/20 scale-110"
+                      : "bg-muted text-muted-foreground"
                 )}
                 aria-label={`${stepLabel}${isCompleted ? " - ukończony" : isCurrent ? " - aktualny" : ""}`}
                 aria-current={isCurrent ? "step" : undefined}

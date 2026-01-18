@@ -1,5 +1,5 @@
-import { Home, History, Scale } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Home, History, Scale } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface NavItem {
   href: string;
@@ -10,22 +10,22 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    href: '/',
-    label: 'Dashboard',
+    href: "/",
+    label: "Dashboard",
     icon: Home,
-    ariaLabel: 'Strona główna - Dashboard',
+    ariaLabel: "Strona główna - Dashboard",
   },
   {
-    href: '/history',
-    label: 'Historia',
+    href: "/history",
+    label: "Historia",
     icon: History,
-    ariaLabel: 'Historia posiłków',
+    ariaLabel: "Historia posiłków",
   },
   {
-    href: '/measurements',
-    label: 'Pomiary',
+    href: "/measurements",
+    label: "Pomiary",
     icon: Scale,
-    ariaLabel: 'Pomiary ciała',
+    ariaLabel: "Pomiary ciała",
   },
 ];
 
@@ -40,7 +40,7 @@ interface MobileBottomNavProps {
  */
 export function MobileBottomNav({ currentPath }: MobileBottomNavProps) {
   return (
-    <nav 
+    <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background border-t shadow-lg"
       role="navigation"
       aria-label="Główna nawigacja mobilna"
@@ -49,45 +49,41 @@ export function MobileBottomNav({ currentPath }: MobileBottomNavProps) {
         {navItems.slice(0, 2).map((item) => {
           const Icon = item.icon;
           const isActive = currentPath === item.href;
-          
+
           return (
             <a
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 flex-1 h-full rounded-lg transition-colors',
-                isActive 
-                  ? 'text-primary' 
-                  : 'text-muted-foreground hover:text-foreground'
+                "flex flex-col items-center justify-center gap-1 flex-1 h-full rounded-lg transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
               aria-label={item.ariaLabel}
-              aria-current={isActive ? 'page' : undefined}
+              aria-current={isActive ? "page" : undefined}
             >
               <Icon className="h-5 w-5" />
               <span className="text-xs font-medium">{item.label}</span>
             </a>
           );
         })}
-        
+
         {/* Empty space for FAB */}
         <div className="flex-1 h-full" aria-hidden="true" />
-        
+
         {navItems.slice(2).map((item) => {
           const Icon = item.icon;
           const isActive = currentPath === item.href;
-          
+
           return (
             <a
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 flex-1 h-full rounded-lg transition-colors',
-                isActive 
-                  ? 'text-primary' 
-                  : 'text-muted-foreground hover:text-foreground'
+                "flex flex-col items-center justify-center gap-1 flex-1 h-full rounded-lg transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
               aria-label={item.ariaLabel}
-              aria-current={isActive ? 'page' : undefined}
+              aria-current={isActive ? "page" : undefined}
             >
               <Icon className="h-5 w-5" />
               <span className="text-xs font-medium">{item.label}</span>

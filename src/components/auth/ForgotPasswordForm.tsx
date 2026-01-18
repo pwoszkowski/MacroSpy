@@ -15,24 +15,22 @@ interface ForgotPasswordFormProps {
   success?: string;
 }
 
-export function ForgotPasswordForm({
-  onSubmit,
-  onBack,
-  isLoading = false,
-  error,
-  success
-}: ForgotPasswordFormProps) {
-  const submitHandler = onSubmit || (async (data: ForgotPasswordFormValues) => {
-    // Placeholder - backend będzie zaimplementowany później
-    console.log("Forgot password attempt:", data);
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Symulacja API call
-  });
+export function ForgotPasswordForm({ onSubmit, onBack, isLoading = false, error, success }: ForgotPasswordFormProps) {
+  const submitHandler =
+    onSubmit ||
+    (async (data: ForgotPasswordFormValues) => {
+      // Placeholder - backend będzie zaimplementowany później
+      console.log("Forgot password attempt:", data);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Symulacja API call
+    });
 
-  const backHandler = onBack || (() => {
-    // Placeholder - nawigacja będzie zaimplementowana później
-    console.log("Back to login");
-    window.location.href = "/login";
-  });
+  const backHandler =
+    onBack ||
+    (() => {
+      // Placeholder - nawigacja będzie zaimplementowana później
+      console.log("Back to login");
+      window.location.href = "/login";
+    });
   const {
     register,
     handleSubmit,
@@ -57,9 +55,7 @@ export function ForgotPasswordForm({
       {/* Nagłówek */}
       <div className="text-center space-y-2">
         <h2 className="text-2xl md:text-3xl font-bold">Resetowanie hasła</h2>
-        <p className="text-muted-foreground">
-          Wprowadź swój adres email, a wyślemy Ci link do resetowania hasła
-        </p>
+        <p className="text-muted-foreground">Wprowadź swój adres email, a wyślemy Ci link do resetowania hasła</p>
       </div>
 
       {/* Formularz */}
@@ -90,18 +86,12 @@ export function ForgotPasswordForm({
             disabled={isLoading || isSubmitting}
           />
           {errors.email && (
-            <p className="text-sm text-destructive animate-in fade-in duration-200">
-              {errors.email.message}
-            </p>
+            <p className="text-sm text-destructive animate-in fade-in duration-200">{errors.email.message}</p>
           )}
         </div>
 
         {/* Przycisk wysyłania */}
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isLoading || isSubmitting}
-        >
+        <Button type="submit" className="w-full" disabled={isLoading || isSubmitting}>
           {isLoading || isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
