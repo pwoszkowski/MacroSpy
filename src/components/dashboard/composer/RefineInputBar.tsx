@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Mic } from 'lucide-react';
+import { useVoiceInput } from '../../hooks';
+import { toast } from 'sonner';
 
 interface RefineInputBarProps {
   onRefine: (prompt: string) => Promise<void>;
@@ -14,6 +16,21 @@ interface RefineInputBarProps {
  */
 export function RefineInputBar({ onRefine, isRefining }: RefineInputBarProps) {
   const [prompt, setPrompt] = useState('');
+
+  // Voice input hook
+  const {
+    isListening,
+    isSupported: voiceSupported,
+    error: voiceError,
+    startListening,
+    stopListening,
+  } = useVoiceInput();
+
+  useEffect(() => {
+    if (voiceError) {
+      toast.error(voiceError);
+    }
+  }, [voiceError]);
 
   const handleSubmit = async () => {
     if (!prompt.trim() || isRefining) return;
@@ -44,6 +61,20 @@ export function RefineInputBar({ onRefine, isRefining }: RefineInputBarProps) {
           disabled={isRefining}
           className="flex-1"
         />
+        {voiceSupported && (
+          <Button
+            type="button"
+            variant={isListening ? "destructive" : "outline"}
+            size="icon"
+            onClick={isListening ? stopListening : () => startListening(setPrompt)}
+            disabled={isRefining}
+            className={isListening ? 'animate-pulse' : ''}
+            title={isListening ? "Zatrzymaj nagrywanie" : "Nagraj głosem"}
+            aria-label={isListening ? "Zatrzymaj nagrywanie głosu" : "Rozpocznij nagrywanie głosu"}
+          >
+            <Mic className="w-4 h-4" />
+          </Button>
+        )}
         <Button
           onClick={handleSubmit}
           disabled={!prompt.trim() || isRefining}

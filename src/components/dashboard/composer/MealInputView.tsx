@@ -1,9 +1,11 @@
-import { useState, useRef, type ChangeEvent } from "react";
+import { useState, useRef, useEffect, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { X, Image as ImageIcon, Loader2, Sparkles, Edit3 } from "lucide-react";
+import { X, Image as ImageIcon, Loader2, Sparkles, Edit3, Mic } from "lucide-react";
 import { ManualEntryForm } from "./ManualEntryForm";
+import { useVoiceInput } from "../../hooks";
+import { toast } from "sonner";
 
 type InputMode = "ai" | "manual";
 
@@ -40,6 +42,22 @@ export function MealInputView({
   const [images, setImages] = useState<string[]>(initialImages);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Voice input hook
+  const {
+    isListening,
+    isSupported: voiceSupported,
+    error: voiceError,
+    startListening,
+    stopListening,
+  } = useVoiceInput();
+
+  // Show voice errors as toast
+  useEffect(() => {
+    if (voiceError) {
+      toast.error(voiceError);
+    }
+  }, [voiceError]);
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -79,7 +97,7 @@ export function MealInputView({
       const base64Promises = Array.from(files).map((file) => convertToBase64(file));
       const base64Images = await Promise.all(base64Promises);
       setImages((prev) => [...prev, ...base64Images]);
-    } catch (err) {
+    } catch {
       setError("Błąd podczas wczytywania zdjęć");
     }
 
@@ -140,20 +158,37 @@ export function MealInputView({
       {/* AI Mode */}
       {mode === "ai" ? (
         <>
-          {/* Textarea */}
+          {/* Textarea with voice button */}
           <div className="space-y-2">
             <Label htmlFor="meal-description">Opisz swój posiłek</Label>
-            <Textarea
-              id="meal-description"
-              placeholder="np. Jajecznica z dwóch jajek, pomidor, chleb..."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              disabled={isSubmitting}
-              rows={4}
-              className="resize-none"
-            />
+            <div className="flex gap-2">
+              <Textarea
+                id="meal-description"
+                placeholder="np. Jajecznica z dwóch jajek, pomidor, chleb..."
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                disabled={isSubmitting}
+                rows={4}
+                className="resize-none flex-1"
+              />
+              {voiceSupported && (
+                <Button
+                  type="button"
+                  variant={isListening ? "destructive" : "outline"}
+                  size="icon"
+                  onClick={isListening ? stopListening : () => startListening(setText)}
+                  disabled={isSubmitting}
+                  className={`h-10 w-10 ${isListening ? "animate-pulse" : ""}`}
+                  title={isListening ? "Zatrzymaj nagrywanie" : "Nagraj głosem"}
+                  aria-label={isListening ? "Zatrzymaj nagrywanie głosu" : "Rozpocznij nagrywanie głosu"}
+                >
+                  <Mic className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground">
               Możesz też dodać zdjęcia, aby AI mogło lepiej oszacować wartości odżywcze
+              {voiceSupported && ", lub nagrać opis głosem"}
             </p>
           </div>
 
