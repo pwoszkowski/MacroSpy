@@ -69,7 +69,7 @@ export function MealCard({ meal, onClick }: MealCardProps) {
 
         {/* AI Suggestion badge */}
         {meal.ai_suggestion && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="text-xs sm:whitespace-nowrap sm:shrink-0 whitespace-normal shrink">
             💡 {meal.ai_suggestion}
           </Badge>
         )}
