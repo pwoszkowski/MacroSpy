@@ -39,9 +39,15 @@ const createMealSchema = z.object({
  */
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    // TODO: Add authentication when ready
-    // For now, use a test user_id
-    const userId = "bf63b5fc-523b-4224-8ffd-d22546c49f3d";
+    // Get authenticated user
+    const user = locals.user;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const userId = user.id;
 
     // Parse and validate query parameters
     const url = new URL(request.url);
@@ -83,9 +89,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // TODO: Add authentication when ready
-    // For now, use a test user_id
-    const userId = "bf63b5fc-523b-4224-8ffd-d22546c49f3d";
+    // Get authenticated user
+    const user = locals.user;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const userId = user.id;
 
     // Parse request body
     let body: unknown;

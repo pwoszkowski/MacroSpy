@@ -15,6 +15,7 @@ import type { Json } from "../../db/database.types";
 export class AiService {
   private client: OpenAI;
   private model = "x-ai/grok-4.1-fast";
+  private language = "Polish";
 
   constructor(apiKey: string) {
     if (!apiKey) {
@@ -145,9 +146,11 @@ export class AiService {
    * Uses AI to suggest optimal macronutrient distribution
    */
   private async getSuggestedMacroTargets(request: TDEECalculationRequest, tdee: number): Promise<GoalTargets> {
-    const systemPrompt = `You are a professional nutritionist and dietitian. 
+    const systemPrompt = `You are a professional nutritionist and dietitian.
 Your task is to suggest optimal macronutrient targets for a person based on their TDEE and profile.
 Always respond with valid JSON only, no additional text.
+
+IMPORTANT: Always respond in ${this.language} language for the explanation field.
 
 Required JSON format:
 {
@@ -217,6 +220,8 @@ Respond with JSON only.`;
   private buildMealAnalysisSystemPrompt(): string {
     return `You are a professional nutritionist and dietitian assistant in MacroSpy app.
 Your task is to analyze meals and provide accurate nutritional information.
+
+IMPORTANT: Always respond in ${this.language} language for all text fields including name, assistant_response, and dietary_suggestion.
 
 CRITICAL: Always respond with valid JSON only, no additional text or markdown.
 

@@ -9,9 +9,15 @@ export const prerender = false;
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
-    // TODO: Add authentication when ready
-    // For now, use a test user_id
-    const userId = "d9622d1a-756c-442a-aba9-ef94ad49b174";
+    // Get authenticated user
+    const user = locals.user;
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const userId = user.id;
 
     // Validate measurement ID
     const measurementId = params.id;

@@ -22,64 +22,11 @@ let mealsData: MealListResponse;
 let profile;
 let currentGoal;
 
-try {
-  [mealsData, profile, currentGoal] = await Promise.all([
-    mealService.getMealsByDate(userId), // Defaults to today
-    profileService.getProfile(userId),
-    goalService.getCurrentGoal(userId),
-  ]);
-} catch {
-  // Use mock data if DB fails (for testing without auth)
-  // eslint-disable-next-line no-console
-  console.log("Using mock data for dashboard");
-  const now = new Date();
-  mealsData = {
-    data: [
-      {
-        id: "1",
-        name: "Owsianka z owocami",
-        calories: 450,
-        protein: 15,
-        fat: 12,
-        carbs: 65,
-        fiber: 8,
-        ai_suggestion: "Doskonały posiłek na początek dnia!",
-        consumed_at: new Date(now.setHours(8, 30, 0, 0)).toISOString(),
-      },
-      {
-        id: "2",
-        name: "Kurczak z ryżem i warzywami",
-        calories: 650,
-        protein: 55,
-        fat: 15,
-        carbs: 70,
-        fiber: 6,
-        ai_suggestion: "Świetne źródło białka",
-        consumed_at: new Date(now.setHours(13, 0, 0, 0)).toISOString(),
-      },
-      {
-        id: "3",
-        name: "Shake proteinowy",
-        calories: 280,
-        protein: 30,
-        fat: 8,
-        carbs: 25,
-        fiber: 3,
-        ai_suggestion: null,
-        consumed_at: new Date(now.setHours(16, 30, 0, 0)).toISOString(),
-      },
-    ],
-    summary: {
-      total_calories: 1380,
-      total_protein: 100,
-      total_fat: 35,
-      total_carbs: 160,
-      total_fiber: 17,
-    },
-  };
-  profile = null;
-  currentGoal = null;
-}
+[mealsData, profile, currentGoal] = await Promise.all([
+  mealService.getMealsByDate(user.id), // Defaults to today
+  profileService.getProfile(user.id),
+  goalService.getCurrentGoal(user.id),
+]);
 
 // Prepare user profile response with mock data for testing
 const userProfile: UserProfileResponse = {
