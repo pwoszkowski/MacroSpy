@@ -1,4 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
 
 export default defineConfig({
   testDir: "./e2e",
@@ -31,7 +35,7 @@ export default defineConfig({
   // Shared settings for all the projects
   use: {
     // Base URL to use in actions like `await page.goto('/')`
-    baseURL: process.env.BASE_URL || "http://localhost:3003",
+    baseURL: process.env.BASE_URL || "http://localhost:4322",
 
     // Collect trace when retrying the failed test
     trace: "on-first-retry",

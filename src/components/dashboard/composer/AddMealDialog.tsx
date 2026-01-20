@@ -15,15 +15,16 @@ interface AddMealDialogProps {
 
 // Hook do wykrywania urządzeń mobilnych
 function useIsMobile() {
-  // W środowisku SSR zawsze zwracamy false
-  if (typeof window === "undefined") return false;
-
-  const [isMobile, setIsMobile] = useState(window.matchMedia("(max-width: 768px)").matches);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    // W środowisku SSR pomijamy
+    if (typeof window === "undefined") return;
 
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mediaQuery.addEventListener("change", handler);
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
@@ -107,6 +108,19 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
         return <AnalysisLoadingView />;
 
       case "refining":
+        return candidate ? (
+          <MealReviewView
+            candidate={candidate}
+            interactions={interactions}
+            onRefine={refine}
+            onSave={save}
+            onCancel={handleClose}
+            onManualChange={updateCandidate}
+            isRefining={true}
+            isSaving={false}
+          />
+        ) : null;
+
       case "review":
         return candidate ? (
           <MealReviewView
@@ -116,8 +130,8 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
             onSave={save}
             onCancel={handleClose}
             onManualChange={updateCandidate}
-            isRefining={status === "refining"}
-            isSaving={status === "saving"}
+            isRefining={false}
+            isSaving={false}
           />
         ) : null;
 
@@ -153,7 +167,7 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-        <DrawerContent>
+        <DrawerContent data-test-id="add-meal-dialog">
           <DrawerHeader>
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
@@ -167,7 +181,7 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
   // Desktop: użyj Dialog
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" data-test-id="add-meal-dialog">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

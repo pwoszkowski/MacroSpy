@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
  */
 export function AnalysisLoadingView() {
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4" data-test-id="analysis-loading-view">
       {/* Header z animacją */}
       <div className="flex items-center justify-center gap-3 py-4">
         <Loader2 className="w-6 h-6 animate-spin text-primary" />

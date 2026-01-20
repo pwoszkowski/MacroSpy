@@ -35,7 +35,7 @@ export function MealReviewView({
   const isManualEntry = !candidate.assistant_response && !candidate.ai_context;
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4" data-test-id="meal-review-view">
       {/* Dymek AI - tylko dla wpisów z AI */}
       {candidate.assistant_response && (
         <AIResponseSummary response={candidate.assistant_response} suggestion={candidate.ai_suggestion} />
@@ -62,7 +62,7 @@ export function MealReviewView({
         <Button variant="outline" onClick={onCancel} disabled={isProcessing} className="flex-1">
           Anuluj
         </Button>
-        <Button onClick={onSave} disabled={isProcessing || !candidate.name.trim()} className="flex-1">
+        <Button onClick={onSave} disabled={isProcessing || !candidate.name.trim()} className="flex-1" data-test-id="save-meal-button">
           {isSaving ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />

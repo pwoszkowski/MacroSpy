@@ -170,6 +170,7 @@ export function MealInputView({
                 disabled={isSubmitting}
                 rows={4}
                 className="resize-none flex-1"
+                data-test-id="meal-description-input"
               />
               {voiceSupported && (
                 <Button
@@ -243,7 +244,13 @@ export function MealInputView({
           {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</div>}
 
           {/* Przycisk Submit */}
-          <Button onClick={handleSubmit} disabled={!canSubmit} className="w-full" size="lg">
+          <Button
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            className="w-full"
+            size="lg"
+            data-test-id="analyze-meal-button"
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
