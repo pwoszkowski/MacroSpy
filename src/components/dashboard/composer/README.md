@@ -25,7 +25,7 @@ composer/
 ### Podstawowa implementacja
 
 ```tsx
-import { AddMealDialog } from '@/components/dashboard/composer';
+import { AddMealDialog } from "@/components/dashboard/composer";
 
 function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,12 +38,8 @@ function Dashboard() {
   return (
     <>
       <button onClick={() => setIsOpen(true)}>Dodaj posiłek</button>
-      
-      <AddMealDialog
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onSuccess={handleMealSaved}
-      />
+
+      <AddMealDialog isOpen={isOpen} onClose={() => setIsOpen(false)} onSuccess={handleMealSaved} />
     </>
   );
 }
@@ -56,11 +52,13 @@ function Dashboard() {
 Główny kontener modala. Automatycznie wybiera Dialog (desktop) lub Drawer (mobile).
 
 **Props:**
+
 - `isOpen: boolean` - Stan widoczności modala
 - `onClose: () => void` - Callback zamknięcia modala
 - `onSuccess?: () => void` - Callback po udanym zapisie posiłku
 
 **Funkcjonalności:**
+
 - Automatyczne przełączanie Dialog/Drawer na podstawie rozmiaru ekranu
 - Potwierdzenie zamknięcia przy niezapisanych zmianach
 - Toast notifications dla błędów i sukcesu
@@ -71,6 +69,7 @@ Główny kontener modala. Automatycznie wybiera Dialog (desktop) lub Drawer (mob
 Formularz wejściowy z przełącznikiem między trybem AI a ręcznym wprowadzaniem.
 
 **Props:**
+
 - `initialText?: string` - Początkowa wartość tekstu
 - `initialImages?: string[]` - Początkowe zdjęcia (base64)
 - `onSubmit: (text: string, images: string[]) => void` - Callback analizy AI
@@ -78,15 +77,18 @@ Formularz wejściowy z przełącznikiem między trybem AI a ręcznym wprowadzani
 - `isSubmitting: boolean` - Stan ładowania
 
 **Tryby:**
+
 - **Analiza AI** - Użytkownik opisuje posiłek tekstem i/lub zdjęciami, AI analizuje
 - **Ręczne dodanie** - Użytkownik samodzielnie wypełnia nazwę i makroskładniki
 
 **Walidacja (tryb AI):**
+
 - Minimum 2 znaki w opisie LUB przynajmniej 1 zdjęcie
 - Maksymalnie 5 zdjęć
 - Akceptowane formaty: JPG, PNG, WEBP
 
 **Walidacja (tryb ręczny):**
+
 - Nazwa posiłku: minimum 2 znaki
 - Makroskładniki: wartości >= 0
 
@@ -95,10 +97,12 @@ Formularz wejściowy z przełącznikiem między trybem AI a ręcznym wprowadzani
 Formularz do bezpośredniego wprowadzania nazwy posiłku i makroskładników bez użycia AI.
 
 **Props:**
+
 - `onSubmit: (data: ManualEntryData) => void` - Callback wysłania danych
 - `isSubmitting: boolean` - Stan ładowania
 
 **Pola formularza:**
+
 - Nazwa posiłku (text, wymagane)
 - Kalorie (number, kcal)
 - Białko (number, g)
@@ -111,6 +115,7 @@ Formularz do bezpośredniego wprowadzania nazwy posiłku i makroskładników bez
 Widok weryfikacji wyników analizy AI z możliwością edycji i korekty.
 
 **Props:**
+
 - `candidate: MealCandidateViewModel` - Dane posiłku do weryfikacji
 - `interactions: InteractionLog[]` - Historia interakcji user-AI
 - `onRefine: (prompt: string) => Promise<void>` - Callback korekty AI
@@ -128,20 +133,20 @@ Custom hook zarządzający całą logiką biznesową procesu dodawania posiłku.
 
 ```tsx
 const {
-  status,            // 'idle' | 'analyzing' | 'refining' | 'review' | 'saving' | 'success'
-  inputText,         // Tekst z inputa
-  selectedImages,    // Wybrane zdjęcia (base64[])
-  candidate,         // Dane posiłku po analizie
-  interactions,      // Historia czatu
-  error,             // Komunikat błędu
-  setInputText,      // Ustawienie tekstu
+  status, // 'idle' | 'analyzing' | 'refining' | 'review' | 'saving' | 'success'
+  inputText, // Tekst z inputa
+  selectedImages, // Wybrane zdjęcia (base64[])
+  candidate, // Dane posiłku po analizie
+  interactions, // Historia czatu
+  error, // Komunikat błędu
+  setInputText, // Ustawienie tekstu
   setSelectedImages, // Ustawienie zdjęć
-  analyze,           // Analiza posiłku przez AI
+  analyze, // Analiza posiłku przez AI
   createManualEntry, // Utworzenie wpisu ręcznego (pomija AI)
-  refine,            // Korekta przez AI
-  updateCandidate,   // Ręczna edycja pól
-  save,              // Zapis do bazy
-  reset,             // Reset stanu
+  refine, // Korekta przez AI
+  updateCandidate, // Ręczna edycja pól
+  save, // Zapis do bazy
+  reset, // Reset stanu
 } = useMealComposer(onSuccess);
 ```
 
@@ -159,6 +164,7 @@ const {
 Hook automatycznie wywołuje następujące endpointy:
 
 #### 1. Analiza (Analyze)
+
 - **Endpoint:** `POST /api/ai/analyze`
 - **Request:**
   ```typescript
@@ -170,6 +176,7 @@ Hook automatycznie wywołuje następujące endpointy:
 - **Response:** `AnalyzeMealResponse`
 
 #### 2. Korekta (Refine)
+
 - **Endpoint:** `POST /api/ai/refine`
 - **Request:**
   ```typescript
@@ -181,6 +188,7 @@ Hook automatycznie wywołuje następujące endpointy:
 - **Response:** `AnalyzeMealResponse`
 
 #### 3. Zapis (Create)
+
 - **Endpoint:** `POST /api/meals`
 - **Request:** `CreateMealCommand`
 - **Response:** `Meal`
@@ -188,11 +196,13 @@ Hook automatycznie wywołuje następujące endpointy:
 ## Typy
 
 ### ComposerStatus
+
 ```typescript
-type ComposerStatus = 'idle' | 'analyzing' | 'refining' | 'review' | 'saving' | 'success';
+type ComposerStatus = "idle" | "analyzing" | "refining" | "review" | "saving" | "success";
 ```
 
 ### MealCandidateViewModel
+
 ```typescript
 interface MealCandidateViewModel {
   name: string;
@@ -211,10 +221,11 @@ interface MealCandidateViewModel {
 ```
 
 ### InteractionLog
+
 ```typescript
 interface InteractionLog {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: number;
 }
@@ -248,6 +259,7 @@ interface InteractionLog {
 ## Obsługa błędów
 
 Hook automatycznie obsługuje błędy:
+
 - **Błąd analizy** - Toast + powrót do stanu `idle` z zachowanym inputem
 - **Błąd korekty** - Toast + pozostanie w stanie `review` z poprzednimi danymi
 - **Błąd zapisu** - Toast + pozostanie w `review`, aby użytkownik nie stracił danych
@@ -255,10 +267,12 @@ Hook automatycznie obsługuje błędy:
 ## Walidacja
 
 ### Przed analizą:
+
 - Tekst: min. 2 znaki LUB przynajmniej 1 zdjęcie
 - Zdjęcia: max 5, formaty JPG/PNG/WEBP
 
 ### Przed zapisem:
+
 - Nazwa: niepusta
 - Makroskładniki: wartości >= 0
 - Data: prawidłowa data/czas (domyślnie `new Date()`)
@@ -266,6 +280,7 @@ Hook automatycznie obsługuje błędy:
 ## Responsywność
 
 Komponenty automatycznie dostosowują się do rozmiaru ekranu:
+
 - **Desktop (>768px)**: Dialog z `max-w-2xl`
 - **Mobile (≤768px)**: Drawer od dołu ekranu, `max-h-[70vh]`
 
@@ -275,12 +290,12 @@ Wymagana integracja `ToastProvider` w głównym layoutcie:
 
 ```tsx
 // Layout.astro
-import { ToastProvider } from '../components/ToastProvider';
+import { ToastProvider } from "../components/ToastProvider";
 
 <body>
   <slot />
   <ToastProvider client:load />
-</body>
+</body>;
 ```
 
 ## Przykłady
@@ -289,18 +304,13 @@ import { ToastProvider } from '../components/ToastProvider';
 
 ```tsx
 function AIComposer() {
-  const {
-    status,
-    candidate,
-    analyze,
-    save,
-  } = useMealComposer(() => console.log('Saved!'));
+  const { status, candidate, analyze, save } = useMealComposer(() => console.log("Saved!"));
 
-  if (status === 'idle') {
-    return <button onClick={() => analyze('Jajecznica', [])}>Analizuj</button>;
+  if (status === "idle") {
+    return <button onClick={() => analyze("Jajecznica", [])}>Analizuj</button>;
   }
 
-  if (status === 'review' && candidate) {
+  if (status === "review" && candidate) {
     return (
       <div>
         <h2>{candidate.name}</h2>
@@ -318,29 +328,28 @@ function AIComposer() {
 
 ```tsx
 function ManualComposer() {
-  const {
-    status,
-    candidate,
-    createManualEntry,
-    save,
-  } = useMealComposer(() => console.log('Saved!'));
+  const { status, candidate, createManualEntry, save } = useMealComposer(() => console.log("Saved!"));
 
-  if (status === 'idle') {
+  if (status === "idle") {
     return (
-      <button onClick={() => createManualEntry({
-        name: 'Jajecznica',
-        calories: 300,
-        protein: 20,
-        fat: 15,
-        carbs: 5,
-        fiber: 1
-      })}>
+      <button
+        onClick={() =>
+          createManualEntry({
+            name: "Jajecznica",
+            calories: 300,
+            protein: 20,
+            fat: 15,
+            carbs: 5,
+            fiber: 1,
+          })
+        }
+      >
         Dodaj ręcznie
       </button>
     );
   }
 
-  if (status === 'review' && candidate) {
+  if (status === "review" && candidate) {
     return (
       <div>
         <h2>{candidate.name}</h2>

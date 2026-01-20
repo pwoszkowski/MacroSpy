@@ -2,9 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import { ProfileView } from "../components/profile";
 
-// Get Supabase client from middleware
-const supabase = Astro.locals.supabase;
-
 // Check authentication - user is available from middleware
 const user = Astro.locals.user;
 

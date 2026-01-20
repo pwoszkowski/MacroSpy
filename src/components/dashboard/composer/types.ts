@@ -11,7 +11,7 @@ export interface MealCandidateViewModel {
   fiber: number; // float
   ai_suggestion: string | null;
   assistant_response: string | null; // Ostatnia odpowiedź AI
-  ai_context: any; // Blob JSON potrzebny do endpointu refine
+  ai_context: unknown; // Blob JSON potrzebny do endpointu refine
   original_prompt: string;
   is_image_analyzed: boolean;
   consumed_at: string; // ISO Date

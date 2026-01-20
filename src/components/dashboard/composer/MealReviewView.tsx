@@ -12,7 +12,7 @@ interface MealReviewViewProps {
   onRefine: (prompt: string) => Promise<void>;
   onSave: () => Promise<void>;
   onCancel: () => void;
-  onManualChange: (field: keyof MealCandidateViewModel, value: any) => void;
+  onManualChange: (field: keyof MealCandidateViewModel, value: number | string) => void;
   isRefining: boolean;
   isSaving: boolean;
 }
@@ -62,7 +62,12 @@ export function MealReviewView({
         <Button variant="outline" onClick={onCancel} disabled={isProcessing} className="flex-1">
           Anuluj
         </Button>
-        <Button onClick={onSave} disabled={isProcessing || !candidate.name.trim()} className="flex-1" data-test-id="save-meal-button">
+        <Button
+          onClick={onSave}
+          disabled={isProcessing || !candidate.name.trim()}
+          className="flex-1"
+          data-test-id="save-meal-button"
+        >
           {isSaving ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />

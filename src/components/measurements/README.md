@@ -39,6 +39,7 @@ import { MeasurementsDashboard } from "../components/measurements";
 Główny kontener zarządzający całym widokiem pomiarów.
 
 **Funkcjonalności:**
+
 - Pobieranie danych z API przy montowaniu
 - Zarządzanie stanem modala dodawania pomiaru
 - Obsługa błędów i stanów ładowania
@@ -47,33 +48,38 @@ Główny kontener zarządzający całym widokiem pomiarów.
 ### MeasurementsSummary
 
 Wyświetla kluczowe metryki w formie kart:
+
 - Aktualna waga
 - Zmiana wagi (od poprzedniego pomiaru)
 - Procent tłuszczu (jeśli dostępny)
 - Procent mięśni (jeśli dostępny)
 
 **Props:**
+
 ```typescript
 interface MeasurementsSummaryProps {
-  latest: MeasurementDto | null;    // Najnowszy pomiar
-  previous: MeasurementDto | null;  // Poprzedni pomiar (do obliczenia zmian)
+  latest: MeasurementDto | null; // Najnowszy pomiar
+  previous: MeasurementDto | null; // Poprzedni pomiar (do obliczenia zmian)
 }
 ```
 
 ### MeasurementsChart
 
 Interaktywny wykres postępów z możliwością przełączania między:
+
 - Widok wagi (wykres liniowy wagi w czasie)
 - Skład ciała (dwa wykresy: % tłuszczu i % mięśni)
 
 **Props:**
+
 ```typescript
 interface MeasurementsChartProps {
-  data: MeasurementDto[];  // Dane posortowane automatycznie
+  data: MeasurementDto[]; // Dane posortowane automatycznie
 }
 ```
 
 **Funkcjonalności:**
+
 - Automatyczne sortowanie danych chronologicznie
 - Formatowanie dat na osi X
 - Obsługa pustego stanu
@@ -87,6 +93,7 @@ interface MeasurementsChartProps {
 Modal zawierający formularz dodawania nowego pomiaru.
 
 **Props:**
+
 ```typescript
 interface MeasurementLogDialogProps {
   isOpen: boolean;
@@ -100,12 +107,14 @@ interface MeasurementLogDialogProps {
 Formularz z walidacją (React Hook Form + Zod).
 
 **Pola:**
+
 - Data (wymagane, domyślnie dzisiaj)
 - Waga w kg (wymagane, 20-300 kg)
 - Procent tłuszczu (opcjonalne, 0-100%)
 - Procent mięśni (opcjonalne, 0-100%)
 
 **Props:**
+
 ```typescript
 interface MeasurementFormProps {
   onSubmit: (data: MeasurementFormValues) => Promise<void>;
@@ -118,14 +127,16 @@ interface MeasurementFormProps {
 Tabela z historią pomiarów oraz możliwością usuwania wpisów.
 
 **Props:**
+
 ```typescript
 interface MeasurementsHistoryProps {
-  data: MeasurementDto[];  // Wyświetlane w kolejności z API (DESC)
-  onDelete: (measurementId: string) => Promise<void>;  // Callback usuwania
+  data: MeasurementDto[]; // Wyświetlane w kolejności z API (DESC)
+  onDelete: (measurementId: string) => Promise<void>; // Callback usuwania
 }
 ```
 
 **Kolumny:**
+
 - Data (formatowana jako "1 stycznia 2026")
 - Waga (kg)
 - Tłuszcz (%)
@@ -133,6 +144,7 @@ interface MeasurementsHistoryProps {
 - Akcje (przycisk usuń)
 
 **Funkcjonalności:**
+
 - Przycisk usuwania (ikona kosza) w każdym wierszu
 - AlertDialog z potwierdzeniem przed usunięciem
 - Wyświetlanie szczegółów pomiaru w dialogu potwierdzenia
@@ -145,11 +157,13 @@ interface MeasurementsHistoryProps {
 Hook zarządzający stanem pomiarów i komunikacją z API.
 
 **Parametry:**
+
 ```typescript
 useMeasurements(limit?: number)  // Domyślnie: 30
 ```
 
 **Zwraca:**
+
 ```typescript
 interface UseMeasurementsReturn {
   measurements: MeasurementDto[];
@@ -162,6 +176,7 @@ interface UseMeasurementsReturn {
 ```
 
 **Funkcjonalności:**
+
 - Automatyczne pobieranie danych przy montowaniu
 - Automatyczne odświeżanie po dodaniu/usunięciu pomiaru
 - Obsługa błędów
@@ -188,8 +203,8 @@ Schema Zod w `schemas.ts`:
 
 ```typescript
 const measurementFormSchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),  // YYYY-MM-DD
-  weight: z.number().positive().min(20).max(300),  // kg
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD
+  weight: z.number().positive().min(20).max(300), // kg
   body_fat_percentage: z.number().min(0).max(100).optional().nullable(),
   muscle_percentage: z.number().min(0).max(100).optional().nullable(),
 });
@@ -198,6 +213,7 @@ const measurementFormSchema = z.object({
 ## Integracja z API
 
 Komponenty komunikują się z endpointami:
+
 - `GET /api/measurements?limit=30` - pobieranie historii
 - `POST /api/measurements` - dodawanie nowego pomiaru
 - `DELETE /api/measurements/[id]` - usuwanie pomiaru
@@ -205,6 +221,7 @@ Komponenty komunikują się z endpointami:
 ## Toast Notifications
 
 Używa `sonner` do wyświetlania powiadomień:
+
 - Sukces dodania: "Pomiar został zapisany"
 - Sukces usunięcia: "Pomiar został usunięty"
 - Błąd: Komunikat błędu z API

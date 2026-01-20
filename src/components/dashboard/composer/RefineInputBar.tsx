@@ -49,7 +49,7 @@ export function RefineInputBar({ onRefine, isRefining }: RefineInputBarProps) {
   return (
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">
-        Możesz poprosić AI o korektę, np. "zmień masło na olej" lub "dodaj więcej białka"
+        Możesz poprosić AI o korektę, np. &quot;zmień masło na olej&quot; lub &quot;dodaj więcej białka&quot;
       </p>
       <div className="flex gap-2">
         <Input

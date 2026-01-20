@@ -1,16 +1,20 @@
 # Plan implementacji widoku Modal Dodawania Posiłku (AI Meal Composer)
 
 ## 1. Przegląd
+
 Widok "Modal Dodawania Posiłku" to centralny punkt interakcji użytkownika w aplikacji MacroSpy. Umożliwia on:
+
 - **Tryb AI**: Multimodalne (tekst + zdjęcia) wprowadzanie danych, analiza przez model `grok-4.1-fast`, interaktywna korekta (refinement).
 - **Tryb ręczny**: Bezpośrednie wprowadzanie nazwy posiłku i wartości makroskładników bez użycia AI.
 
 Widok działa jako nakładka (Dialog/Drawer) dostępna z poziomu Dashboardu.
 
 ## 2. Routing widoku
+
 Widok nie posiada dedykowanej ścieżki URL (route). Jest to komponent typu Modal/Dialog renderowany warunkowo wewnątrz layoutu lub na stronie głównej (`/`), wywoływany przyciskiem FAB (Floating Action Button).
 
 ## 3. Struktura komponentów
+
 Głównym kontenerem jest `AddMealDialog`. Zarządza on maszyną stanów (Input -> Analyzing -> Review/Refine -> Saving).
 
 ```text
@@ -41,6 +45,7 @@ AddMealDialog (Smart Component)
 ## 4. Szczegóły komponentów
 
 ### `AddMealDialog` (Container)
+
 - **Opis**: Główny orkiestrator. Zarządza stanem widoczności modala (otwarcie/zamknięcie) oraz logiką biznesową (hook `useMealComposer`).
 - **Główne elementy**: `Dialog` (Desktop) / `Drawer` (Mobile) z `shadcn/ui`.
 - **Obsługiwane interakcje**: Zamykanie modala (z potwierdzeniem, jeśli są niezapisane dane), przełączanie widoków na podstawie stanu.
@@ -48,77 +53,81 @@ AddMealDialog (Smart Component)
 - **Propsy**: `isOpen: boolean`, `onClose: () => void`.
 
 ### `MealInputView`
+
 - **Opis**: Ekran początkowy z przełącznikiem trybów (AI / Manual). Wyświetla odpowiedni formularz w zależności od wybranego trybu.
-- **Główne elementy**: 
-    - Przełącznik trybu (`Button` group z ikonami Sparkles/Edit3)
-    - **Tryb AI**: `Textarea`, `Input type="file"`, podgląd miniatur zdjęć z przyciskiem usuwania
-    - **Tryb Manual**: Komponent `ManualEntryForm`
+- **Główne elementy**:
+  - Przełącznik trybu (`Button` group z ikonami Sparkles/Edit3)
+  - **Tryb AI**: `Textarea`, `Input type="file"`, podgląd miniatur zdjęć z przyciskiem usuwania
+  - **Tryb Manual**: Komponent `ManualEntryForm`
 - **Obsługiwane interakcje**:
-    - Przełączanie między trybami (AI ↔ Manual)
-    - **Tryb AI**:
-        - Wpisanie tekstu
-        - Wybór zdjęć (wielokrotny)
-        - Usunięcie zdjęcia
-        - Submit -> przejście do analizy AI
-    - **Tryb Manual**:
-        - Wypełnienie formularza ręcznego
-        - Submit -> przejście bezpośrednio do review (pominięcie analizy)
-- **Walidacja**: 
-    - **Tryb AI**: Minimum 2 znaki w opisie LUB przynajmniej 1 zdjęcie. Maksymalnie 5 zdjęć.
-    - **Tryb Manual**: Nazwa min. 2 znaki, wartości >= 0.
-- **Propsy**: 
-    - `onSubmit: (text: string, images: string[]) => void` - callback analizy AI
-    - `onManualSubmit: (data: ManualEntryData) => void` - callback ręcznego wprowadzenia
-    - `isSubmitting: boolean`
+  - Przełączanie między trybami (AI ↔ Manual)
+  - **Tryb AI**:
+    - Wpisanie tekstu
+    - Wybór zdjęć (wielokrotny)
+    - Usunięcie zdjęcia
+    - Submit -> przejście do analizy AI
+  - **Tryb Manual**:
+    - Wypełnienie formularza ręcznego
+    - Submit -> przejście bezpośrednio do review (pominięcie analizy)
+- **Walidacja**:
+  - **Tryb AI**: Minimum 2 znaki w opisie LUB przynajmniej 1 zdjęcie. Maksymalnie 5 zdjęć.
+  - **Tryb Manual**: Nazwa min. 2 znaki, wartości >= 0.
+- **Propsy**:
+  - `onSubmit: (text: string, images: string[]) => void` - callback analizy AI
+  - `onManualSubmit: (data: ManualEntryData) => void` - callback ręcznego wprowadzenia
+  - `isSubmitting: boolean`
 
 ### `ManualEntryForm`
+
 - **Opis**: Formularz do bezpośredniego wprowadzania nazwy posiłku i wartości makroskładników.
-- **Główne elementy**: 
-    - Input (Nazwa posiłku)
-    - Number inputs (Kalorie, Białko, Tłuszcze, Węglowodany, Błonnik)
-    - Przycisk "Przejdź do podsumowania"
+- **Główne elementy**:
+  - Input (Nazwa posiłku)
+  - Number inputs (Kalorie, Białko, Tłuszcze, Węglowodany, Błonnik)
+  - Przycisk "Przejdź do podsumowania"
 - **Obsługiwane interakcje**:
-    - Wpisanie nazwy
-    - Wprowadzanie wartości liczbowych (z walidacją >= 0)
-    - Submit -> przejście do review
+  - Wpisanie nazwy
+  - Wprowadzanie wartości liczbowych (z walidacją >= 0)
+  - Submit -> przejście do review
 - **Walidacja**: Nazwa min. 2 znaki, wszystkie wartości >= 0
-- **Propsy**: 
-    - `onSubmit: (data: ManualEntryData) => void`
-    - `isSubmitting: boolean`
+- **Propsy**:
+  - `onSubmit: (data: ManualEntryData) => void`
+  - `isSubmitting: boolean`
 
 ### `AnalysisLoadingView`
+
 - **Opis**: Ekran oczekiwania na odpowiedź AI.
 - **Główne elementy**: Animowany `Skeleton` odwzorowujący układ formularza, tekst "AI analizuje Twój posiłek...".
 - **Propsy**: Brak (komponent prezentacyjny).
 
 ### `MealReviewView`
+
 - **Opis**: Ekran weryfikacji. Wyświetla dane do sprawdzenia i pozwala na ich korektę (ręczną lub przez AI - tylko dla wpisów z AI).
 - **Główne elementy**:
-    - `Input` (Nazwa posiłku)
-    - `NumberInput` (Kalorie, Białko, Tłuszcze, Węglowodany, Błonnik)
-    - **Dla wpisów z AI**:
-        - Dymek z odpowiedzią AI (`AIResponseSummary`)
-        - Historia interakcji (`InteractionHistory`)
-        - Sekcja Czat/Refine (`RefineInputBar`)
-    - **Dla wpisów ręcznych**:
-        - Informacja tekstowa: "Posiłek dodany ręcznie. Sprawdź wartości przed zapisem."
+  - `Input` (Nazwa posiłku)
+  - `NumberInput` (Kalorie, Białko, Tłuszcze, Węglowodany, Błonnik)
+  - **Dla wpisów z AI**:
+    - Dymek z odpowiedzią AI (`AIResponseSummary`)
+    - Historia interakcji (`InteractionHistory`)
+    - Sekcja Czat/Refine (`RefineInputBar`)
+  - **Dla wpisów ręcznych**:
+    - Informacja tekstowa: "Posiłek dodany ręcznie. Sprawdź wartości przed zapisem."
 - **Obsługiwane interakcje**:
-    - Ręczna edycja wartości liczbowych (aktualizuje stan lokalny)
-    - **Tylko wpisy z AI**:
-        - Wpisanie komendy korekcyjnej (np. "bez masła") -> wywołuje API `refine` -> aktualizuje wartości
-        - Przeglądanie historii interakcji
-    - Zapisz -> wywołuje API `create`
-    - Anuluj -> zamyka modal (z potwierdzeniem)
+  - Ręczna edycja wartości liczbowych (aktualizuje stan lokalny)
+  - **Tylko wpisy z AI**:
+    - Wpisanie komendy korekcyjnej (np. "bez masła") -> wywołuje API `refine` -> aktualizuje wartości
+    - Przeglądanie historii interakcji
+  - Zapisz -> wywołuje API `create`
+  - Anuluj -> zamyka modal (z potwierdzeniem)
 - **Walidacja**: Wartości numeryczne muszą być nieujemne. Nazwa wymagana.
 - **Propsy**:
-    - `mealCandidate`: `MealCandidateViewModel`
-    - `interactions`: `InteractionLog[]`
-    - `onRefine`: `(prompt: string) => Promise<void>`
-    - `onSave`: `() => Promise<void>`
-    - `onCancel`: `() => void`
-    - `onManualChange`: `(field: keyof MealCandidateViewModel, value: any) => void`
-    - `isRefining`: `boolean`
-    - `isSaving`: `boolean`
+  - `mealCandidate`: `MealCandidateViewModel`
+  - `interactions`: `InteractionLog[]`
+  - `onRefine`: `(prompt: string) => Promise<void>`
+  - `onSave`: `() => Promise<void>`
+  - `onCancel`: `() => void`
+  - `onManualChange`: `(field: keyof MealCandidateViewModel, value: any) => void`
+  - `isRefining`: `boolean`
+  - `isSaving`: `boolean`
 
 ## 5. Typy
 
@@ -126,16 +135,16 @@ Wymagane zdefiniowanie w `src/components/dashboard/composer/types.ts`:
 
 ```typescript
 // Stan procesu
-export type ComposerStatus = 'idle' | 'analyzing' | 'refining' | 'review' | 'saving' | 'success';
+export type ComposerStatus = "idle" | "analyzing" | "refining" | "review" | "saving" | "success";
 
 // Model widoku dla edytowanego posiłku
 export interface MealCandidateViewModel {
   name: string;
   calories: number; // float
-  protein: number;  // float
-  fat: number;      // float
-  carbs: number;    // float
-  fiber: number;    // float
+  protein: number; // float
+  fat: number; // float
+  carbs: number; // float
+  fiber: number; // float
   ai_suggestion: string | null;
   assistant_response: string | null; // Ostatnia odpowiedź AI (null dla ręcznych wpisów)
   ai_context: any; // Blob JSON potrzebny do endpointu refine (null dla ręcznych wpisów)
@@ -147,7 +156,7 @@ export interface MealCandidateViewModel {
 // Historia interakcji (do wyświetlenia w sekcji Refine)
 export interface InteractionLog {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: number;
 }
@@ -168,6 +177,7 @@ export interface ManualEntryData {
 Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/components/dashboard/composer/useMealComposer.ts`.
 
 **Stan hooka:**
+
 - `status`: `ComposerStatus`
 - `inputText`: string
 - `selectedImages`: string[] (base64)
@@ -176,6 +186,7 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
 - `error`: string | null
 
 **Metody hooka:**
+
 - `analyze(text, images)`: Wywołuje `POST /api/ai/analyze`. Ustawia `candidate`. (Tylko tryb AI)
 - `createManualEntry(data)`: Tworzy `candidate` z danych ręcznych, pomija analizę AI, przechodzi do stanu 'review'. (Tylko tryb Manual)
 - `refine(prompt)`: Wywołuje `POST /api/ai/refine` z `ai_context`. Aktualizuje `candidate` i `interactions`. (Tylko tryb AI)
@@ -186,6 +197,7 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
 ## 7. Integracja API
 
 ### 1. Analiza (Analyze)
+
 - **Endpoint**: `POST /api/ai/analyze`
 - **Żądanie**:
   ```typescript
@@ -197,6 +209,7 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
 - **Odpowiedź**: `AnalyzeMealResponse` (zgodnie z `src/types.ts`).
 
 ### 2. Korekta (Refine)
+
 - **Endpoint**: `POST /api/ai/refine`
 - **Żądanie**:
   ```typescript
@@ -208,6 +221,7 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
 - **Odpowiedź**: `AnalyzeMealResponse` (zaktualizowane makro i kontekst).
 
 ### 3. Zapis (Create)
+
 - **Endpoint**: `POST /api/meals`
 - **Żądanie**: `CreateMealCommand` (zgodnie z `src/types.ts`).
 - **Odpowiedź**: `Meal` (zapisany obiekt).
@@ -242,7 +256,7 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
    - Węglowodany: 0g
    - Błonnik: 0g
 4. **Przejście**: Użytkownik klika "Przejdź do podsumowania". UI przechodzi do stanu `REVIEW`.
-5. **Weryfikacja**: 
+5. **Weryfikacja**:
    - Formularz wypełniony wprowadzonymi danymi.
    - Widoczna informacja: "Posiłek dodany ręcznie. Sprawdź wartości przed zapisem."
    - Brak dymku AI, brak sekcji refine.
@@ -280,6 +294,6 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
 7. **Kontener Dialog**: Złożenie wszystkiego w `AddMealDialog` i podpięcie pod przycisk na Dashboardzie.
 8. **Obsługa zdarzeń**: Dodanie event listenera lub contextu do odświeżania listy posiłków po dodaniu.
 9. **Stylowanie i UX**: Dopracowanie animacji (Skeleton), responsywności (Dialog vs Drawer) i przełącznika trybów.
-10. **Testy manualne**: 
+10. **Testy manualne**:
     - Ścieżka AI: Tekst -> Analiza -> Korekta -> Zapis
     - Ścieżka Manual: Formularz -> Review -> Zapis

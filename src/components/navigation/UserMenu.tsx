@@ -45,7 +45,7 @@ export function UserMenu({ user }: UserMenuProps) {
           description: errorData.error || "Wystąpił błąd podczas wylogowywania.",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Błąd połączenia", {
         description: "Nie udało się nawiązać połączenia z serwerem.",
       });

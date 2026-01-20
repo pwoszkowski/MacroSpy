@@ -17,9 +17,11 @@ HistoryView (Container)
 ## Komponenty
 
 ### HistoryView
+
 Główny kontener zarządzający stanem i koordynujący wszystkie podkomponenty.
 
 **Stan:**
+
 - `selectedDate` - wybrana data
 - `isDialogOpen` - stan modala
 - `editingMeal` - posiłek w trybie edycji
@@ -27,48 +29,59 @@ Główny kontener zarządzający stanem i koordynujący wszystkie podkomponenty.
 **Hook:** Używa `useHistoryMeals` do zarządzania danymi i operacjami CRUD.
 
 ### HistoryCalendar
+
 Komponent kalendarza oparty na shadcn/ui Calendar.
 
 **Props:**
+
 - `selectedDate: Date` - wybrana data
 - `onSelectDate: (date: Date) => void` - callback zmiany daty
 
 **Features:**
+
 - Polska lokalizacja
 - Blokada dat przyszłych
 - Sticky positioning na desktop
 
 ### DaySummary
+
 Wyświetla podsumowanie makroskładników dla wybranego dnia.
 
 **Props:**
+
 - `summary: MealSummary | null` - dane podsumowania
 - `isLoading: boolean` - stan ładowania
 
 **Features:**
+
 - Responsywna siatka statystyk
 - Skeleton loading states
 - Empty state
 
 ### MealList & MealItem
+
 Lista i pojedynczy element posiłku.
 
 **MealList Props:**
+
 - `meals: MealDto[]` - lista posiłków
 - `isLoading: boolean` - stan ładowania
 - `onEdit: (meal: MealDto) => void` - callback edycji
 - `onDelete: (id: string) => void` - callback usunięcia
 
 **MealItem Features:**
+
 - Menu akcji (DropdownMenu) z opcjami Edytuj/Usuń
 - Wyświetlanie makroskładników
 - AI suggestions badge
 - Ikony z lucide-react
 
 ### MealDialog
+
 Uniwersalny modal do dodawania i edycji posiłków.
 
 **Props:**
+
 - `isOpen: boolean` - stan otwarcia
 - `onClose: () => void` - callback zamknięcia
 - `onSubmit: (data: MealFormValues) => Promise<void>` - callback zapisu
@@ -76,6 +89,7 @@ Uniwersalny modal do dodawania i edycji posiłków.
 - `defaultDate: Date` - domyślna data (dodawanie)
 
 **Features:**
+
 - react-hook-form z zod validation
 - Automatyczny reset formularza
 - Walidacja wszystkich pól
@@ -86,9 +100,11 @@ Uniwersalny modal do dodawania i edycji posiłków.
 Custom hook zarządzający danymi historii posiłków.
 
 **Params:**
+
 - `selectedDate: Date` - data do pobrania posiłków
 
 **Returns:**
+
 - `meals: MealDto[]` - lista posiłków
 - `summary: MealSummary | null` - podsumowanie dnia
 - `isLoading: boolean` - stan ładowania

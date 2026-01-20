@@ -1,13 +1,16 @@
 # Plan implementacji widoku Historia Posiłków
 
 ## 1. Przegląd
+
 Widok "Historia Posiłków" umożliwia użytkownikom przeglądanie spożytych posiłków w ujęciu dziennym, nawigację po kalendarzu oraz zarządzanie wpisami (dodawanie zaległych, edycja i usuwanie istniejących). Jest to realizacja wymagania US-009, mająca na celu utrzymanie porządku w dzienniku żywieniowym.
 
 ## 2. Routing widoku
+
 - **Ścieżka:** `/history`
 - **Plik strony:** `src/pages/history.astro` (kontener dla aplikacji React)
 
 ## 3. Struktura komponentów
+
 Głównym kontenerem będzie komponent React osadzony w stronie Astro.
 
 ```text
@@ -25,12 +28,14 @@ src/pages/history.astro
 ## 4. Szczegóły komponentów
 
 ### 1. `HistoryView.tsx` (Container)
+
 - **Opis:** Główny komponent zarządzający stanem wybranej daty, pobieraniem danych i koordynacją akcji (otwieranie modala).
 - **Główne elementy:** Wrapper layoutu, przekazuje stan do dzieci.
 - **Obsługiwane interakcje:** Zmiana daty, odświeżenie danych po mutacji.
 - **Stan:** `selectedDate`, `meals` (data), `summary` (data), `isLoading`, `error`.
 
 ### 2. `HistoryCalendar.tsx`
+
 - **Opis:** Komponent wizualny kalendarza (oparty na `shadcn/calendar`) pozwalający na wybór dnia.
 - **Propsy:**
   - `selectedDate: Date`
@@ -38,6 +43,7 @@ src/pages/history.astro
 - **UX:** Powinien być zawsze widoczny (lub łatwo dostępny), z wyraźnym zaznaczeniem aktywnego dnia.
 
 ### 3. `DaySummary.tsx`
+
 - **Opis:** Karta podsumowująca makroskładniki dla wybranego dnia.
 - **Propsy:**
   - `summary: MealSummary | null`
@@ -45,6 +51,7 @@ src/pages/history.astro
 - **Główne elementy:** Paski postępu (Progress Bar) lub proste liczniki dla Kalorii, Białka, Tłuszczy, Węglowodanów.
 
 ### 4. `MealList.tsx` & `MealItem.tsx`
+
 - **Opis:** Lista renderująca posiłki. Obsługuje stan pusty.
 - **Propsy:**
   - `meals: MealDto[]`
@@ -53,6 +60,7 @@ src/pages/history.astro
 - **Elementy `MealItem`:** Nazwa, godzina, kalorie, makro (skrótowo), przycisk menu akcji (DropdownMenu).
 
 ### 5. `MealDialog.tsx`
+
 - **Opis:** Uniwersalny modal do tworzenia i edycji posiłków.
 - **Propsy:**
   - `isOpen: boolean`
@@ -68,13 +76,16 @@ src/pages/history.astro
 ## 5. Typy
 
 ### DTO (zgodne z `src/types.ts`)
+
 Wkorzystujemy istniejące typy:
+
 - `MealDto`
 - `MealSummary`
 - `CreateMealCommand`
 - `UpdateMealCommand`
 
 ### View Models & Form Schemas
+
 ```typescript
 // Schema dla formularza edycji/dodawania
 export const mealFormSchema = z.object({
@@ -99,10 +110,11 @@ const useHistoryMeals = (date: Date) => {
   // Logika fetchowania z użyciem useEffect lub React Query (jeśli dostępne)
   // URL: `/api/meals?date=${format(date, 'yyyy-MM-dd')}`
   // Zwraca: { meals, summary, isLoading, refresh, deleteMeal, updateMeal, createMeal }
-}
+};
 ```
 
 Stan lokalny w `HistoryView`:
+
 - `selectedDate`: `useState<Date>(new Date())`
 - `isModalOpen`: `useState<boolean>(false)`
 - `editingMeal`: `useState<MealDto | null>(null)` (jeśli null -> tryb dodawania)
@@ -110,20 +122,24 @@ Stan lokalny w `HistoryView`:
 ## 7. Integracja API
 
 ### Pobieranie danych (GET)
+
 - **Endpoint:** `/api/meals?date=YYYY-MM-DD`
 - **Metoda:** `fetch`
 - **Format daty:** `yyyy-MM-dd` (uwaga na strefy czasowe, formatować lokalnie).
 
 ### Dodawanie (POST)
+
 - **Endpoint:** `/api/meals`
 - **Body:** `CreateMealCommand`
 - **Ważne:** Pole `consumed_at` musi zawierać pełną datę i godzinę. Jeśli dodajemy posiłek do przeszłości, data musi się zgadzać z wybranym dniem w kalendarzu.
 
 ### Edycja (PATCH)
+
 - **Endpoint:** `/api/meals/[id]`
 - **Body:** `UpdateMealCommand` (częściowe dane, np. tylko zmienione makro).
 
 ### Usuwanie (DELETE)
+
 - **Endpoint:** `/api/meals/[id]`
 - **Reakcja:** Po sukcesie usunięcia, należy przeładować listę lub usunąć element lokalnie.
 

@@ -23,7 +23,7 @@ interface UseMealComposerReturn {
   analyze: (text: string, images: string[]) => Promise<void>;
   createManualEntry: (data: ManualEntryData) => void;
   refine: (prompt: string) => Promise<void>;
-  updateCandidate: (field: keyof MealCandidateViewModel, value: any) => void;
+  updateCandidate: (field: keyof MealCandidateViewModel, value: number | string) => void;
   save: () => Promise<void>;
   reset: () => void;
 }
@@ -188,7 +188,7 @@ export function useMealComposer(onSuccess?: () => void): UseMealComposerReturn {
   );
 
   const updateCandidate = useCallback(
-    (field: keyof MealCandidateViewModel, value: any) => {
+    (field: keyof MealCandidateViewModel, value: number | string) => {
       if (!candidate) return;
 
       setCandidate({

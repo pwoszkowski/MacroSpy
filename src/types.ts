@@ -109,7 +109,7 @@ export interface CreateMealCommand {
   ai_suggestion?: string | null;
   original_prompt?: string | null;
   is_image_analyzed?: boolean | null;
-  last_ai_context?: any | null;
+  last_ai_context?: unknown | null;
 }
 
 /**

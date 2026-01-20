@@ -26,7 +26,7 @@ export function MealList({ meals, onMealClick }: MealListProps) {
   }
 
   return (
-    <ul className="space-y-3" role="list" aria-label="Lista posiłków">
+    <ul className="space-y-3" aria-label="Lista posiłków">
       {meals.map((meal) => (
         <li key={meal.id}>
           <MealCard meal={meal} onClick={() => onMealClick?.(meal.id)} />

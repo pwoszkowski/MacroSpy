@@ -6,66 +6,58 @@ Celem niniejszego planu jest zapewnienie wysokiej jakości aplikacji webowej **M
 
 Głównym priorytetem jest weryfikacja poprawności działania kluczowych funkcjonalności:
 
-* Analizy posiłków przy użyciu AI (tekst i obraz).
-* Algorytmów obliczania zapotrzebowania kalorycznego (TDEE).
-* Integracji z bazą danych Supabase (bezpieczeństwo i spójność danych).
-* Responsywności interfejsu (specyficzne zachowanie mobile vs desktop).
+- Analizy posiłków przy użyciu AI (tekst i obraz).
+- Algorytmów obliczania zapotrzebowania kalorycznego (TDEE).
+- Integracji z bazą danych Supabase (bezpieczeństwo i spójność danych).
+- Responsywności interfejsu (specyficzne zachowanie mobile vs desktop).
 
 ## 2. Zakres testów
 
 **W zakresie (In-Scope):**
 
-* **Frontend:** Interfejs użytkownika, walidacja formularzy (Zod), responsywność (Tailwind CSS), działanie komponentów React wewnątrz Astro.
-* **Backend/API:** Endpoints w katalogu `src/pages/api/` (proxy do AI, operacje na bazie danych).
-* **Integracje:** Supabase (Auth, DB), OpenRouter/OpenAI (analiza posiłków), Web Speech API.
-* **Logika Biznesowa:** Obliczanie makroskładników, TDEE, obsługa historii pomiarów.
+- **Frontend:** Interfejs użytkownika, walidacja formularzy (Zod), responsywność (Tailwind CSS), działanie komponentów React wewnątrz Astro.
+- **Backend/API:** Endpoints w katalogu `src/pages/api/` (proxy do AI, operacje na bazie danych).
+- **Integracje:** Supabase (Auth, DB), OpenRouter/OpenAI (analiza posiłków), Web Speech API.
+- **Logika Biznesowa:** Obliczanie makroskładników, TDEE, obsługa historii pomiarów.
 
 **Poza zakresem (Out-of-Scope):**
 
-* Testy wydajnościowe infrastruktury Supabase (polegamy na SLA dostawcy).
-* Weryfikacja merytoryczna porad dietetycznych generowanych przez AI (skupiamy się na poprawności technicznej struktury JSON i obsłudze odpowiedzi).
-* Testy bezpieczeństwa samego modelu LLM (Prompt Injection testing jest opcjonalny w tej fazie).
+- Testy wydajnościowe infrastruktury Supabase (polegamy na SLA dostawcy).
+- Weryfikacja merytoryczna porad dietetycznych generowanych przez AI (skupiamy się na poprawności technicznej struktury JSON i obsłudze odpowiedzi).
+- Testy bezpieczeństwa samego modelu LLM (Prompt Injection testing jest opcjonalny w tej fazie).
 
 ## 3. Typy testów do przeprowadzenia
 
 ### 3.1. Testy Jednostkowe (Unit Tests)
 
-* **Cel:** Weryfikacja izolowanej logiki biznesowej.
-* **Kluczowe obszary:**
-* Schematy walidacji (`src/**/schemas.ts`).
-* Custom hooki: `useMealComposer`, `useMeasurements`, `useHistoryMeals`.
-* Funkcje użytkowe i konwertery danych.
-
-
+- **Cel:** Weryfikacja izolowanej logiki biznesowej.
+- **Kluczowe obszary:**
+- Schematy walidacji (`src/**/schemas.ts`).
+- Custom hooki: `useMealComposer`, `useMeasurements`, `useHistoryMeals`.
+- Funkcje użytkowe i konwertery danych.
 
 ### 3.2. Testy Integracyjne
 
-* **Cel:** Weryfikacja współpracy między modułami a API.
-* **Kluczowe obszary:**
-* Przesyłanie danych z formularzy do API Routes.
-* Obsługa odpowiedzi z serwisów AI (mockowanie odpowiedzi z OpenRouter).
-* Sprawdzenie flow autoryzacji (Middleware + Supabase Auth).
-
-
+- **Cel:** Weryfikacja współpracy między modułami a API.
+- **Kluczowe obszary:**
+- Przesyłanie danych z formularzy do API Routes.
+- Obsługa odpowiedzi z serwisów AI (mockowanie odpowiedzi z OpenRouter).
+- Sprawdzenie flow autoryzacji (Middleware + Supabase Auth).
 
 ### 3.3. Testy End-to-End (E2E)
 
-* **Cel:** Symulacja pełnych ścieżek użytkownika w przeglądarce.
-* **Kluczowe obszary:**
-* Proces rejestracji i onboardingu.
-* Dodawanie posiłku (ścieżka Happy Path).
-* Edycja profilu i celów.
-
-
+- **Cel:** Symulacja pełnych ścieżek użytkownika w przeglądarce.
+- **Kluczowe obszary:**
+- Proces rejestracji i onboardingu.
+- Dodawanie posiłku (ścieżka Happy Path).
+- Edycja profilu i celów.
 
 ### 3.4. Testy UI/UX i Responsywności
 
-* **Cel:** Weryfikacja adaptacji interfejsu do różnych ekranów.
-* **Kluczowe obszary:**
-* Przełączanie między `Drawer` (Mobile) a `Dialog` (Desktop) w `AddMealDialog`.
-* Wyświetlanie wykresów (`Recharts`) na małych ekranach.
-
-
+- **Cel:** Weryfikacja adaptacji interfejsu do różnych ekranów.
+- **Kluczowe obszary:**
+- Przełączanie między `Drawer` (Mobile) a `Dialog` (Desktop) w `AddMealDialog`.
+- Wyświetlanie wykresów (`Recharts`) na małych ekranach.
 
 ## 4. Scenariusze testowe dla kluczowych funkcjonalności
 
@@ -73,9 +65,9 @@ Głównym priorytetem jest weryfikacja poprawności działania kluczowych funkcj
 
 Jest to najbardziej krytyczny element systemu.
 
-| ID | Tytuł Scenariusza | Kroki Testowe | Oczekiwany Rezultat |
-| --- | --- | --- | --- |
-| **MC-01** | Analiza posiłku (Tekst) | 1. Otwórz kreator (+).<br>
+| ID        | Tytuł Scenariusza       | Kroki Testowe              | Oczekiwany Rezultat |
+| --------- | ----------------------- | -------------------------- | ------------------- |
+| **MC-01** | Analiza posiłku (Tekst) | 1. Otwórz kreator (+).<br> |
 
 <br>2. Wybierz tryb "Analiza AI".<br>
 
@@ -101,9 +93,9 @@ Jest to najbardziej krytyczny element systemu.
 
 Kluczowy dla poprawnego działania algorytmów dashboardu.
 
-| ID | Tytuł Scenariusza | Kroki Testowe | Oczekiwany Rezultat |
-| --- | --- | --- | --- |
-| **ON-01** | Pełny proces Onboardingu | 1. Zarejestruj nowego użytkownika.<br>
+| ID        | Tytuł Scenariusza        | Kroki Testowe                          | Oczekiwany Rezultat |
+| --------- | ------------------------ | -------------------------------------- | ------------------- |
+| **ON-01** | Pełny proces Onboardingu | 1. Zarejestruj nowego użytkownika.<br> |
 
 <br>2. Przejdź 3 kroki kreatora (Bio, Aktywność, Cele). | Użytkownik przekierowany na Dashboard, dane zapisane w tabelach `profiles`, `dietary_goals`. |
 | **ON-02** | Walidacja wieku | 1. Wpisz datę urodzenia wskazującą na wiek < 10 lat lub > 120 lat. | Blokada przejścia dalej, komunikat błędu. |
@@ -115,9 +107,9 @@ Kluczowy dla poprawnego działania algorytmów dashboardu.
 
 Weryfikacja wizualizacji i spójności danych.
 
-| ID | Tytuł Scenariusza | Kroki Testowe | Oczekiwany Rezultat |
-| --- | --- | --- | --- |
-| **DB-01** | Sumowanie Makro | 1. Dodaj posiłek 500 kcal.<br>
+| ID        | Tytuł Scenariusza | Kroki Testowe                  | Oczekiwany Rezultat |
+| --------- | ----------------- | ------------------------------ | ------------------- |
+| **DB-01** | Sumowanie Makro   | 1. Dodaj posiłek 500 kcal.<br> |
 
 <br>2. Dodaj posiłek 300 kcal. | `CaloriesRing` pokazuje 800 kcal / Cel. Paski postępu są zaktualizowane. |
 | **DB-02** | Zmiana Daty | 1. Zmień datę na wczorajszą.<br>
@@ -129,29 +121,27 @@ Weryfikacja wizualizacji i spójności danych.
 
 ### 4.4. Pomiary Ciała (Measurements)
 
-| ID | Tytuł Scenariusza | Kroki Testowe | Oczekiwany Rezultat |
-| --- | --- | --- | --- |
-| **MS-01** | Wykres Postępów | 1. Dodaj pomiary z 3 różnych dni. | Wykres liniowy poprawnie rysuje punkty w czasie. |
-| **MS-02** | Walidacja Danych | 1. Spróbuj dodać pomiar z datą przyszłą. | Walidacja Zod blokuje zapis. |
+| ID        | Tytuł Scenariusza | Kroki Testowe                            | Oczekiwany Rezultat                              |
+| --------- | ----------------- | ---------------------------------------- | ------------------------------------------------ |
+| **MS-01** | Wykres Postępów   | 1. Dodaj pomiary z 3 różnych dni.        | Wykres liniowy poprawnie rysuje punkty w czasie. |
+| **MS-02** | Walidacja Danych  | 1. Spróbuj dodać pomiar z datą przyszłą. | Walidacja Zod blokuje zapis.                     |
 
 ## 5. Środowisko testowe
 
-* **Lokalne (Development):** Uruchomienie `npm run dev` z lokalną bazą danych Supabase (lub połączoną z projektem "Dev" w chmurze).
-* **Staging:** Wersja produkcyjna aplikacji (build) podłączona do oddzielnej instancji Supabase (z danymi testowymi), aby nie nadpisywać danych produkcyjnych.
-* **Przeglądarki:**
-* Chrome (Latest) - główne środowisko.
-* Safari (iOS/macOS) - weryfikacja Web Speech API i styli iOS.
-* Firefox (Latest).
-
-
+- **Lokalne (Development):** Uruchomienie `npm run dev` z lokalną bazą danych Supabase (lub połączoną z projektem "Dev" w chmurze).
+- **Staging:** Wersja produkcyjna aplikacji (build) podłączona do oddzielnej instancji Supabase (z danymi testowymi), aby nie nadpisywać danych produkcyjnych.
+- **Przeglądarki:**
+- Chrome (Latest) - główne środowisko.
+- Safari (iOS/macOS) - weryfikacja Web Speech API i styli iOS.
+- Firefox (Latest).
 
 ## 6. Narzędzia do testowania
 
-* **Vitest:** Do testów jednostkowych i integracyjnych (logika, hooki, utility).
-* **Playwright:** Do testów E2E (pełne ścieżki użytkownika, testy screenshotów dla wykresów).
-* **React Testing Library:** Do testowania komponentów (formularze, interakcje w izolacji).
-* **ESLint / Prettier / Husky:** Statyczna analiza kodu uruchamiana przed commitem (`pre-commit`).
-* **Chrome DevTools:** Emulacja urządzeń mobilnych (weryfikacja responsywności i komponentów Drawer vs Dialog).
+- **Vitest:** Do testów jednostkowych i integracyjnych (logika, hooki, utility).
+- **Playwright:** Do testów E2E (pełne ścieżki użytkownika, testy screenshotów dla wykresów).
+- **React Testing Library:** Do testowania komponentów (formularze, interakcje w izolacji).
+- **ESLint / Prettier / Husky:** Statyczna analiza kodu uruchamiana przed commitem (`pre-commit`).
+- **Chrome DevTools:** Emulacja urządzeń mobilnych (weryfikacja responsywności i komponentów Drawer vs Dialog).
 
 ## 7. Harmonogram testów
 
@@ -164,16 +154,16 @@ Testy są integralną częścią procesu CI/CD:
 
 ## 8. Kryteria akceptacji testów
 
-* Wszystkie testy automatyczne (Unit, Integration) muszą przechodzić (100% pass rate).
-* Testy E2E dla ścieżek krytycznych (Rejestracja, Dodanie Posiłku) muszą przechodzić.
-* Brak błędów krytycznych (blokujących działanie aplikacji) i wysokich (utrudniających główne funkcje).
-* Aplikacja poprawnie renderuje się na mobile (360px+) i desktopie.
-* AI Meal Composer obsługuje błędy sieciowe w sposób przyjazny dla użytkownika (Graceful Degradation).
+- Wszystkie testy automatyczne (Unit, Integration) muszą przechodzić (100% pass rate).
+- Testy E2E dla ścieżek krytycznych (Rejestracja, Dodanie Posiłku) muszą przechodzić.
+- Brak błędów krytycznych (blokujących działanie aplikacji) i wysokich (utrudniających główne funkcje).
+- Aplikacja poprawnie renderuje się na mobile (360px+) i desktopie.
+- AI Meal Composer obsługuje błędy sieciowe w sposób przyjazny dla użytkownika (Graceful Degradation).
 
 ## 9. Role i odpowiedzialności
 
-* **QA Engineer:** Tworzenie planu testów, pisanie testów automatycznych E2E, testy manualne/eksploracyjne, raportowanie błędów.
-* **Developer:** Pisanie testów jednostkowych dla tworzonych komponentów/funkcji, utrzymanie zgodności z TypeScript, naprawa zgłoszonych błędów.
+- **QA Engineer:** Tworzenie planu testów, pisanie testów automatycznych E2E, testy manualne/eksploracyjne, raportowanie błędów.
+- **Developer:** Pisanie testów jednostkowych dla tworzonych komponentów/funkcji, utrzymanie zgodności z TypeScript, naprawa zgłoszonych błędów.
 
 ## 10. Procedury raportowania błędów
 

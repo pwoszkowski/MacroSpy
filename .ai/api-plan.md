@@ -4,13 +4,13 @@ This document outlines the REST API architecture for MacroSpy. The API is implem
 
 ## 1. Resources
 
-| Resource | DB Table | Description |
-| :--- | :--- | :--- |
-| **Profile** | `profiles` | User bio-data (height, gender, DOB) linked to Auth. |
-| **Goals** | `dietary_goals` | Historic and current nutritional targets. |
-| **Meals** | `meals` | Food entries with macro data. |
-| **AI Analysis** | N/A (Stateless) | Ephemeral resource for analyzing text/images via AI. |
-| **Measurements** | `body_measurements` | Weight and body composition logs. |
+| Resource         | DB Table            | Description                                          |
+| :--------------- | :------------------ | :--------------------------------------------------- |
+| **Profile**      | `profiles`          | User bio-data (height, gender, DOB) linked to Auth.  |
+| **Goals**        | `dietary_goals`     | Historic and current nutritional targets.            |
+| **Meals**        | `meals`             | Food entries with macro data.                        |
+| **AI Analysis**  | N/A (Stateless)     | Ephemeral resource for analyzing text/images via AI. |
+| **Measurements** | `body_measurements` | Weight and body composition logs.                    |
 
 ---
 
@@ -21,7 +21,9 @@ This document outlines the REST API architecture for MacroSpy. The API is implem
 These endpoints handle the interaction with the LLM (grok-4.1-fast). They do not write to the database directly but return structured data for the user to review.
 
 #### **Analyze Meal**
+
 Analyzes text or images to estimate macros.
+
 - **Method:** `POST`
 - **URL:** `/api/ai/analyze`
 - **Description:** Takes text prompt and/or image base64, sends to AI, returns estimated macros, assistant commentary, and passive suggestions.
@@ -48,7 +50,9 @@ Analyzes text or images to estimate macros.
   ```
 
 #### **Refine Meal (Chat)**
+
 Allows the user to correct the AI's estimation via natural language.
+
 - **Method:** `POST`
 - **URL:** `/api/ai/refine`
 - **Description:** Takes previous context and a correction prompt to recalculate macros.
@@ -62,7 +66,9 @@ Allows the user to correct the AI's estimation via natural language.
 - **Response Body:** Same structure as `/api/ai/analyze` (updates macros, response, and suggestion).
 
 #### **Calculate TDEE**
+
 Calculates caloric needs based on biometrics (Onboarding).
+
 - **Method:** `POST`
 - **URL:** `/api/ai/calculate-tdee`
 - **Description:** Stateless calculator using standard formulas (Mifflin-St Jeor) and AI suggestions for macro splits.
@@ -96,6 +102,7 @@ Calculates caloric needs based on biometrics (Onboarding).
 ### 2.2. Meals (Journal)
 
 #### **List Meals**
+
 - **Method:** `GET`
 - **URL:** `/api/meals`
 - **Query Params:** `?date=YYYY-MM-DD` (Defaults to today)
@@ -126,6 +133,7 @@ Calculates caloric needs based on biometrics (Onboarding).
   ```
 
 #### **Create Meal**
+
 - **Method:** `POST`
 - **URL:** `/api/meals`
 - **Description:** Saves a verified meal to the database.
@@ -148,12 +156,14 @@ Calculates caloric needs based on biometrics (Onboarding).
 - **Response:** `201 Created` with created object.
 
 #### **Update Meal**
+
 - **Method:** `PATCH`
 - **URL:** `/api/meals/[id]`
 - **Request Body:** Partial meal object (e.g., changing time or macros including `fiber`).
 - **Response:** `200 OK`.
 
 #### **Delete Meal**
+
 - **Method:** `DELETE`
 - **URL:** `/api/meals/[id]`
 - **Response:** `204 No Content`.
@@ -163,9 +173,10 @@ Calculates caloric needs based on biometrics (Onboarding).
 ### 2.3. Dietary Goals & Profile
 
 #### **Get Current Profile & Goal**
+
 - **Method:** `GET`
 - **URL:** `/api/profile/me`
-- **Description:** Returns user bio-data and the *currently active* dietary goal.
+- **Description:** Returns user bio-data and the _currently active_ dietary goal.
 - **Response Body:**
   ```json
   {
@@ -182,6 +193,7 @@ Calculates caloric needs based on biometrics (Onboarding).
   ```
 
 #### **Update Profile (Bio-data)**
+
 - **Method:** `PUT`
 - **URL:** `/api/profile`
 - **Request Body:**
@@ -194,6 +206,7 @@ Calculates caloric needs based on biometrics (Onboarding).
   ```
 
 #### **Set New Dietary Goal**
+
 - **Method:** `POST`
 - **URL:** `/api/goals`
 - **Description:** Creates a new entry in `dietary_goals` effective from a specific date.
@@ -214,12 +227,14 @@ Calculates caloric needs based on biometrics (Onboarding).
 ### 2.4. Body Measurements
 
 #### **List Measurements**
+
 - **Method:** `GET`
 - **URL:** `/api/measurements`
 - **Query Params:** `?limit=30` (default)
 - **Response Body:** Array of measurement objects sorted by date DESC.
 
 #### **Log Measurement**
+
 - **Method:** `POST`
 - **URL:** `/api/measurements`
 - **Request Body:**
@@ -233,6 +248,7 @@ Calculates caloric needs based on biometrics (Onboarding).
   ```
 
 #### **Delete Measurement**
+
 - **Method:** `DELETE`
 - **URL:** `/api/measurements/{id}`
 - **Response:** `204 No Content`
@@ -256,6 +272,7 @@ Calculates caloric needs based on biometrics (Onboarding).
 ## 4. Validation & Business Logic
 
 ### 4.1. Validation Rules (Zod Schemas)
+
 All incoming requests will be validated using **Zod** before processing.
 
 - **Global:**

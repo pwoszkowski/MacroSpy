@@ -25,7 +25,6 @@ export const MeasurementsSummary = memo(function MeasurementsSummary({ latest, p
   }
 
   const weightChange = previous ? latest.weight - previous.weight : null;
-  const bmi = latest.weight / Math.pow(1.75, 2); // Placeholder - ideally get height from profile
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

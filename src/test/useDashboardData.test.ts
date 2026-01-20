@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { useDashboardData } from "../components/hooks/useDashboardData";
-import { format } from "date-fns";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -51,20 +50,24 @@ describe("useDashboardData", () => {
     it("powinien ponownie pobrać dane", async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          ...mockMealData,
-          data: [...mockMealData.data, {
-            id: "2",
-            name: "Dodany posiłek",
-            calories: 200,
-            protein: 10,
-            fat: 8,
-            carbs: 25,
-            fiber: 3,
-            ai_suggestion: null,
-            consumed_at: "2024-01-18T15:00:00Z",
-          }],
-        }),
+        json: () =>
+          Promise.resolve({
+            ...mockMealData,
+            data: [
+              ...mockMealData.data,
+              {
+                id: "2",
+                name: "Dodany posiłek",
+                calories: 200,
+                protein: 10,
+                fat: 8,
+                carbs: 25,
+                fiber: 3,
+                ai_suggestion: null,
+                consumed_at: "2024-01-18T15:00:00Z",
+              },
+            ],
+          }),
       });
 
       const today = new Date();

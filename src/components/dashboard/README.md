@@ -19,48 +19,61 @@ DashboardContainer (główny kontener)
 ## Komponenty
 
 ### DashboardContainer
+
 Główny kontener zarządzający stanem i integrujący wszystkie subkomponenty.
 
 **Props:**
+
 - `initialMeals: MealListResponse` - dane SSR dla dzisiejszego dnia
 - `userProfile: UserProfileResponse` - profil użytkownika z celami
 
 ### DateHeader
+
 Sticky header z wybraną datą i selektorem dni.
 
 **Props:**
+
 - `selectedDate: Date`
 - `onDateChange: (date: Date) => void`
 
 ### DaySelector
+
 Horizontal scroll z ostatnimi 7 dniami + kalendarz w popover.
 
 ### NutritionSummary
+
 Wizualizacja postępu kalorii, makroskładników i błonnika.
 
 **Props:**
+
 - `current: MealSummary` - spożyte wartości
 - `targets: DietaryGoalDto | null` - cele żywieniowe
 
 **Wyświetla:**
+
 - CaloriesRing - pierścień kalorii
 - MacroBars - 4 paski: białko, tłuszcze, węglowodany, błonnik
 
 ### MealList
+
 Lista kart posiłków z empty state.
 
 **Props:**
+
 - `meals: MealDto[]`
 - `onMealClick?: (mealId: string) => void`
 
 ### MealCard
+
 Karta pojedynczego posiłku z makro, błonnikiem i sugestią AI.
 
 **Props:**
+
 - `meal: MealDto`
 - `onClick?: () => void`
 
 **Wyświetla:**
+
 - Nazwę posiłku i godzinę spożycia
 - 5 wartości odżywczych w siatce: kalorie, białko, tłuszcze, węglowodany, błonnik
 - Badge z sugestią AI (jeśli dostępna)
@@ -68,27 +81,33 @@ Karta pojedynczego posiłku z makro, błonnikiem i sugestią AI.
 **Uwaga:** Błonnik wyświetla "-" jeśli wartość jest niedostępna (null/undefined)
 
 ### AddMealFAB
+
 Floating Action Button do szybkiego dodawania posiłków.
 
 **Props:**
+
 - `onClick: () => void`
 
 ## Skeleton States
 
 Dla lepszego UX podczas ładowania:
+
 - `SkeletonNutritionSummary`
 - `SkeletonMealCard`
 
 ## Hook
 
 ### useDashboardData
+
 Custom hook do zarządzania danymi posiłków.
 
 **Parametry:**
+
 - `selectedDate: Date`
 - `initialData?: MealListResponse`
 
 **Zwraca:**
+
 - `data: MealListResponse | null`
 - `isLoading: boolean`
 - `error: string | null`

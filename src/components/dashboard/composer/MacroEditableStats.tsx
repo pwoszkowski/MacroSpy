@@ -4,7 +4,7 @@ import type { MealCandidateViewModel } from "./types";
 
 interface MacroEditableStatsProps {
   candidate: MealCandidateViewModel;
-  onChange: (field: keyof MealCandidateViewModel, value: any) => void;
+  onChange: (field: keyof MealCandidateViewModel, value: number | string) => void;
   disabled?: boolean;
 }
 

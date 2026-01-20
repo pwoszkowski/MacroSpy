@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { useVoiceInput } from "../components/hooks/useVoiceInput";
 
 // Mock dla Web Speech API
@@ -11,10 +11,10 @@ const mockSpeechRecognition = {
   continuous: false,
   interimResults: true,
   maxAlternatives: 1,
-  onstart: null as any,
-  onresult: null as any,
-  onend: null as any,
-  onerror: null as any,
+  onstart: null as ((this: SpeechRecognition, ev: Event) => void) | null,
+  onresult: null as ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null,
+  onend: null as ((this: SpeechRecognition, ev: Event) => void) | null,
+  onerror: null as ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null,
 };
 
 const mockSpeechRecognitionConstructor = vi.fn().mockImplementation(() => mockSpeechRecognition);
@@ -271,7 +271,7 @@ describe("useVoiceInput", () => {
         const mockResults = {
           0: mockResult1,
           1: mockResult2,
-          item: vi.fn((index: number) => index === 0 ? mockResult1 : mockResult2),
+          item: vi.fn((index: number) => (index === 0 ? mockResult1 : mockResult2)),
           length: 2,
         };
 

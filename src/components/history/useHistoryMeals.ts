@@ -64,9 +64,6 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
         }
 
         await fetchMeals();
-      } catch (err) {
-        throw err;
-      }
     },
     [fetchMeals]
   );
@@ -88,9 +85,6 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
         }
 
         await fetchMeals();
-      } catch (err) {
-        throw err;
-      }
     },
     [fetchMeals]
   );
@@ -108,9 +102,6 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
         }
 
         await fetchMeals();
-      } catch (err) {
-        throw err;
-      }
     },
     [fetchMeals]
   );

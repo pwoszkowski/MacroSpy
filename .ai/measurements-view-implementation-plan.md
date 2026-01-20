@@ -1,9 +1,11 @@
 # Plan implementacji widoku Pomiarów Ciała
 
 ## 1. Przegląd
+
 Widok "Pomiary Ciała" (`/measurements`) służy do monitorowania postępów użytkownika w zakresie wagi oraz składu ciała (tkanka tłuszczowa, masa mięśniowa). Umożliwia przeglądanie historii pomiarów na interaktywnych wykresach i w tabeli, a także dodawanie nowych wpisów (również z datą wsteczną). Jest to realizacja wymagania US-010 (Should Have).
 
 ## 2. Routing widoku
+
 - **Ścieżka:** `/measurements`
 - **Plik Astro:** `src/pages/measurements/index.astro`
 - **Dostęp:** Wymaga zalogowania (Chroniony przez middleware).
@@ -26,6 +28,7 @@ src/pages/measurements/index.astro (Page Wrapper)
 ## 4. Szczegóły komponentów
 
 ### 1. `MeasurementsDashboard` (Container)
+
 - **Opis:** Główny kontener zarządzający stanem widoku (pobieranie danych, otwieranie modala).
 - **Główne elementy:** Wrapper `div` z `className="space-y-6"`, nagłówek z przyciskiem "Dodaj pomiar".
 - **Interakcje:**
@@ -34,17 +37,20 @@ src/pages/measurements/index.astro (Page Wrapper)
 - **Typy:** Zarządza listą `MeasurementDto[]`.
 
 ### 2. `MeasurementsSummary`
+
 - **Opis:** Komponent wyświetlający kluczowe metryki w formie kart (np. "Aktualna waga", "Ostatnie BMI", "Zmiana od początku").
 - **Główne elementy:** `Card` (Shadcn), `lucide-react` icons.
 - **Props:** `latest: MeasurementDto | null`, `previous: MeasurementDto | null`.
 
 ### 3. `MeasurementsChart`
+
 - **Opis:** Wizualizacja trendów w czasie. Użytkownik może przełączać się między widokiem wagi a składu ciała.
 - **Główne elementy:** `ResponsiveContainer`, `LineChart`, `XAxis`, `YAxis`, `Tooltip`, `Area` (Recharts). Przełącznik (Tabs/ToggleGroup) do zmiany typu wykresu.
 - **Props:** `data: MeasurementDto[]`.
 - **Logika:** Sortowanie danych chronologicznie (API zwraca DESC, wykres potrzebuje ASC). Formatowanie daty na osi X.
 
 ### 4. `MeasurementLogDialog` & `MeasurementForm`
+
 - **Opis:** Modal zawierający formularz dodawania pomiaru.
 - **Główne elementy:** `Dialog`, `DialogContent`, `DialogHeader`, `Input` (type="number"), `Input` (type="date"), `Button`.
 - **Biblioteki:** `react-hook-form`, `zod`, `@hookform/resolvers/zod`.
@@ -56,6 +62,7 @@ src/pages/measurements/index.astro (Page Wrapper)
 - **Props:** `isOpen: boolean`, `onClose: () => void`, `onSuccess: () => void`.
 
 ### 5. `MeasurementsHistory`
+
 - **Opis:** Tabela lub lista (na mobile) wyświetlająca historię pomiarów z możliwością usuwania.
 - **Główne elementy:** `Table`, `TableHeader`, `TableRow`, `TableCell`, `AlertDialog` (Shadcn), przycisk usuwania z ikoną `Trash2` (lucide-react).
 - **Props:** `data: MeasurementDto[]`, `onDelete: (measurementId: string) => Promise<void>`.
@@ -90,6 +97,7 @@ export type MeasurementFormValues = z.infer<typeof measurementFormSchema>;
 Zalecane użycie customowego hooka `useMeasurements` wewnątrz `MeasurementsDashboard`.
 
 ### `useMeasurements`
+
 - **State:**
   - `measurements`: `MeasurementDto[]`
   - `isLoading`: `boolean`
@@ -102,11 +110,13 @@ Zalecane użycie customowego hooka `useMeasurements` wewnątrz `MeasurementsDash
 ## 7. Integracja API
 
 ### Pobieranie danych (GET)
+
 - **Endpoint:** `/api/measurements?limit=30`
 - **Response:** `MeasurementDto[]`
 - **Obsługa:** Parsowanie JSON, obsługa błędów sieci.
 
 ### Dodawanie danych (POST)
+
 - **Endpoint:** `/api/measurements`
 - **Body:**
   ```json
@@ -121,6 +131,7 @@ Zalecane użycie customowego hooka `useMeasurements` wewnątrz `MeasurementsDash
 - **Error:** Wyświetlenie błędu w formularzu lub toast error.
 
 ### Usuwanie danych (DELETE)
+
 - **Endpoint:** `/api/measurements/{id}`
 - **Response:** `204 No Content`
 - **Success:** Odświeżenie listy pomiarów, zamknięcie dialogu potwierdzenia, toast success.

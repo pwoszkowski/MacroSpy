@@ -57,7 +57,7 @@ export function MealList({ meals, isLoading, onEdit, onDelete }: MealListProps) 
   }
 
   return (
-    <ul className="space-y-3" role="list" aria-label="Lista posiłków">
+    <ul className="space-y-3" aria-label="Lista posiłków">
       {meals.map((meal) => (
         <li key={meal.id}>
           <MealItem meal={meal} onEdit={onEdit} onDelete={onDelete} />

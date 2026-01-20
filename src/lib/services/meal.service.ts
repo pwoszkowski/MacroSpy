@@ -86,7 +86,7 @@ export class MealService {
    */
   async updateMeal(userId: string, mealId: string, command: UpdateMealCommand): Promise<MealDto | null> {
     // Build update object with only provided fields
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, unknown> = {};
 
     if (command.name !== undefined) updateData.name = command.name;
     if (command.calories !== undefined) updateData.calories = command.calories;
