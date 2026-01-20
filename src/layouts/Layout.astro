@@ -21,6 +21,7 @@ const user = Astro.locals.user || null;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <script is:inline>
+      // eslint-disable-next-line prettier/prettier
       // Inicjalizacja motywu przed renderowaniem, aby uniknąć flashowania
       (function () {
         const theme = localStorage.getItem("theme") || "system";

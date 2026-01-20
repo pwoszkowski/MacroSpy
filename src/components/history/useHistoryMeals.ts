@@ -64,6 +64,9 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
         }
 
         await fetchMeals();
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Nie udało się dodać posiłku");
+      }
     },
     [fetchMeals]
   );
@@ -85,6 +88,9 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
         }
 
         await fetchMeals();
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Nie udało się zaktualizować posiłku");
+      }
     },
     [fetchMeals]
   );
@@ -102,6 +108,9 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
         }
 
         await fetchMeals();
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Nie udało się usunąć posiłku");
+      }
     },
     [fetchMeals]
   );

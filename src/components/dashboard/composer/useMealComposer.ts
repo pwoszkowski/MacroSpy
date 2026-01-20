@@ -262,7 +262,7 @@ export function useMealComposer(onSuccess?: () => void): UseMealComposerReturn {
       setError(err instanceof Error ? err.message : "Błąd połączenia");
       setStatus("review");
     }
-  }, [candidate, onSuccess]);
+  }, [candidate, onSuccess, reset]);
 
   const reset = useCallback(() => {
     setStatus("idle");

@@ -163,12 +163,15 @@ export function OnboardingWizard({ redirectUrl = "/", user }: OnboardingWizardPr
 
     try {
       const age = calculateAge(state.bioData.birthDate);
+      if (!state.activityLevel) {
+        throw new Error("Activity level is required");
+      }
       const request: TDEECalculationRequest = {
         gender: state.bioData.gender,
         weight_kg: state.bioData.weight,
         height_cm: state.bioData.height,
         age,
-        activity_level: state.activityLevel!,
+        activity_level: state.activityLevel,
       };
 
       const response = await fetch("/api/ai/calculate-tdee", {

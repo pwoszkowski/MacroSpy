@@ -44,7 +44,7 @@ export function OnboardingTopBar({ user }: OnboardingTopBarProps) {
           description: errorData.error || "Wystąpił błąd podczas wylogowywania.",
         });
       }
-    } catch (_error) {
+    } catch {
       toast.error("Błąd połączenia", {
         description: "Nie udało się nawiązać połączenia z serwerem.",
       });
