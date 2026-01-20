@@ -199,6 +199,15 @@ export function useMealComposer(onSuccess?: () => void): UseMealComposerReturn {
     [candidate]
   );
 
+  const reset = useCallback(() => {
+    setStatus("idle");
+    setInputText("");
+    setSelectedImages([]);
+    setCandidate(null);
+    setInteractions([]);
+    setError(null);
+  }, []);
+
   const save = useCallback(async () => {
     if (!candidate) return;
 
@@ -263,15 +272,6 @@ export function useMealComposer(onSuccess?: () => void): UseMealComposerReturn {
       setStatus("review");
     }
   }, [candidate, onSuccess, reset]);
-
-  const reset = useCallback(() => {
-    setStatus("idle");
-    setInputText("");
-    setSelectedImages([]);
-    setCandidate(null);
-    setInteractions([]);
-    setError(null);
-  }, []);
 
   return {
     status,
