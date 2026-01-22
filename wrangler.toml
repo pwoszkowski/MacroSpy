@@ -1,6 +1,0 @@
-name = "macrospy"
-compatibility_date = "2024-01-01"
-
-[[kv_namespaces]]
-binding = "SESSION"
-id = "90fcbc7d0cb9480894fd69b9da4aab8f"
