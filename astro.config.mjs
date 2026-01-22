@@ -17,7 +17,7 @@ export default defineConfig({
   adapter: cloudflare(),
   session: {
     cookie: {
-      name: 'macrospy-session',
+      name: "macrospy-session",
     },
   },
 });
