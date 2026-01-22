@@ -40,8 +40,8 @@ export const createSupabaseServerInstance = (context: { headers: Headers; cookie
 // Keep the old client for client-side usage (not SSR)
 import { createClient } from "@supabase/supabase-js";
 export const supabaseClient = createClient<Database>(
-  import.meta.env.PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL,
-  import.meta.env.PUBLIC_SUPABASE_KEY || process.env.SUPABASE_KEY
+  process.env.PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL,
+  process.env.PUBLIC_SUPABASE_KEY || process.env.SUPABASE_KEY
 );
 
 /**
