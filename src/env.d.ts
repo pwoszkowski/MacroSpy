@@ -73,13 +73,5 @@ declare global {
   }
 }
 
-interface ImportMetaEnv {
-  readonly SUPABASE_URL: string;
-  readonly SUPABASE_KEY: string;
-  readonly OPENROUTER_API_KEY: string;
-  // more env variables...
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
+// Environment variables are now managed by astro:env schema in astro.config.mjs
+// Types are generated automatically by Astro

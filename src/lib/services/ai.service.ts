@@ -334,7 +334,7 @@ Please provide updated nutritional analysis based on the correction. Respond wit
  * Creates an instance of AiService with environment configuration
  */
 export function createAiService(): AiService {
-  const apiKey = process.env.PUBLIC_OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY;
+  const apiKey = import.meta.env.PUBLIC_OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error("OPENROUTER_API_KEY environment variable is not set");
   }
