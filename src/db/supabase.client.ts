@@ -20,7 +20,7 @@ export const createSupabaseServerInstance = (context: { headers: Headers; cookie
   // Import server environment variables
   const { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY } = import.meta.env;
 
-  const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {
+  const supabase = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_KEY, {
     cookieOptions,
     cookies: {
       getAll() {
