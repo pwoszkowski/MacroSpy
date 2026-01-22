@@ -34,6 +34,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       let errorMessage = error.message;
       if (error.message === "Invalid login credentials") {
         errorMessage = "Nieprawidłowe dane logowania";
+      } else if (error.message === "Email not confirmed") {
+        errorMessage = "Adres email nie został potwierdzony";
       }
 
       return new Response(JSON.stringify({ error: errorMessage }), {
