@@ -1,0 +1,6 @@
+name = "macrospy"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "SESSION"
+id = "your_session_kv_id"
