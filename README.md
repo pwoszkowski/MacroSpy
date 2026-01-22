@@ -1,6 +1,6 @@
 # MacroSpy
 
-**MacroSpy** is an intelligent, RWD web application (PWA capable) designed to simplify the process of monitoring food intake and nutritional values. By leveraging artificial intelligence (specifically the `grok-4.1-fast` model), MacroSpy allows users to log meals via text, voice, or photos, automatically calculating macros and removing the friction of manual data entry.
+**MacroSpy** is an intelligent, RWD/PWA web application designed to simplify the process of monitoring food intake and nutritional values. By leveraging artificial intelligence (specifically the `grok-4.1-fast` model), MacroSpy allows users to log meals via text, voice, or photos, automatically calculating macros and removing the friction of manual data entry.
 
 ## Project Description
 
