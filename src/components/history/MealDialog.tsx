@@ -22,14 +22,16 @@ interface MealDialogProps {
   onSubmit: (data: MealFormValues) => Promise<void>;
   initialData?: MealDto;
   defaultDate: Date;
+  mode?: "create" | "edit" | "duplicate";
 }
 
 /**
  * Universal dialog for creating and editing meals.
  * Uses react-hook-form with zod validation.
  */
-export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate }: MealDialogProps) {
-  const isEditMode = !!initialData;
+export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate, mode = "create" }: MealDialogProps) {
+  const isEditMode = mode === "edit";
+  const isDuplicateMode = mode === "duplicate";
 
   const {
     register,
@@ -38,32 +40,35 @@ export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate
     reset,
   } = useForm<MealFormValues>({
     resolver: zodResolver(mealFormSchema),
-    defaultValues: initialData
-      ? {
-          name: initialData.name,
-          calories: initialData.calories,
-          protein: initialData.protein,
-          fat: initialData.fat,
-          carbs: initialData.carbs,
-          fiber: initialData.fiber ?? 0,
-          consumed_at: initialData.consumed_at,
-        }
-      : {
-          name: "",
-          calories: 0,
-          protein: 0,
-          fat: 0,
-          carbs: 0,
-          fiber: 0,
-          consumed_at: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
-        },
+    defaultValues:
+      (isEditMode || isDuplicateMode) && initialData
+        ? {
+            name: initialData.name,
+            calories: initialData.calories,
+            protein: initialData.protein,
+            fat: initialData.fat,
+            carbs: initialData.carbs,
+            fiber: initialData.fiber ?? 0,
+            consumed_at: isDuplicateMode
+              ? format(new Date(), "yyyy-MM-dd'T'HH:mm")
+              : format(new Date(initialData.consumed_at), "yyyy-MM-dd'T'HH:mm"),
+          }
+        : {
+            name: "",
+            calories: 0,
+            protein: 0,
+            fat: 0,
+            carbs: 0,
+            fiber: 0,
+            consumed_at: format(defaultDate, "yyyy-MM-dd'T'HH:mm"),
+          },
   });
 
   // Reset form when dialog opens/closes or initialData changes
   useEffect(() => {
     if (isOpen) {
       reset(
-        initialData
+        (isEditMode || isDuplicateMode) && initialData
           ? {
               name: initialData.name,
               calories: initialData.calories,
@@ -71,7 +76,9 @@ export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate
               fat: initialData.fat,
               carbs: initialData.carbs,
               fiber: initialData.fiber ?? 0,
-              consumed_at: format(new Date(initialData.consumed_at), "yyyy-MM-dd'T'HH:mm"),
+              consumed_at: isDuplicateMode
+                ? format(new Date(), "yyyy-MM-dd'T'HH:mm")
+                : format(new Date(initialData.consumed_at), "yyyy-MM-dd'T'HH:mm"),
             }
           : {
               name: "",
@@ -84,7 +91,15 @@ export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate
             }
       );
     }
-  }, [isOpen, initialData, defaultDate, reset]);
+  }, [isOpen, initialData, defaultDate, isEditMode, isDuplicateMode, reset]);
+
+  const title = isEditMode ? "Edytuj posiłek" : isDuplicateMode ? "Powiel posiłek" : "Dodaj posiłek";
+  const description = isEditMode
+    ? "Wprowadź zmiany w danych posiłku"
+    : isDuplicateMode
+      ? "Możesz zmodyfikować dane przed zapisem"
+      : "Wprowadź dane posiłku ręcznie";
+  const submitLabel = isEditMode ? "Zapisz zmiany" : "Dodaj posiłek";
 
   const handleFormSubmit = async (data: MealFormValues) => {
     try {
@@ -105,10 +120,8 @@ export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? "Edytuj posiłek" : "Dodaj posiłek"}</DialogTitle>
-          <DialogDescription>
-            {isEditMode ? "Wprowadź zmiany w danych posiłku" : "Wprowadź dane posiłku ręcznie"}
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
@@ -244,7 +257,7 @@ export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate
               Anuluj
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Zapisywanie..." : isEditMode ? "Zapisz zmiany" : "Dodaj posiłek"}
+              {isSubmitting ? "Zapisywanie..." : submitLabel}
             </Button>
           </DialogFooter>
         </form>

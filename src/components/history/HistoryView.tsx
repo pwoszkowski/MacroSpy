@@ -25,6 +25,8 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMeal, setEditingMeal] = useState<MealDto | null>(null);
+  const [duplicatingMeal, setDuplicatingMeal] = useState<MealDto | null>(null);
+  const [dialogMode, setDialogMode] = useState<"create" | "edit" | "duplicate">("create");
 
   const { meals, summary, isLoading, error, refresh, createMeal, updateMeal, deleteMeal } =
     useHistoryMeals(selectedDate);
@@ -34,12 +36,23 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
   };
 
   const handleAddMeal = () => {
+    setDialogMode("create");
     setEditingMeal(null);
+    setDuplicatingMeal(null);
     setIsDialogOpen(true);
   };
 
   const handleEditMeal = (meal: MealDto) => {
+    setDialogMode("edit");
     setEditingMeal(meal);
+    setDuplicatingMeal(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleDuplicateMeal = (meal: MealDto) => {
+    setDialogMode("duplicate");
+    setEditingMeal(null);
+    setDuplicatingMeal(meal);
     setIsDialogOpen(true);
   };
 
@@ -71,7 +84,7 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
         await updateMeal(editingMeal.id, updateCommand);
         toast.success("Posiłek został zaktualizowany");
       } else {
-        // Create new meal
+        // Create new meal (including duplicated meal flow)
         const createCommand: CreateMealCommand = {
           name: data.name,
           calories: data.calories,
@@ -82,7 +95,7 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
           consumed_at: data.consumed_at,
         };
         await createMeal(createCommand);
-        toast.success("Posiłek został dodany");
+        toast.success(dialogMode === "duplicate" ? "Posiłek został powielony" : "Posiłek został dodany");
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Wystąpił błąd");
@@ -93,6 +106,8 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setEditingMeal(null);
+    setDuplicatingMeal(null);
+    setDialogMode("create");
   };
 
   // Error state
@@ -137,7 +152,13 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
           {/* Meals List */}
           <div>
             <h2 className="text-xl font-semibold mb-4">Posiłki</h2>
-            <MealList meals={meals} isLoading={isLoading} onEdit={handleEditMeal} onDelete={handleDeleteMeal} />
+            <MealList
+              meals={meals}
+              isLoading={isLoading}
+              onEdit={handleEditMeal}
+              onDuplicate={handleDuplicateMeal}
+              onDelete={handleDeleteMeal}
+            />
           </div>
         </div>
       </div>
@@ -150,8 +171,9 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
         isOpen={isDialogOpen}
         onClose={handleDialogClose}
         onSubmit={handleDialogSubmit}
-        initialData={editingMeal || undefined}
+        initialData={editingMeal || duplicatingMeal || undefined}
         defaultDate={selectedDate}
+        mode={dialogMode}
       />
     </PageLayout>
   );

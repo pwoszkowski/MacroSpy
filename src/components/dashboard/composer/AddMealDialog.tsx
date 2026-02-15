@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import { MealInputView } from "./MealInputView";
 import { AnalysisLoadingView } from "./AnalysisLoadingView";
 import { MealReviewView } from "./MealReviewView";
@@ -167,12 +169,25 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-        <DrawerContent data-test-id="add-meal-dialog">
-          <DrawerHeader>
+        <DrawerContent
+          className="data-[vaul-drawer-direction=bottom]:mt-0 data-[vaul-drawer-direction=bottom]:h-[100dvh] data-[vaul-drawer-direction=bottom]:max-h-[100dvh] data-[vaul-drawer-direction=bottom]:rounded-none"
+          data-test-id="add-meal-dialog"
+        >
+          <DrawerHeader className="relative pr-14">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-3 top-3"
+              onClick={handleClose}
+              aria-label="Zamknij okno dodawania posiłku"
+            >
+              <X className="h-5 w-5" />
+            </Button>
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <div className="max-h-[70vh] overflow-y-auto">{renderContent()}</div>
+          <div className="flex-1 min-h-0 overflow-y-auto pb-4">{renderContent()}</div>
         </DrawerContent>
       </Drawer>
     );

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { X, Image as ImageIcon, Loader2, Sparkles, Edit3, Mic } from "lucide-react";
+import { X, Image as ImageIcon, Camera, Loader2, Sparkles, Edit3, Mic } from "lucide-react";
 import { ManualEntryForm } from "./ManualEntryForm";
 import { useVoiceInput } from "../../hooks";
 import { toast } from "sonner";
@@ -41,7 +41,20 @@ export function MealInputView({
   const [text, setText] = useState(initialText);
   const [images, setImages] = useState<string[]>(initialImages);
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mediaQuery.matches);
+
+    const handler = (event: MediaQueryListEvent) => setIsMobile(event.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
 
   // Voice input hook
   const {
@@ -102,9 +115,8 @@ export function MealInputView({
     }
 
     // Reset input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (galleryInputRef.current) galleryInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
   const handleRemoveImage = (index: number) => {
@@ -217,28 +229,66 @@ export function MealInputView({
             </div>
           )}
 
-          {/* Przycisk dodawania zdjęć */}
+          {/* Przyciski dodawania zdjęć */}
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={images.length >= MAX_IMAGES || isSubmitting}
-              className="flex-1"
-            >
-              <ImageIcon className="w-4 h-4 mr-2" />
-              Dodaj zdjęcie ({images.length}/{MAX_IMAGES})
-            </Button>
+            {isMobile ? (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => cameraInputRef.current?.click()}
+                  disabled={images.length >= MAX_IMAGES || isSubmitting}
+                  className="flex-1"
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Aparat
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => galleryInputRef.current?.click()}
+                  disabled={images.length >= MAX_IMAGES || isSubmitting}
+                  className="flex-1"
+                >
+                  <ImageIcon className="w-4 h-4 mr-2" />
+                  Galeria
+                </Button>
+              </>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => galleryInputRef.current?.click()}
+                disabled={images.length >= MAX_IMAGES || isSubmitting}
+                className="flex-1"
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                Dodaj zdjęcie
+              </Button>
+            )}
+
             <input
-              ref={fileInputRef}
+              ref={galleryInputRef}
               type="file"
               accept={ACCEPTED_IMAGE_TYPES.join(",")}
               multiple
               onChange={handleImageSelect}
               className="hidden"
-              aria-label="Wybierz zdjęcia"
+              aria-label="Wybierz zdjęcia z galerii"
+            />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept={ACCEPTED_IMAGE_TYPES.join(",")}
+              capture="environment"
+              onChange={handleImageSelect}
+              className="hidden"
+              aria-label="Zrób zdjęcie aparatem"
             />
           </div>
+          <p className="text-xs text-muted-foreground">
+            Dodano zdjęcia: {images.length}/{MAX_IMAGES}
+          </p>
 
           {/* Błędy */}
           {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</div>}

@@ -1,6 +1,10 @@
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { MealCandidateViewModel } from "./types";
+import { composerMealSchema, type ComposerMealValues } from "./schemas";
 
 interface MacroEditableStatsProps {
   candidate: MealCandidateViewModel;
@@ -8,18 +12,52 @@ interface MacroEditableStatsProps {
   disabled?: boolean;
 }
 
+type MacroField = "calories" | "protein" | "fat" | "carbs" | "fiber";
+
 /**
  * Edytowalne pola makroskładników w widoku Review.
  * Pozwala na ręczną korektę wartości po analizie AI.
  */
 export function MacroEditableStats({ candidate, onChange, disabled = false }: MacroEditableStatsProps) {
-  const handleNumberChange = (field: keyof MealCandidateViewModel, value: string) => {
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue) && numValue >= 0) {
-      onChange(field, numValue);
-    } else if (value === "" || value === "-") {
+  const { register, reset, setValue } = useForm<ComposerMealValues>({
+    resolver: zodResolver(composerMealSchema),
+    defaultValues: {
+      name: candidate.name,
+      calories: candidate.calories,
+      protein: candidate.protein,
+      fat: candidate.fat,
+      carbs: candidate.carbs,
+      fiber: candidate.fiber,
+    },
+  });
+
+  useEffect(() => {
+    reset({
+      name: candidate.name,
+      calories: candidate.calories,
+      protein: candidate.protein,
+      fat: candidate.fat,
+      carbs: candidate.carbs,
+      fiber: candidate.fiber,
+    });
+  }, [candidate, reset]);
+
+  const handleNumberBlur = (field: MacroField, value: string) => {
+    if (value.trim() === "") {
+      setValue(field, 0, { shouldDirty: true });
       onChange(field, 0);
+      return;
     }
+
+    const numValue = parseFloat(value);
+    if (Number.isNaN(numValue) || numValue < 0) {
+      setValue(field, 0, { shouldDirty: true });
+      onChange(field, 0);
+      return;
+    }
+
+    setValue(field, numValue, { shouldDirty: true });
+    onChange(field, numValue);
   };
 
   return (
@@ -30,8 +68,9 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
         <Input
           id="meal-name"
           type="text"
-          value={candidate.name}
-          onChange={(e) => onChange("name", e.target.value)}
+          {...register("name", {
+            onChange: (e) => onChange("name", e.target.value as string),
+          })}
           disabled={disabled}
           placeholder="np. Jajecznica z warzywami"
           required
@@ -50,8 +89,9 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             type="number"
             step="0.1"
             min="0"
-            value={candidate.calories}
-            onChange={(e) => handleNumberChange("calories", e.target.value)}
+            {...register("calories", {
+              onBlur: (e) => handleNumberBlur("calories", e.target.value as string),
+            })}
             disabled={disabled}
           />
         </div>
@@ -66,8 +106,9 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             type="number"
             step="0.1"
             min="0"
-            value={candidate.protein}
-            onChange={(e) => handleNumberChange("protein", e.target.value)}
+            {...register("protein", {
+              onBlur: (e) => handleNumberBlur("protein", e.target.value as string),
+            })}
             disabled={disabled}
           />
         </div>
@@ -82,8 +123,9 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             type="number"
             step="0.1"
             min="0"
-            value={candidate.fat}
-            onChange={(e) => handleNumberChange("fat", e.target.value)}
+            {...register("fat", {
+              onBlur: (e) => handleNumberBlur("fat", e.target.value as string),
+            })}
             disabled={disabled}
           />
         </div>
@@ -98,8 +140,9 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             type="number"
             step="0.1"
             min="0"
-            value={candidate.carbs}
-            onChange={(e) => handleNumberChange("carbs", e.target.value)}
+            {...register("carbs", {
+              onBlur: (e) => handleNumberBlur("carbs", e.target.value as string),
+            })}
             disabled={disabled}
           />
         </div>
@@ -114,8 +157,9 @@ export function MacroEditableStats({ candidate, onChange, disabled = false }: Ma
             type="number"
             step="0.1"
             min="0"
-            value={candidate.fiber}
-            onChange={(e) => handleNumberChange("fiber", e.target.value)}
+            {...register("fiber", {
+              onBlur: (e) => handleNumberBlur("fiber", e.target.value as string),
+            })}
             disabled={disabled}
           />
         </div>

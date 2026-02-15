@@ -1,17 +1,12 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { composerMealSchema, type ComposerMealValues } from "./schemas";
 
-interface ManualEntryData {
-  name: string;
-  calories: number;
-  protein: number;
-  fat: number;
-  carbs: number;
-  fiber: number;
-}
+type ManualEntryData = ComposerMealValues;
 
 interface ManualEntryFormProps {
   onSubmit: (data: ManualEntryData) => void;
@@ -23,44 +18,28 @@ interface ManualEntryFormProps {
  * Pomija analizę AI.
  */
 export function ManualEntryForm({ onSubmit, isSubmitting }: ManualEntryFormProps) {
-  const [formData, setFormData] = useState<ManualEntryData>({
-    name: "",
-    calories: 0,
-    protein: 0,
-    fat: 0,
-    carbs: 0,
-    fiber: 0,
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<ManualEntryData>({
+    resolver: zodResolver(composerMealSchema),
+    defaultValues: {
+      name: "",
+      calories: 0,
+      protein: 0,
+      fat: 0,
+      carbs: 0,
+      fiber: 0,
+    },
+    mode: "onChange",
   });
 
-  const [error, setError] = useState<string | null>(null);
-
-  const handleNumberChange = (field: keyof Omit<ManualEntryData, "name">, value: string) => {
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue) && numValue >= 0) {
-      setFormData((prev) => ({ ...prev, [field]: numValue }));
-    } else if (value === "" || value === "0") {
-      setFormData((prev) => ({ ...prev, [field]: 0 }));
-    }
+  const handleFormSubmit = (data: ManualEntryData) => {
+    onSubmit(data);
   };
 
-  const handleSubmit = () => {
-    setError(null);
-
-    // Walidacja
-    if (!formData.name.trim()) {
-      setError("Nazwa posiłku jest wymagana");
-      return;
-    }
-
-    if (formData.name.trim().length < 2) {
-      setError("Nazwa musi mieć co najmniej 2 znaki");
-      return;
-    }
-
-    onSubmit(formData);
-  };
-
-  const canSubmit = formData.name.trim().length >= 2 && !isSubmitting;
+  const canSubmit = isValid && !isSubmitting;
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -70,12 +49,12 @@ export function ManualEntryForm({ onSubmit, isSubmitting }: ManualEntryFormProps
         <Input
           id="manual-name"
           type="text"
-          value={formData.name}
-          onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+          {...register("name")}
           disabled={isSubmitting}
           placeholder="np. Jajecznica z warzywami"
           required
         />
+        {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
       </div>
 
       {/* Makroskładniki - siatka */}
@@ -90,11 +69,11 @@ export function ManualEntryForm({ onSubmit, isSubmitting }: ManualEntryFormProps
             type="number"
             step="1"
             min="0"
-            value={formData.calories}
-            onChange={(e) => handleNumberChange("calories", e.target.value)}
+            {...register("calories")}
             disabled={isSubmitting}
             placeholder="0"
           />
+          {errors.calories && <p className="text-sm text-destructive">{errors.calories.message}</p>}
         </div>
 
         {/* Białko */}
@@ -107,11 +86,11 @@ export function ManualEntryForm({ onSubmit, isSubmitting }: ManualEntryFormProps
             type="number"
             step="0.1"
             min="0"
-            value={formData.protein}
-            onChange={(e) => handleNumberChange("protein", e.target.value)}
+            {...register("protein")}
             disabled={isSubmitting}
             placeholder="0"
           />
+          {errors.protein && <p className="text-sm text-destructive">{errors.protein.message}</p>}
         </div>
 
         {/* Tłuszcze */}
@@ -124,11 +103,11 @@ export function ManualEntryForm({ onSubmit, isSubmitting }: ManualEntryFormProps
             type="number"
             step="0.1"
             min="0"
-            value={formData.fat}
-            onChange={(e) => handleNumberChange("fat", e.target.value)}
+            {...register("fat")}
             disabled={isSubmitting}
             placeholder="0"
           />
+          {errors.fat && <p className="text-sm text-destructive">{errors.fat.message}</p>}
         </div>
 
         {/* Węglowodany */}
@@ -141,11 +120,11 @@ export function ManualEntryForm({ onSubmit, isSubmitting }: ManualEntryFormProps
             type="number"
             step="0.1"
             min="0"
-            value={formData.carbs}
-            onChange={(e) => handleNumberChange("carbs", e.target.value)}
+            {...register("carbs")}
             disabled={isSubmitting}
             placeholder="0"
           />
+          {errors.carbs && <p className="text-sm text-destructive">{errors.carbs.message}</p>}
         </div>
 
         {/* Błonnik */}
@@ -158,11 +137,11 @@ export function ManualEntryForm({ onSubmit, isSubmitting }: ManualEntryFormProps
             type="number"
             step="0.1"
             min="0"
-            value={formData.fiber}
-            onChange={(e) => handleNumberChange("fiber", e.target.value)}
+            {...register("fiber")}
             disabled={isSubmitting}
             placeholder="0"
           />
+          {errors.fiber && <p className="text-sm text-destructive">{errors.fiber.message}</p>}
         </div>
       </div>
 
@@ -170,11 +149,8 @@ export function ManualEntryForm({ onSubmit, isSubmitting }: ManualEntryFormProps
         Wprowadź wartości odżywcze na podstawie etykiety produktu lub własnej wiedzy
       </p>
 
-      {/* Błędy */}
-      {error && <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">{error}</div>}
-
       {/* Przycisk Submit */}
-      <Button onClick={handleSubmit} disabled={!canSubmit} className="w-full" size="lg">
+      <Button onClick={handleSubmit(handleFormSubmit)} disabled={!canSubmit} className="w-full" size="lg">
         {isSubmitting ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
