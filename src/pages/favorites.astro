@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { FavoritesView } from "../components/favorites/FavoritesView";
+
+const user = Astro.locals.user;
+---
+
+<Layout title="MacroSpy - Ulubione">
+  <FavoritesView client:load user={user} />
+</Layout>

@@ -24,7 +24,8 @@ export function useDashboardData(selectedDate: Date, initialData?: MealListRespo
 
     try {
       const dateStr = format(selectedDate, "yyyy-MM-dd");
-      const response = await fetch(`/api/meals?date=${dateStr}`);
+      const timezoneOffsetMin = new Date().getTimezoneOffset();
+      const response = await fetch(`/api/meals?date=${dateStr}&tz_offset_min=${timezoneOffsetMin}`);
 
       if (!response.ok) {
         throw new Error(`Błąd pobierania danych: ${response.statusText}`);
@@ -40,14 +41,8 @@ export function useDashboardData(selectedDate: Date, initialData?: MealListRespo
   }, [selectedDate]);
 
   useEffect(() => {
-    // Skip initial fetch if we have initialData for today
-    const isToday = format(selectedDate, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
-    if (initialData && isToday) {
-      return;
-    }
-
     fetchMeals();
-  }, [selectedDate, fetchMeals, initialData]);
+  }, [selectedDate, fetchMeals]);
 
   return {
     data,

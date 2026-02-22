@@ -14,17 +14,18 @@ export class MealService {
    * @param date - Date in YYYY-MM-DD format (default: today)
    * @returns MealListResponse with meals array and summary
    */
-  async getMealsByDate(userId: string, date?: string): Promise<MealListResponse> {
+  async getMealsByDate(userId: string, date?: string, timezoneOffsetMinutes?: number): Promise<MealListResponse> {
     // Default to today if no date provided
     const targetDate = date || new Date().toISOString().split("T")[0];
+    const { rangeStartUtcIso, rangeEndUtcIso } = this.getUtcRangeForLocalDate(targetDate, timezoneOffsetMinutes);
 
     // Query meals for the user on the specified date
     const { data: meals, error } = await this.supabase
       .from("meals")
       .select("id, name, calories, protein, fat, carbs, fiber, ai_suggestion, consumed_at")
       .eq("user_id", userId)
-      .gte("consumed_at", `${targetDate}T00:00:00.000Z`)
-      .lt("consumed_at", this.getNextDay(targetDate))
+      .gte("consumed_at", rangeStartUtcIso)
+      .lt("consumed_at", rangeEndUtcIso)
       .order("consumed_at", { ascending: false });
 
     if (error) {
@@ -164,14 +165,26 @@ export class MealService {
     );
   }
 
-  /**
-   * Get next day in YYYY-MM-DD format for date range queries.
-   * @param dateString - Date in YYYY-MM-DD format
-   * @returns Next day timestamp
-   */
-  private getNextDay(dateString: string): string {
-    const date = new Date(dateString);
-    date.setDate(date.getDate() + 1);
-    return `${date.toISOString().split("T")[0]}T00:00:00.000Z`;
+  private getUtcRangeForLocalDate(
+    dateString: string,
+    timezoneOffsetMinutes?: number
+  ): { rangeStartUtcIso: string; rangeEndUtcIso: string } {
+    const [yearRaw, monthRaw, dayRaw] = dateString.split("-");
+    const year = Number(yearRaw);
+    const month = Number(monthRaw);
+    const day = Number(dayRaw);
+
+    if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+      throw new Error(`Invalid date format: ${dateString}`);
+    }
+
+    const offset = timezoneOffsetMinutes ?? 0;
+    const localMidnightUtcMs = Date.UTC(year, month - 1, day) + offset * 60 * 1000;
+    const localNextMidnightUtcMs = localMidnightUtcMs + 24 * 60 * 60 * 1000;
+
+    return {
+      rangeStartUtcIso: new Date(localMidnightUtcMs).toISOString(),
+      rangeEndUtcIso: new Date(localNextMidnightUtcMs).toISOString(),
+    };
   }
 }

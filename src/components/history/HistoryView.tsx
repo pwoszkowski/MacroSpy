@@ -6,6 +6,7 @@ import { DaySummary } from "./DaySummary";
 import { MealList } from "./MealList";
 import { MealDialog } from "./MealDialog";
 import { AddMealFAB } from "@/components/dashboard/AddMealFAB";
+import { AddMealDialog } from "@/components/dashboard/composer/AddMealDialog";
 import { useHistoryMeals } from "./useHistoryMeals";
 import type { MealDto, CreateMealCommand, UpdateMealCommand } from "@/types";
 import type { MealFormValues } from "./schemas";
@@ -28,7 +29,7 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
   const [duplicatingMeal, setDuplicatingMeal] = useState<MealDto | null>(null);
   const [dialogMode, setDialogMode] = useState<"create" | "edit" | "duplicate">("create");
 
-  const { meals, summary, isLoading, error, refresh, createMeal, updateMeal, deleteMeal } =
+  const { meals, summary, isLoading, error, refresh, createMeal, updateMeal, deleteMeal, addToFavorites } =
     useHistoryMeals(selectedDate);
 
   const handleDateChange = (newDate: Date) => {
@@ -65,6 +66,20 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
       toast.success("Posiłek został usunięty");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Nie udało się usunąć posiłku");
+    }
+  };
+
+  const handleAddToFavorites = async (meal: MealDto) => {
+    try {
+      await addToFavorites(meal);
+      toast.success("Szablon został utworzony");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Nie udało się dodać do ulubionych.";
+      if (message.toLowerCase().includes("limit")) {
+        toast.error("Limit ulubionych osiągnięty");
+        return;
+      }
+      toast.error(message);
     }
   };
 
@@ -108,6 +123,13 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
     setEditingMeal(null);
     setDuplicatingMeal(null);
     setDialogMode("create");
+  };
+
+  const getDefaultConsumedAtForCreate = () => {
+    const now = new Date();
+    const defaultDate = new Date(selectedDate);
+    defaultDate.setHours(now.getHours(), now.getMinutes(), 0, 0);
+    return defaultDate.toISOString();
   };
 
   // Error state
@@ -157,6 +179,7 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
               isLoading={isLoading}
               onEdit={handleEditMeal}
               onDuplicate={handleDuplicateMeal}
+              onAddToFavorites={handleAddToFavorites}
               onDelete={handleDeleteMeal}
             />
           </div>
@@ -167,14 +190,26 @@ export function HistoryView({ user }: HistoryViewProps = {}) {
       <AddMealFAB onClick={handleAddMeal} />
 
       {/* Meal Dialog */}
-      <MealDialog
-        isOpen={isDialogOpen}
-        onClose={handleDialogClose}
-        onSubmit={handleDialogSubmit}
-        initialData={editingMeal || duplicatingMeal || undefined}
-        defaultDate={selectedDate}
-        mode={dialogMode}
-      />
+      {dialogMode === "create" ? (
+        <AddMealDialog
+          isOpen={isDialogOpen}
+          onClose={handleDialogClose}
+          onSuccess={() => {
+            void refresh();
+          }}
+          defaultConsumedAt={getDefaultConsumedAtForCreate()}
+          showConsumedAtInput={true}
+        />
+      ) : (
+        <MealDialog
+          isOpen={isDialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handleDialogSubmit}
+          initialData={editingMeal || duplicatingMeal || undefined}
+          defaultDate={selectedDate}
+          mode={dialogMode}
+        />
+      )}
     </PageLayout>
   );
 }

@@ -11,6 +11,7 @@ interface UseHistoryMealsResult {
   createMeal: (command: CreateMealCommand) => Promise<void>;
   updateMeal: (id: string, command: UpdateMealCommand) => Promise<void>;
   deleteMeal: (id: string) => Promise<void>;
+  addToFavorites: (meal: MealDto) => Promise<void>;
 }
 
 /**
@@ -29,7 +30,8 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
 
     try {
       const dateStr = format(selectedDate, "yyyy-MM-dd");
-      const response = await fetch(`/api/meals?date=${dateStr}`);
+      const timezoneOffsetMin = new Date().getTimezoneOffset();
+      const response = await fetch(`/api/meals?date=${dateStr}&tz_offset_min=${timezoneOffsetMin}`);
 
       if (!response.ok) {
         throw new Error(`Błąd pobierania danych: ${response.statusText}`);
@@ -115,6 +117,28 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
     [fetchMeals]
   );
 
+  const addToFavorites = useCallback(async (meal: MealDto) => {
+    const response = await fetch("/api/favorites", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: meal.name,
+        calories: meal.calories,
+        protein: meal.protein,
+        fat: meal.fat,
+        carbs: meal.carbs,
+        fiber: meal.fiber ?? 0,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = (await response.json().catch(() => ({}))) as { error?: string; message?: string };
+      throw new Error(errorData.error || errorData.message || "Nie udało się dodać do ulubionych");
+    }
+  }, []);
+
   useEffect(() => {
     fetchMeals();
   }, [fetchMeals]);
@@ -128,5 +152,6 @@ export function useHistoryMeals(selectedDate: Date): UseHistoryMealsResult {
     createMeal,
     updateMeal,
     deleteMeal,
+    addToFavorites,
   };
 }

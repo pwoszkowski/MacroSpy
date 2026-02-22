@@ -16,6 +16,7 @@ export type TableRow<T extends keyof Database["public"]["Tables"]> = Database["p
 export type Profile = TableRow<"profiles">;
 export type DietaryGoal = TableRow<"dietary_goals">;
 export type Meal = TableRow<"meals">;
+export type FavoriteMeal = TableRow<"favorite_meals">;
 export type BodyMeasurement = TableRow<"body_measurements">;
 
 // ==========================================
@@ -109,7 +110,7 @@ export interface CreateMealCommand {
   ai_suggestion?: string | null;
   original_prompt?: string | null;
   is_image_analyzed?: boolean | null;
-  last_ai_context?: unknown | null;
+  last_ai_context?: Json | null;
 }
 
 /**
@@ -141,7 +142,52 @@ export type UpdateProfileCommand = ProfileDto;
 export type SetDietaryGoalCommand = DietaryGoalDto;
 
 // ==========================================
-// 5. Body Measurements
+// 5. Favorites (Meal Templates)
+// ==========================================
+
+/**
+ * DTO for favorite meals list/items.
+ * Based on favorite_meals table row.
+ */
+export type FavoriteMealDto = Pick<
+  FavoriteMeal,
+  "id" | "name" | "calories" | "protein" | "fat" | "carbs" | "fiber" | "created_at"
+>;
+
+/**
+ * Query DTO for GET /api/favorites.
+ */
+export interface ListFavoritesQuery {
+  search?: string;
+  sort?: "newest" | "name_asc";
+}
+
+/**
+ * Sort options for favorites view and API.
+ */
+export type SortOption = "newest" | "name_asc";
+
+/**
+ * Modal state used in Favorites view.
+ */
+export interface FavoritesModalState {
+  type: "log" | "edit" | "delete" | null;
+  selectedId: string | null;
+}
+
+/**
+ * Command for POST /api/favorites.
+ * Uses DB entity fields and removes server-managed columns.
+ */
+export type CreateFavoriteCommand = Omit<FavoriteMeal, "id" | "user_id" | "created_at" | "updated_at">;
+
+/**
+ * Command for PATCH /api/favorites/[id].
+ */
+export type UpdateFavoriteCommand = Partial<CreateFavoriteCommand>;
+
+// ==========================================
+// 6. Body Measurements
 // ==========================================
 
 export type MeasurementDto = Pick<

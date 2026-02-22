@@ -24,3 +24,13 @@ export interface InteractionLog {
   content: string;
   timestamp: number;
 }
+
+// Dane z ręcznego wprowadzenia
+export interface ManualEntryData {
+  name: string;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  fiber: number;
+}

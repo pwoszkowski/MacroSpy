@@ -1,4 +1,4 @@
-import { Home, History, Scale, Plus } from "lucide-react";
+import { Home, History, Scale, Plus, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
 import { UserMenu } from "./UserMenu";
@@ -20,6 +20,11 @@ const navItems: NavItem[] = [
     href: "/history",
     label: "Historia",
     icon: History,
+  },
+  {
+    href: "/favorites",
+    label: "Ulubione",
+    icon: Star,
   },
   {
     href: "/measurements",

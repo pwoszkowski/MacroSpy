@@ -1,4 +1,4 @@
-import { Home, History, Scale } from "lucide-react";
+import { Home, History, Scale, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -20,6 +20,12 @@ const navItems: NavItem[] = [
     label: "Historia",
     icon: History,
     ariaLabel: "Historia posiłków",
+  },
+  {
+    href: "/favorites",
+    label: "Ulubione",
+    icon: Star,
+    ariaLabel: "Ulubione posiłki",
   },
   {
     href: "/measurements",

@@ -71,7 +71,8 @@ src/pages/index.astro (SSR Entry Point)
 
 - **Opis:** Pływający przycisk (Fixed position bottom-right) "+" do szybkiego dodawania.
 - **Główne elementy:** `Button` (Shadcn, rounded-full, fixed).
-- **Obsługiwane interakcje:** Nawigacja do `/meals/new` (lub otwarcie modala).
+- **Obsługiwane interakcje:** Otwarcie modala `AddMealDialog`.
+- **Integracja:** Wykorzystuje komponent `AddMealDialog` opisany szczegółowo w osobnym planie (`.ai/add-meal-modal-view-implementation-plan.md`), który wspiera tryb AI, tryb ręczny oraz zapisywanie posiłków do ulubionych (US-013).
 
 ## 5. Typy
 
@@ -137,8 +138,11 @@ W pliku `src/pages/index.astro`:
     - Użytkownik wybiera datę z kalendarza -> aplikacja pobiera posiłki dla wybranej daty historycznej.
 2.  **Przewijanie:**
     - Przy przewijaniu listy posiłków nagłówek z datą pozostaje przyklejony (`sticky`).
-3.  **Dodawanie posiłku:**
-    - Kliknięcie FAB przekierowuje do widoku dodawania posiłku (kontekst aktualnie wybranej daty może być przekazany w query params, np. `/meals/new?date=2026-01-06`).
+3.  **Dodawanie posiłku (integracja z Modalem):**
+    - Kliknięcie FAB otwiera `AddMealDialog`.
+    - Użytkownik może dodać posiłek przy użyciu AI lub ręcznie.
+    - Użytkownik ma opcję zaznaczenia checkboxa "Zapisz do ulubionych" (US-013), co zapisuje szablon posiłku na przyszłość.
+    - Po pomyślnym dodaniu, Dashboard automatycznie odświeża listę posiłków i podsumowanie dnia.
 
 ## 9. Warunki i walidacja
 
@@ -150,6 +154,7 @@ W pliku `src/pages/index.astro`:
 
 - **Błąd pobierania posiłków:** Wyświetlenie komponentu `ErrorState` z przyciskiem "Spróbuj ponownie".
 - **Błąd pobierania profilu:** Fallback do domyślnych wartości celów (np. 2000 kcal) z ostrzeżeniem lub przekierowanie do logowania/konfiguracji.
+- **Błąd dodawania posiłku:** Obsługiwany wewnątrz modala (`AddMealDialog`), Dashboard jedynie reaguje na sukces.
 - **Brak autoryzacji:** Middleware Astro powinno obsłużyć przekierowanie do `/login` przed renderowaniem strony.
 
 ## 11. Kroki implementacji
@@ -165,10 +170,13 @@ W pliku `src/pages/index.astro`:
 4.  **Implementacja `DashboardContainer`:**
     - Złożenie layoutu.
     - Dodanie logiki pobierania danych (hook `useDashboardData`).
-5.  **Integracja z Astro (`index.astro`):**
+5.  **Integracja z Modalem Dodawania:**
+    - Podpięcie `AddMealFAB` do stanu widoczności `AddMealDialog`.
+    - Obsługa odświeżania listy po dodaniu posiłku (callback `onSuccess`).
+6.  **Integracja z Astro (`index.astro`):**
     - Pobranie danych po stronie serwera.
     - Przekazanie ich do komponentu React.
-6.  **Stylowanie i UX:**
+7.  **Stylowanie i UX:**
     - Dopracowanie sticky header.
     - Animacje pasków postępu.
     - Obsługa RWD (mobilne vs desktop).

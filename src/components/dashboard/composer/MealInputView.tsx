@@ -43,7 +43,6 @@ export function MealInputView({
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const galleryInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -86,10 +85,7 @@ export function MealInputView({
     });
   };
 
-  const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
+  const processFiles = async (files: File[]) => {
     setError(null);
 
     // Sprawdź limit
@@ -113,10 +109,35 @@ export function MealInputView({
     } catch {
       setError("Błąd podczas wczytywania zdjęć");
     }
+  };
+
+  const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    await processFiles(Array.from(files));
 
     // Reset input
     if (galleryInputRef.current) galleryInputRef.current.value = "";
-    if (cameraInputRef.current) cameraInputRef.current.value = "";
+  };
+
+  const handleCameraCapture = () => {
+    if (typeof window === "undefined") return;
+    if (images.length >= MAX_IMAGES || isSubmitting) return;
+
+    // Dynamiczny input poprawia kompatybilność "capture" na mobile (szczególnie iOS/PWA).
+    const cameraInput = document.createElement("input");
+    cameraInput.type = "file";
+    cameraInput.accept = "image/*";
+    cameraInput.setAttribute("capture", "environment");
+
+    cameraInput.onchange = async () => {
+      const files = cameraInput.files;
+      if (!files || files.length === 0) return;
+      await processFiles(Array.from(files));
+    };
+
+    cameraInput.click();
   };
 
   const handleRemoveImage = (index: number) => {
@@ -236,7 +257,7 @@ export function MealInputView({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => cameraInputRef.current?.click()}
+                  onClick={handleCameraCapture}
                   disabled={images.length >= MAX_IMAGES || isSubmitting}
                   className="flex-1"
                 >
@@ -275,15 +296,6 @@ export function MealInputView({
               onChange={handleImageSelect}
               className="hidden"
               aria-label="Wybierz zdjęcia z galerii"
-            />
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept={ACCEPTED_IMAGE_TYPES.join(",")}
-              capture="environment"
-              onChange={handleImageSelect}
-              className="hidden"
-              aria-label="Zrób zdjęcie aparatem"
             />
           </div>
           <p className="text-xs text-muted-foreground">

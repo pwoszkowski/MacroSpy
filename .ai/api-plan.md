@@ -9,6 +9,7 @@ This document outlines the REST API architecture for MacroSpy. The API is implem
 | **Profile**      | `profiles`          | User bio-data (height, gender, DOB) linked to Auth.  |
 | **Goals**        | `dietary_goals`     | Historic and current nutritional targets.            |
 | **Meals**        | `meals`             | Food entries with macro data.                        |
+| **Favorites**    | `favorite_meals`    | Templates for frequently used meals.                 |
 | **AI Analysis**  | N/A (Stateless)     | Ephemeral resource for analyzing text/images via AI. |
 | **Measurements** | `body_measurements` | Weight and body composition logs.                    |
 
@@ -224,7 +225,70 @@ Calculates caloric needs based on biometrics (Onboarding).
 
 ---
 
-### 2.4. Body Measurements
+### 2.4. Favorites (Meal Templates)
+
+Endpoints for managing the "Favorite Meals" library.
+
+#### **List Favorites**
+
+- **Method:** `GET`
+- **URL:** `/api/favorites`
+- **Query Params:**
+  - `search`: String (optional) - Filters by name.
+  - `sort`: `newest` (default) | `name_asc`.
+- **Response Body:**
+  ```json
+  [
+    {
+      "id": "uuid",
+      "name": "Owsianka Królewska",
+      "calories": 450,
+      "protein": 15.0,
+      "fat": 12.0,
+      "carbs": 60.0,
+      "fiber": 8.0,
+      "created_at": "2026-02-15T10:00:00Z"
+    },
+    ...
+  ]
+  ```
+
+#### **Create Favorite**
+
+- **Method:** `POST`
+- **URL:** `/api/favorites`
+- **Description:** Saves a meal template. Used when saving a new meal as favorite or promoting a historic meal to favorites. Enforces a limit of 100 favorites per user.
+- **Request Body:**
+  ```json
+  {
+    "name": "Owsianka Królewska",
+    "calories": 450,
+    "protein": 15.0,
+    "fat": 12.0,
+    "carbs": 60.0,
+    "fiber": 8.0
+  }
+  ```
+- **Response:** `201 Created` or `400 Bad Request` (if limit reached).
+
+#### **Update Favorite**
+
+- **Method:** `PATCH`
+- **URL:** `/api/favorites/[id]`
+- **Description:** Updates the template definition. Does NOT affect meals already logged in history using this template.
+- **Request Body:** Partial object (e.g., name or macros).
+- **Response:** `200 OK`.
+
+#### **Delete Favorite**
+
+- **Method:** `DELETE`
+- **URL:** `/api/favorites/[id]`
+- **Description:** Removes the template. Does NOT remove meals from history.
+- **Response:** `204 No Content`.
+
+---
+
+### 2.5. Body Measurements
 
 #### **List Measurements**
 
@@ -278,9 +342,10 @@ All incoming requests will be validated using **Zod** before processing.
 - **Global:**
   - Date strings must be ISO 8601.
   - Numeric IDs must be valid UUIDs.
-- **Meals:**
+- **Meals & Favorites:**
   - `calories`, `protein`, `fat`, `carbs`, `fiber` must be >= 0.
   - `name` cannot be empty.
+  - **Favorites only:** Max 100 entries per user.
 - **Goals:**
   - Targets (calories, protein, fat, carbs) must be positive integers.
   - `fiber_target` must be >= 0 (nullable allowed in DB, but API should enforce non-negative if provided).
@@ -302,5 +367,9 @@ All incoming requests will be validated using **Zod** before processing.
 3.  **Data Aggregation:**
     - The `/api/meals` endpoint does not just return rows; it sums up the macros (including fiber) for the requested day server-side to ensure the dashboard receives ready-to-render data.
 
-4.  **Security/Rate Limiting:**
+4.  **Favorites Logic:**
+    - **Limit Check:** Before creating a new favorite via `POST /api/favorites`, the service checks if `count(favorite_meals where user_id = auth.uid()) >= 100`. If so, returns error.
+    - **Template Usage:** To "use" a favorite, the frontend requests `GET /api/favorites`, pre-fills a form, and then submits to `POST /api/meals`. The API does not link the journal entry to the template ID (snapshot pattern).
+
+5.  **Security/Rate Limiting:**
     - Since AI calls are expensive, `/api/ai/*` endpoints should have server-side rate limiting (e.g., using Upstash or a simple in-memory map if single instance) to prevent abuse.

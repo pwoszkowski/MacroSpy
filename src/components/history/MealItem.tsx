@@ -10,12 +10,13 @@ import {
 import type { MealDto } from "@/types";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
-import { Copy, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { Copy, MoreVertical, Pencil, Star, Trash2 } from "lucide-react";
 
 interface MealItemProps {
   meal: MealDto;
   onEdit: (meal: MealDto) => void;
   onDuplicate: (meal: MealDto) => void;
+  onAddToFavorites: (meal: MealDto) => void;
   onDelete: (id: string) => void;
 }
 
@@ -23,7 +24,7 @@ interface MealItemProps {
  * Single meal item card with action menu (Edit/Delete).
  * Displays meal name, time, macros, and optional AI suggestion.
  */
-export function MealItem({ meal, onEdit, onDuplicate, onDelete }: MealItemProps) {
+export function MealItem({ meal, onEdit, onDuplicate, onAddToFavorites, onDelete }: MealItemProps) {
   const consumedTime = format(new Date(meal.consumed_at), "HH:mm", { locale: pl });
 
   return (
@@ -49,6 +50,10 @@ export function MealItem({ meal, onEdit, onDuplicate, onDelete }: MealItemProps)
                 <DropdownMenuItem onClick={() => onDuplicate(meal)}>
                   <Copy className="mr-2 h-4 w-4" />
                   Powiel
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddToFavorites(meal)}>
+                  <Star className="mr-2 h-4 w-4" />
+                  Dodaj do ulubionych
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onDelete(meal.id)} className="text-destructive focus:text-destructive">
                   <Trash2 className="mr-2 h-4 w-4" />

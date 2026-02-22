@@ -111,6 +111,53 @@ export interface Database {
           },
         ];
       };
+      favorite_meals: {
+        Row: {
+          calories: number;
+          carbs: number;
+          created_at: string;
+          fat: number;
+          fiber: number;
+          id: string;
+          name: string;
+          protein: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          calories: number;
+          carbs: number;
+          created_at?: string;
+          fat: number;
+          fiber?: number;
+          id?: string;
+          name: string;
+          protein: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          calories?: number;
+          carbs?: number;
+          created_at?: string;
+          fat?: number;
+          fiber?: number;
+          id?: string;
+          name?: string;
+          protein?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "favorite_meals_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       meals: {
         Row: {
           ai_suggestion: string | null;

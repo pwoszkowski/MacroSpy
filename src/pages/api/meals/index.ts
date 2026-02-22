@@ -13,6 +13,7 @@ const dateQuerySchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
     .optional(),
+  tz_offset_min: z.coerce.number().int().min(-900).max(900).optional(),
 });
 
 /**
@@ -53,7 +54,8 @@ export const GET: APIRoute = async ({ request, locals }) => {
     const url = new URL(request.url);
     const dateParam = url.searchParams.get("date") || undefined;
 
-    const validationResult = dateQuerySchema.safeParse({ date: dateParam });
+    const timezoneOffsetParam = url.searchParams.get("tz_offset_min") || undefined;
+    const validationResult = dateQuerySchema.safeParse({ date: dateParam, tz_offset_min: timezoneOffsetParam });
 
     if (!validationResult.success) {
       return new Response(
@@ -67,7 +69,11 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
     // Fetch meals using service
     const mealService = new MealService(locals.supabase);
-    const response = await mealService.getMealsByDate(userId, validationResult.data.date);
+    const response = await mealService.getMealsByDate(
+      userId,
+      validationResult.data.date,
+      validationResult.data.tz_offset_min
+    );
 
     return new Response(JSON.stringify(response), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (error) {

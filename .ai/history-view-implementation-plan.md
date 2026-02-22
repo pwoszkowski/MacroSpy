@@ -2,7 +2,7 @@
 
 ## 1. Przegląd
 
-Widok "Historia Posiłków" umożliwia użytkownikom przeglądanie spożytych posiłków w ujęciu dziennym, nawigację po kalendarzu oraz zarządzanie wpisami (dodawanie zaległych, edycja i usuwanie istniejących). Jest to realizacja wymagania US-009, mająca na celu utrzymanie porządku w dzienniku żywieniowym.
+Widok "Historia Posiłków" umożliwia użytkownikom przeglądanie spożytych posiłków w ujęciu dziennym, nawigację po kalendarzu oraz zarządzanie wpisami (dodawanie zaległych, edycja i usuwanie istniejących). Jest to realizacja wymagania US-009, rozszerzona o funkcjonalność dodawania posiłków z historii do ulubionych (US-014).
 
 ## 2. Routing widoku
 
@@ -21,7 +21,7 @@ src/pages/history.astro
         ├── DaySummary (Pasek postępu/Statystyki dnia)
         ├── MealList (Lista posiłków)
         │   └── MealItem (Pojedynczy wiersz/karta)
-        │       └── MealActions (Menu: Edytuj, Usuń)
+        │       └── MealActions (Menu: Edytuj, Dodaj do ulubionych, Usuń)
         └── MealDialog (Formularz dodawania/edycji - Modal)
 ```
 
@@ -29,60 +29,45 @@ src/pages/history.astro
 
 ### 1. `HistoryView.tsx` (Container)
 
-- **Opis:** Główny komponent zarządzający stanem wybranej daty, pobieraniem danych i koordynacją akcji (otwieranie modala).
+- **Opis:** Główny komponent zarządzający stanem wybranej daty, pobieraniem danych i koordynacją akcji (otwieranie modala, obsługa ulubionych).
 - **Główne elementy:** Wrapper layoutu, przekazuje stan do dzieci.
-- **Obsługiwane interakcje:** Zmiana daty, odświeżenie danych po mutacji.
+- **Obsługiwane interakcje:** Zmiana daty, odświeżenie danych po mutacji, obsługa akcji "Dodaj do ulubionych".
 - **Stan:** `selectedDate`, `meals` (data), `summary` (data), `isLoading`, `error`.
 
 ### 2. `HistoryCalendar.tsx`
 
 - **Opis:** Komponent wizualny kalendarza (oparty na `shadcn/calendar`) pozwalający na wybór dnia.
-- **Propsy:**
-  - `selectedDate: Date`
-  - `onSelectDate: (date: Date) => void`
-- **UX:** Powinien być zawsze widoczny (lub łatwo dostępny), z wyraźnym zaznaczeniem aktywnego dnia.
+- **Propsy:** `selectedDate`, `onSelectDate`.
 
 ### 3. `DaySummary.tsx`
 
 - **Opis:** Karta podsumowująca makroskładniki dla wybranego dnia.
-- **Propsy:**
-  - `summary: MealSummary | null`
-  - `isLoading: boolean`
-- **Główne elementy:** Paski postępu (Progress Bar) lub proste liczniki dla Kalorii, Białka, Tłuszczy, Węglowodanów.
+- **Propsy:** `summary`, `isLoading`.
 
 ### 4. `MealList.tsx` & `MealItem.tsx`
 
 - **Opis:** Lista renderująca posiłki. Obsługuje stan pusty.
-- **Propsy:**
-  - `meals: MealDto[]`
-  - `onEdit: (meal: MealDto) => void`
-  - `onDelete: (id: string) => void`
+- **Propsy:** `meals`, `onEdit`, `onDelete`, `onAddToFavorites` (nowy prop).
 - **Elementy `MealItem`:** Nazwa, godzina, kalorie, makro (skrótowo), przycisk menu akcji (DropdownMenu).
+- **Menu Akcji (MealActions):**
+  - "Edytuj"
+  - "Dodaj do ulubionych" (realizacja US-014)
+  - "Usuń" (czerwony kolor)
 
 ### 5. `MealDialog.tsx`
 
-- **Opis:** Uniwersalny modal do tworzenia i edycji posiłków.
-- **Propsy:**
-  - `isOpen: boolean`
-  - `onClose: () => void`
-  - `onSubmit: (data: MealFormValues) => Promise<void>`
-  - `initialData?: MealDto` (jeśli edycja)
-  - `defaultDate: Date` (data do której dodajemy posiłek)
-- **Walidacja formularza (Zod):**
-  - `name`: wymagane, min 1 znak.
-  - `calories`, `protein`, `fat`, `carbs`: wymagane, nieujemne.
-  - `consumed_at`: wymagane (domyślnie ustawione na `defaultDate` + aktualna godzina lub godzina z `initialData`).
+- **Opis:** Uniwersalny modal do tworzenia i edycji posiłków (edycja wpisu historycznego).
+- **Propsy:** `isOpen`, `onClose`, `onSubmit`, `initialData`.
 
 ## 5. Typy
 
 ### DTO (zgodne z `src/types.ts`)
 
-Wkorzystujemy istniejące typy:
-
 - `MealDto`
 - `MealSummary`
 - `CreateMealCommand`
 - `UpdateMealCommand`
+- `CreateFavoriteDTO` (dla US-014)
 
 ### View Models & Form Schemas
 
@@ -103,76 +88,68 @@ export type MealFormValues = z.infer<typeof mealFormSchema>;
 
 ## 6. Zarządzanie stanem
 
-Zalecane użycie customowego hooka `useHistoryMeals` wewnątrz `HistoryView`:
+Zalecane użycie customowego hooka `useHistoryMeals` wewnątrz `HistoryView`.
 
-```typescript
-const useHistoryMeals = (date: Date) => {
-  // Logika fetchowania z użyciem useEffect lub React Query (jeśli dostępne)
-  // URL: `/api/meals?date=${format(date, 'yyyy-MM-dd')}`
-  // Zwraca: { meals, summary, isLoading, refresh, deleteMeal, updateMeal, createMeal }
-};
-```
-
-Stan lokalny w `HistoryView`:
-
-- `selectedDate`: `useState<Date>(new Date())`
-- `isModalOpen`: `useState<boolean>(false)`
-- `editingMeal`: `useState<MealDto | null>(null)` (jeśli null -> tryb dodawania)
+**Hook `useHistoryMeals`**:
+- Fetchuje posiłki dla danej daty.
+- Udostępnia metody CRUD: `deleteMeal`, `updateMeal`.
+- Udostępnia metodę `addToFavorites(meal: MealDto)`:
+  - Wywołuje `POST /api/favorites`.
+  - Obsługuje sukces (Toast: "Dodano do ulubionych").
+  - Obsługuje błąd (Toast: "Limit ulubionych osiągnięty" lub inny błąd).
 
 ## 7. Integracja API
 
-### Pobieranie danych (GET)
+### Pobieranie i Mutacje Posiłków
 
-- **Endpoint:** `/api/meals?date=YYYY-MM-DD`
-- **Metoda:** `fetch`
-- **Format daty:** `yyyy-MM-dd` (uwaga na strefy czasowe, formatować lokalnie).
+- `GET /api/meals?date=YYYY-MM-DD`
+- `POST /api/meals`
+- `PATCH /api/meals/[id]`
+- `DELETE /api/meals/[id]`
 
-### Dodawanie (POST)
+### Dodawanie do Ulubionych (Nowe)
 
-- **Endpoint:** `/api/meals`
-- **Body:** `CreateMealCommand`
-- **Ważne:** Pole `consumed_at` musi zawierać pełną datę i godzinę. Jeśli dodajemy posiłek do przeszłości, data musi się zgadzać z wybranym dniem w kalendarzu.
-
-### Edycja (PATCH)
-
-- **Endpoint:** `/api/meals/[id]`
-- **Body:** `UpdateMealCommand` (częściowe dane, np. tylko zmienione makro).
-
-### Usuwanie (DELETE)
-
-- **Endpoint:** `/api/meals/[id]`
-- **Reakcja:** Po sukcesie usunięcia, należy przeładować listę lub usunąć element lokalnie.
+- **Endpoint:** `POST /api/favorites`
+- **Body:**
+  ```json
+  {
+    "name": "Nazwa z historii",
+    "calories": 500,
+    "protein": 30,
+    "fat": 20,
+    "carbs": 50,
+    "fiber": 5
+  }
+  ```
+- **Obsługa:** Wywoływane po kliknięciu w menu kontekstowym. Nie usuwa wpisu z historii.
 
 ## 8. Interakcje użytkownika
 
 1. **Wybór daty:** Kliknięcie w kalendarz zmienia `selectedDate` -> triggeruje pobranie danych.
-2. **Dodanie posiłku:** Kliknięcie "+" otwiera pusty `MealDialog`. Data w formularzu ustawiona domyślnie na `selectedDate`.
-3. **Edycja posiłku:** Kliknięcie "Edytuj" w menu posiłku otwiera `MealDialog` wypełniony danymi.
-4. **Zapis:** Walidacja formularza -> Request do API -> Zamknięcie modala -> Odświeżenie listy.
-5. **Usuwanie:** Kliknięcie "Usuń" -> (Opcjonalnie: Potwierdzenie) -> Request DELETE -> Odświeżenie listy.
+2. **Dodanie posiłku do historii:** Kliknięcie "+" otwiera pusty `MealDialog`.
+3. **Dodanie do ulubionych (US-014):**
+   - Użytkownik klika ikonę menu (trzy kropki) przy posiłku na liście.
+   - Wybiera "Dodaj do ulubionych".
+   - System wysyła żądanie API.
+   - Pojawia się powiadomienie "Szablon został utworzony".
+4. **Edycja posiłku:** Zmiana makro lub godziny spożycia.
+5. **Usuwanie:** Usunięcie wpisu z historii.
 
 ## 9. Warunki i walidacja
 
-- **Data przyszła:** System pozwala na nawigację w przyszłość, ale lista będzie pusta (chyba że dodamy planowanie - poza zakresem MVP).
-- **Formatowanie liczb:** Inputy numeryczne powinny blokować wartości ujemne.
-- **Loading State:** Podczas zmiany daty, lista powinna pokazać szkielet (Skeleton) lub spinner.
-- **Empty State:** Jeśli brak posiłków, wyświetlić komunikat "Brak wpisów dla tego dnia".
+- **Limit Ulubionych:** Jeśli użytkownik ma już 100 ulubionych, akcja "Dodaj do ulubionych" powinna zwrócić błąd (400 Bad Request), który frontend wyświetli jako zrozumiały komunikat.
+- **Unikalność:** API ulubionych nie wymusza unikalności nazw, więc można dodać "Owsiankę" drugi raz.
 
 ## 10. Obsługa błędów
 
-- **Błąd pobierania:** Wyświetlenie komunikatu (Toast/Alert) "Nie udało się pobrać historii".
-- **Błąd zapisu/edycji:** Wyświetlenie błędu walidacji (jeśli 400) lub ogólnego błędu (jeśli 500) wewnątrz modala, bez jego zamykania.
-- **Meal Not Found (404):** Jeśli podczas edycji posiłek został usunięty przez innego klienta, odświeżyć listę i poinformować użytkownika.
+- **Błąd pobierania:** Wyświetlenie komunikatu (Toast/Alert).
+- **Błąd zapisu/edycji:** Błąd w modalu.
+- **Błąd dodawania do ulubionych:** Toast z informacją o błędzie (np. "Nie udało się dodać do ulubionych. Sprawdź limit.").
 
 ## 11. Kroki implementacji
 
-1. **Setup API Client:** Upewnienie się, że mamy helper do fetchowania (lub użycie natywnego `fetch` z obsługą błędów).
-2. **Stworzenie Typów:** Zaktualizowanie/utworzenie definicji Zod dla formularza w `src/lib/schemas.ts` (lub lokalnie).
-3. **Implementacja `HistoryCalendar`:** Podstawowy kalendarz zmieniający datę.
-4. **Implementacja `DaySummary`:** Komponent wizualizujący `MealSummary`.
-5. **Implementacja `MealList` i `MealItem`:** Wyświetlanie statycznej listy (mock data).
-6. **Implementacja Logiki Pobierania:** Podpięcie `useEffect` do pobierania danych z API na podstawie daty.
-7. **Implementacja `MealDialog`:** Formularz z react-hook-form i zod-resolver.
-8. **Integracja CRUD:** Podpięcie funkcji `create`, `update`, `delete` pod interfejs.
-9. **Styling & Polish:** Dopracowanie wyglądu (Shadcn/ui), stany ładowania, responsywność.
-10. **Testy manualne:** Weryfikacja dodawania posiłku do przeszłości i aktualizacji podsumowania.
+1. **Aktualizacja Serwisu:** Dodanie metody `addToFavorites` do serwisu frontendowego.
+2. **Aktualizacja `MealItem`:** Dodanie `DropdownMenu` z opcją "Dodaj do ulubionych".
+3. **Logika w `HistoryView`:** Implementacja handlera `handleAddToFavorites`, który wywołuje API i pokazuje Toast.
+4. **Integracja:** Połączenie widoku listy z logiką biznesową.
+5. **Testy:** Sprawdzenie czy kliknięcie przycisku faktycznie tworzy nowy wpis w tabeli `favorites`.

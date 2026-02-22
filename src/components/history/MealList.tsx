@@ -7,6 +7,7 @@ interface MealListProps {
   isLoading: boolean;
   onEdit: (meal: MealDto) => void;
   onDuplicate: (meal: MealDto) => void;
+  onAddToFavorites: (meal: MealDto) => void;
   onDelete: (id: string) => void;
 }
 
@@ -32,7 +33,7 @@ function MealItemSkeleton() {
  * List of meal items for history view.
  * Shows loading skeletons, empty state, or meal cards with actions.
  */
-export function MealList({ meals, isLoading, onEdit, onDuplicate, onDelete }: MealListProps) {
+export function MealList({ meals, isLoading, onEdit, onDuplicate, onAddToFavorites, onDelete }: MealListProps) {
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -61,7 +62,13 @@ export function MealList({ meals, isLoading, onEdit, onDuplicate, onDelete }: Me
     <ul className="space-y-3" aria-label="Lista posiłków">
       {meals.map((meal) => (
         <li key={meal.id}>
-          <MealItem meal={meal} onEdit={onEdit} onDuplicate={onDuplicate} onDelete={onDelete} />
+          <MealItem
+            meal={meal}
+            onEdit={onEdit}
+            onDuplicate={onDuplicate}
+            onAddToFavorites={onAddToFavorites}
+            onDelete={onDelete}
+          />
         </li>
       ))}
     </ul>

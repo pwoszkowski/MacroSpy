@@ -6,13 +6,15 @@ import { X } from "lucide-react";
 import { MealInputView } from "./MealInputView";
 import { AnalysisLoadingView } from "./AnalysisLoadingView";
 import { MealReviewView } from "./MealReviewView";
-import { useMealComposer } from "./useMealComposer";
+import { useMealComposer, type SaveMealResult } from "./useMealComposer";
 import { toast } from "sonner";
 
 interface AddMealDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  defaultConsumedAt?: string;
+  showConsumedAtInput?: boolean;
 }
 
 // Hook do wykrywania urządzeń mobilnych
@@ -39,11 +41,24 @@ function useIsMobile() {
  * Zarządza przełączaniem między widokami i obsługuje logikę biznesową.
  * Na desktop używa Dialog, na mobile Drawer.
  */
-export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps) {
+export function AddMealDialog({
+  isOpen,
+  onClose,
+  onSuccess,
+  defaultConsumedAt,
+  showConsumedAtInput = false,
+}: AddMealDialogProps) {
   const isMobile = useIsMobile();
 
-  const handleSuccess = () => {
-    toast.success("Posiłek został zapisany");
+  const handleSuccess = ({ savedToFavorites, favoriteError }: SaveMealResult) => {
+    if (savedToFavorites) {
+      toast.success("Posiłek zapisany i dodany do ulubionych");
+    } else if (favoriteError) {
+      toast.warning(`Posiłek zapisany, ale nie udało się dodać do ulubionych: ${favoriteError}`);
+    } else {
+      toast.success("Posiłek został zapisany");
+    }
+
     if (onSuccess) {
       onSuccess();
     }
@@ -56,6 +71,7 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
     selectedImages,
     candidate,
     interactions,
+    isFavorite,
     error,
     setInputText,
     setSelectedImages,
@@ -63,9 +79,10 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
     createManualEntry,
     refine,
     updateCandidate,
+    setFavorite,
     save,
     reset,
-  } = useMealComposer(handleSuccess);
+  } = useMealComposer(handleSuccess, { defaultConsumedAt });
 
   // Wyświetl toast z błędem
   useEffect(() => {
@@ -118,8 +135,11 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
             onSave={save}
             onCancel={handleClose}
             onManualChange={updateCandidate}
+            onFavoriteChange={setFavorite}
+            isFavorite={isFavorite}
             isRefining={true}
             isSaving={false}
+            showConsumedAtInput={showConsumedAtInput}
           />
         ) : null;
 
@@ -132,8 +152,11 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
             onSave={save}
             onCancel={handleClose}
             onManualChange={updateCandidate}
+            onFavoriteChange={setFavorite}
+            isFavorite={isFavorite}
             isRefining={false}
             isSaving={false}
+            showConsumedAtInput={showConsumedAtInput}
           />
         ) : null;
 
@@ -146,8 +169,11 @@ export function AddMealDialog({ isOpen, onClose, onSuccess }: AddMealDialogProps
             onSave={save}
             onCancel={handleClose}
             onManualChange={updateCandidate}
+            onFavoriteChange={setFavorite}
+            isFavorite={isFavorite}
             isRefining={false}
             isSaving={true}
+            showConsumedAtInput={showConsumedAtInput}
           />
         ) : null;
 

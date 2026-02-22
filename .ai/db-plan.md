@@ -76,7 +76,30 @@ Centralna tabela przechowująca spożyte posiłki. Zawiera dane sumaryczne wylic
 
 ---
 
-### 1.4 `body_measurements`
+### 1.4 `favorite_meals`
+
+Tabela przechowująca szablony ulubionych posiłków użytkownika. Są to niezależne kopie danych (snapshoty), które służą do szybkiego tworzenia nowych wpisów w dzienniku.
+
+| Kolumna      | Typ Danych       | Wymagalność      | Opis                                                      |
+| :----------- | :--------------- | :--------------- | :-------------------------------------------------------- |
+| `id`         | `uuid`           | **PK**           | Unikalny identyfikator szablonu (default: `gen_random_uuid()`). |
+| `user_id`    | `uuid`           | NOT NULL, **FK** | Referencja do użytkownika.                                |
+| `name`       | `text`           | NOT NULL         | Nazwa ulubionego posiłku.                                 |
+| `calories`   | `integer`        | NOT NULL         | Kaloryczność szablonu (kcal).                             |
+| `protein`    | `numeric(10, 1)` | NOT NULL         | Białko (g).                                               |
+| `fat`        | `numeric(10, 1)` | NOT NULL         | Tłuszcze (g).                                             |
+| `carbs`      | `numeric(10, 1)` | NOT NULL         | Węglowodany (g).                                          |
+| `fiber`      | `numeric(10, 1)` | DEFAULT 0        | Błonnik (g).                                              |
+| `created_at` | `timestamptz`    | NOT NULL         | Data utworzenia szablonu.                                 |
+| `updated_at` | `timestamptz`    | NOT NULL         | Data ostatniej aktualizacji szablonu.                     |
+
+**Ograniczenia (Constraints):**
+
+- `macros_check`: Wszystkie makroskładniki i kalorie `>= 0`.
+
+---
+
+### 1.5 `body_measurements`
 
 Tabela do śledzenia postępów w wadze i składzie ciała (zgodnie z US-010).
 
@@ -111,7 +134,11 @@ Tabela do śledzenia postępów w wadze i składzie ciała (zgodnie z US-010).
     - Jeden użytkownik posiada wiele posiłków.
     - Usunięcie użytkownika (Cascade) usuwa jego posiłki.
 
-4.  **Users ↔ Body Measurements (1:N)**
+4.  **Users ↔ Favorite Meals (1:N)**
+    - Jeden użytkownik może posiadać wiele szablonów ulubionych posiłków (limit 100 na poziomie aplikacji).
+    - Usunięcie użytkownika (Cascade) usuwa jego ulubione posiłki.
+
+5.  **Users ↔ Body Measurements (1:N)**
     - Jeden użytkownik posiada wiele pomiarów w czasie.
 
 ## 3. Indeksy i Wydajność
@@ -127,7 +154,11 @@ Dla zapewnienia szybkiego działania dashboardu i widoków historii, zostaną ut
 3.  **`dietary_goals`**:
     - `idx_goals_user_start`: Indeks złożony `(user_id, start_date DESC)`. Służy do szybkiego znajdowania aktualnego celu.
 
-4.  **`body_measurements`**:
+4.  **`favorite_meals`**:
+    - `idx_favorites_user_created`: Indeks złożony `(user_id, created_at DESC)`. Służy do domyślnego sortowania listy ulubionych (najnowsze).
+    - `idx_favorites_user_name`: Indeks złożony `(user_id, name)`. Służy do wyszukiwania i sortowania alfabetycznego.
+
+5.  **`body_measurements`**:
     - `idx_measurements_user_date`: Indeks złożony `(user_id, date DESC)`.
 
 ## 4. Bezpieczeństwo (Row Level Security - RLS)
@@ -136,7 +167,7 @@ Zgodnie z wymaganiami, dane są ściśle prywatne. Wszystkie tabele będą miał
 
 ### Polityki (Policies)
 
-Dla każdej tabeli (`profiles`, `dietary_goals`, `meals`, `body_measurements`) zostaną zdefiniowane polityki CRUD, które pozwalają na dostęp **tylko właścicielowi** danych:
+Dla każdej tabeli (`profiles`, `dietary_goals`, `meals`, `favorite_meals`, `body_measurements`) zostaną zdefiniowane polityki CRUD, które pozwalają na dostęp **tylko właścicielowi** danych:
 
 - **SELECT**: `auth.uid() = user_id` (lub `id` w przypadku `profiles`)
 - **INSERT**: `auth.uid() = user_id` (lub `id` w przypadku `profiles`)
@@ -155,10 +186,11 @@ Funkcja PL/pgSQL uruchamiana `AFTER INSERT` na tabeli `auth.users`.
 
 ### 5.2 Trigger: `handle_updated_at`
 
-Funkcja PL/pgSQL do automatycznej aktualizacji kolumny `updated_at` na bieżący czas przy każdej modyfikacji rekordu (dla tabel `profiles`, `meals`, `body_measurements`).
+Funkcja PL/pgSQL do automatycznej aktualizacji kolumny `updated_at` na bieżący czas przy każdej modyfikacji rekordu (dla tabel `profiles`, `meals`, `favorite_meals`, `body_measurements`).
 
 ### 5.3 Decyzje Projektowe
 
 - **JSONB dla kontekstu AI**: Zamiast tworzyć skomplikowaną strukturę relacyjną dla historii czatu z AI (która jest ulotna i służy tylko do korekty bieżącego posiłku), przechowujemy ją jako obiekt JSONB w rekordzie posiłku. Pozwala to na elastyczność i upraszcza schemat.
 - **Brak tabeli produktów**: W modelu MVP nie budujemy własnej bazy produktów spożywczych. Polegamy całkowicie na wiedzy modelu LLM (grok-4.1-fast). Tabela `meals` przechowuje tylko wynikowe makro dla całego posiłku.
 - **Typy liczbowe**: Użycie `NUMERIC(10,1)` dla makroskładników pozwala na precyzję do jednego miejsca po przecinku (np. 4.5g tłuszczu), co jest wystarczające dla celów dietetycznych, unikając problemów z zaokrąglaniem `float`.
+- **Szablony Ulubionych**: Przyjęto model "snapshot", gdzie ulubiony posiłek jest niezależną kopią danych. Edycja ulubionego posiłku nie wpływa na zapisane już posiłki w historii i vice versa. Upraszcza to logikę i zapobiega nieoczekiwanym zmianom w historii żywieniowej użytkownika.

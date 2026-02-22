@@ -6,6 +6,7 @@ Widok "Modal Dodawania Posiłku" to centralny punkt interakcji użytkownika w ap
 
 - **Tryb AI**: Multimodalne (tekst + zdjęcia) wprowadzanie danych, analiza przez model `grok-4.1-fast`, interaktywna korekta (refinement).
 - **Tryb ręczny**: Bezpośrednie wprowadzanie nazwy posiłku i wartości makroskładników bez użycia AI.
+- **Zapis do ulubionych (US-013)**: Możliwość oznaczenia dodawanego posiłku jako "Ulubiony", co tworzy szablon do szybkiego użycia w przyszłości.
 
 Widok działa jako nakładka (Dialog/Drawer) dostępna z poziomu Dashboardu.
 
@@ -32,6 +33,7 @@ AddMealDialog (Smart Component)
 │   └── MealReviewView (State: REVIEW)
 │       ├── [Wspólne]
 │       │   ├── MacroEditableStats (Edytowalne pola makro)
+│       │   ├── SaveAsFavoriteCheckbox (Checkbox "Zapisz do ulubionych")
 │       │   └── ActionButtons (Anuluj / Zapisz)
 │       ├── [Tylko tryb AI]
 │       │   ├── AIResponseSummary (Dymek z komentarzem AI)
@@ -101,10 +103,11 @@ AddMealDialog (Smart Component)
 
 ### `MealReviewView`
 
-- **Opis**: Ekran weryfikacji. Wyświetla dane do sprawdzenia i pozwala na ich korektę (ręczną lub przez AI - tylko dla wpisów z AI).
+- **Opis**: Ekran weryfikacji. Wyświetla dane do sprawdzenia i pozwala na ich korektę oraz oznaczenie jako ulubiony.
 - **Główne elementy**:
   - `Input` (Nazwa posiłku)
   - `NumberInput` (Kalorie, Białko, Tłuszcze, Węglowodany, Błonnik)
+  - `Checkbox` ("Zapisz jako ulubiony") – realizacja US-013.
   - **Dla wpisów z AI**:
     - Dymek z odpowiedzią AI (`AIResponseSummary`)
     - Historia interakcji (`InteractionHistory`)
@@ -113,10 +116,11 @@ AddMealDialog (Smart Component)
     - Informacja tekstowa: "Posiłek dodany ręcznie. Sprawdź wartości przed zapisem."
 - **Obsługiwane interakcje**:
   - Ręczna edycja wartości liczbowych (aktualizuje stan lokalny)
+  - Zaznaczenie/odznaczenie "Zapisz jako ulubiony"
   - **Tylko wpisy z AI**:
     - Wpisanie komendy korekcyjnej (np. "bez masła") -> wywołuje API `refine` -> aktualizuje wartości
     - Przeglądanie historii interakcji
-  - Zapisz -> wywołuje API `create`
+  - Zapisz -> wywołuje API `create` (oraz `favorites` jeśli zaznaczono)
   - Anuluj -> zamyka modal (z potwierdzeniem)
 - **Walidacja**: Wartości numeryczne muszą być nieujemne. Nazwa wymagana.
 - **Propsy**:
@@ -126,6 +130,8 @@ AddMealDialog (Smart Component)
   - `onSave`: `() => Promise<void>`
   - `onCancel`: `() => void`
   - `onManualChange`: `(field: keyof MealCandidateViewModel, value: any) => void`
+  - `onFavoriteChange`: `(checked: boolean) => void`
+  - `isFavorite`: `boolean`
   - `isRefining`: `boolean`
   - `isSaving`: `boolean`
 
@@ -183,6 +189,7 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
 - `selectedImages`: string[] (base64)
 - `candidate`: `MealCandidateViewModel | null`
 - `interactions`: `InteractionLog[]`
+- `isFavorite`: `boolean` (Nowy stan dla checkboxa)
 - `error`: string | null
 
 **Metody hooka:**
@@ -191,7 +198,8 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
 - `createManualEntry(data)`: Tworzy `candidate` z danych ręcznych, pomija analizę AI, przechodzi do stanu 'review'. (Tylko tryb Manual)
 - `refine(prompt)`: Wywołuje `POST /api/ai/refine` z `ai_context`. Aktualizuje `candidate` i `interactions`. (Tylko tryb AI)
 - `updateCandidate(field, value)`: Obsługa ręcznej edycji pól. (Oba tryby)
-- `save()`: Wywołuje `POST /api/meals`. Emituje zdarzenie odświeżenia dashboardu. (Oba tryby)
+- `toggleFavorite()`: Przełącza stan `isFavorite`.
+- `save()`: Wywołuje `POST /api/meals`. Jeśli `isFavorite` jest true, wywołuje również `POST /api/favorites`. Emituje zdarzenie odświeżenia dashboardu. (Oba tryby)
 - `reset()`: Czyści stan do domyślnego. (Oba tryby)
 
 ## 7. Integracja API
@@ -220,11 +228,18 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
   ```
 - **Odpowiedź**: `AnalyzeMealResponse` (zaktualizowane makro i kontekst).
 
-### 3. Zapis (Create)
+### 3. Zapis Posiłku (Create Meal)
 
 - **Endpoint**: `POST /api/meals`
 - **Żądanie**: `CreateMealCommand` (zgodnie z `src/types.ts`).
 - **Odpowiedź**: `Meal` (zapisany obiekt).
+
+### 4. Zapis Ulubionego (Create Favorite) - Opcjonalnie
+
+- **Endpoint**: `POST /api/favorites`
+- **Użycie**: Wywoływane równolegle lub sekwencyjnie z zapisem posiłku, jeśli zaznaczono checkbox.
+- **Żądanie**: `CreateFavoriteDTO` (te same dane co posiłek).
+- **Odpowiedź**: Status 201 Created.
 
 ## 8. Interakcje użytkownika
 
@@ -240,28 +255,25 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
    - Wpisuje w dolnym pasku: "zmień masło na olej rzepakowy".
    - Stan zmienia się na `REFINING` (lokalny loading).
    - Wartości makro aktualizują się, dymek asystenta zmienia treść.
-   - Historia interakcji wyświetla wymianę zdań.
-7. **Edycja ręczna**: Użytkownik widzi, że gramatura jajecznicy to 200g, a nie 150g. Ręcznie zmienia kalorie w inputcie numerycznym.
-8. **Zapis**: Użytkownik klika "Zapisz". Dane trafiają do bazy. Modal zamyka się. Toast informuje o sukcesie. Dashboard odświeża listę.
+7. **Ulubione**: Użytkownik stwierdza, że to jego standardowe śniadanie. Zaznacza checkbox "Dodaj do ulubionych".
+8. **Edycja ręczna**: Użytkownik widzi, że gramatura jajecznicy to 200g, a nie 150g. Ręcznie zmienia kalorie w inputcie numerycznym.
+9. **Zapis**: Użytkownik klika "Zapisz".
+   - System wysyła dane do dziennika (`/api/meals`).
+   - System wysyła dane do ulubionych (`/api/favorites`).
+   - Modal zamyka się.
+   - Toast informuje o sukcesie ("Posiłek zapisany i dodany do ulubionych").
+   - Dashboard odświeża listę.
 
 ### Scenariusz B: Tryb ręczny (bez AI)
 
 1. **Otwarcie**: Użytkownik klika "+" na Dashboardzie. Otwiera się Dialog w stanie `IDLE`.
 2. **Wybór trybu**: Użytkownik przełącza na tryb "Ręczne dodanie".
-3. **Input**: Użytkownik wypełnia formularz:
-   - Nazwa: "Ser żółty 100g"
-   - Kalorie: 400
-   - Białko: 25g
-   - Tłuszcze: 33g
-   - Węglowodany: 0g
-   - Błonnik: 0g
+3. **Input**: Użytkownik wypełnia formularz (Nazwa, Makro).
 4. **Przejście**: Użytkownik klika "Przejdź do podsumowania". UI przechodzi do stanu `REVIEW`.
 5. **Weryfikacja**:
    - Formularz wypełniony wprowadzonymi danymi.
-   - Widoczna informacja: "Posiłek dodany ręcznie. Sprawdź wartości przed zapisem."
-   - Brak dymku AI, brak sekcji refine.
-   - Użytkownik może ręcznie skorygować wartości.
-6. **Zapis**: Użytkownik klika "Zapisz". Dane trafiają do bazy. Modal zamyka się. Toast informuje o sukcesie. Dashboard odświeża listę.
+   - Użytkownik zaznacza checkbox "Dodaj do ulubionych".
+6. **Zapis**: Użytkownik klika "Zapisz". Dane trafiają do bazy (posiłek + ulubiony). Modal zamyka się.
 
 ## 9. Warunki i walidacja
 
@@ -275,25 +287,20 @@ Logika zostanie wydzielona do customowego hooka `useMealComposer` w `src/compone
   - `Name`: Niepuste.
   - `Macros`: Wartości >= 0.
   - `Date`: Prawidłowa data/czas (domyślnie `new Date()`).
-- **Blokady**: Przycisk "Zapisz" zablokowany podczas trwania requestu (`isSubmitting`).
+- **Limit Ulubionych**: Jeśli użytkownik zaznaczy checkbox, a ma już 100 ulubionych, zapis posiłku powinien się udać, ale zapis do ulubionych może zwrócić błąd (lub walidacja powinna nastąpić przed wysłaniem). W MVP można wyświetlić ostrzeżenie "Osiągnięto limit ulubionych" i nie zaznaczać checkboxa domyślnie.
 
 ## 10. Obsługa błędów
 
-- **Błąd analizy AI**: Wyświetlenie komunikatu błędu wewnątrz modala (np. "Nie udało się przeanalizować posiłku. Spróbuj ponownie."). Powrót do stanu `IDLE` z zachowanym inputem.
-- **Błąd korekty (Refine)**: Toast z błędem ("Nie udało się zaktualizować posiłku"), zachowanie poprzedniego stanu `candidate`.
-- **Błąd zapisu**: Toast z błędem ("Błąd połączenia"), formularz pozostaje otwarty, aby użytkownik nie stracił danych.
+- **Błąd analizy AI**: Wyświetlenie komunikatu błędu wewnątrz modala.
+- **Błąd zapisu do dziennika**: Toast z błędem krytycznym, formularz pozostaje otwarty.
+- **Błąd zapisu do ulubionych (przy udanym zapisie posiłku)**: Toast z ostrzeżeniem: "Posiłek zapisany, ale nie udało się dodać do ulubionych (np. limit)". Modal zamyka się.
 
 ## 11. Kroki implementacji
 
 1. **Setup struktur**: Stworzenie katalogu `src/components/dashboard/composer` i plików `types.ts`, `useMealComposer.ts`.
-2. **Implementacja Hooka**: Napisanie logiki `useMealComposer` z metodami `analyze()` i `createManualEntry()`.
-3. **Komponent ManualEntryForm**: Implementacja formularza ręcznego wprowadzania danych.
-4. **Komponent InputView**: Implementacja formularza wejściowego z przełącznikiem trybów i obsługą plików (konwersja File -> Base64).
-5. **Komponent ReviewView**: Implementacja widoku podsumowania z edytowalnymi inputami, sekcją czatu (dla AI) i informacją o ręcznym wpisie.
-6. **Integracja API**: Podpięcie rzeczywistych endpointów `/api/ai/*` oraz `/api/meals` w hooku.
-7. **Kontener Dialog**: Złożenie wszystkiego w `AddMealDialog` i podpięcie pod przycisk na Dashboardzie.
-8. **Obsługa zdarzeń**: Dodanie event listenera lub contextu do odświeżania listy posiłków po dodaniu.
-9. **Stylowanie i UX**: Dopracowanie animacji (Skeleton), responsywności (Dialog vs Drawer) i przełącznika trybów.
-10. **Testy manualne**:
-    - Ścieżka AI: Tekst -> Analiza -> Korekta -> Zapis
-    - Ścieżka Manual: Formularz -> Review -> Zapis
+2. **Implementacja Hooka**: Napisanie logiki `useMealComposer` z obsługą AI i flagą `isFavorite`.
+3. **Komponenty UI**: Implementacja `ManualEntryForm`, `InputView`, `ReviewView` (z checkboxem).
+4. **Integracja API**: Podpięcie endpointów `/api/ai/*`, `/api/meals` oraz `/api/favorites`.
+5. **Obsługa błędów**: Implementacja `try-catch` w funkcji `save` z obsługą częściowego sukcesu (posiłek tak, ulubione nie).
+6. **Kontener Dialog**: Złożenie wszystkiego w `AddMealDialog`.
+7. **Testy manualne**: Sprawdzenie czy posiłek pojawia się zarówno w historii jak i na liście ulubionych.
