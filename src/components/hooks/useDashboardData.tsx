@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { MealListResponse } from "@/types";
 import { format } from "date-fns";
 
@@ -17,15 +17,15 @@ export function useDashboardData(selectedDate: Date, initialData?: MealListRespo
   const [data, setData] = useState<MealListResponse | null>(initialData || null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const selectedDateStr = useMemo(() => format(selectedDate, "yyyy-MM-dd"), [selectedDate]);
 
   const fetchMeals = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const dateStr = format(selectedDate, "yyyy-MM-dd");
       const timezoneOffsetMin = new Date().getTimezoneOffset();
-      const response = await fetch(`/api/meals?date=${dateStr}&tz_offset_min=${timezoneOffsetMin}`);
+      const response = await fetch(`/api/meals?date=${selectedDateStr}&tz_offset_min=${timezoneOffsetMin}`);
 
       if (!response.ok) {
         throw new Error(`Błąd pobierania danych: ${response.statusText}`);
@@ -38,11 +38,11 @@ export function useDashboardData(selectedDate: Date, initialData?: MealListRespo
     } finally {
       setIsLoading(false);
     }
-  }, [selectedDate]);
+  }, [selectedDateStr]);
 
   useEffect(() => {
     fetchMeals();
-  }, [selectedDate, fetchMeals]);
+  }, [fetchMeals]);
 
   return {
     data,
