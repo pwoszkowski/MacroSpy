@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { dietaryGoalsSchema, type DietaryGoalsFormValues } from "./schemas";
 import type { DietaryGoalDto, ProfileDto, SetDietaryGoalCommand, GoalTargets } from "@/types";
 import { TdeeCalculatorDialog } from "./TdeeCalculatorDialog";
+import { useNetworkStatus } from "@/components/hooks/useNetworkStatus";
+import { toast } from "sonner";
 
 interface DietaryGoalsFormProps {
   initialGoal: DietaryGoalDto | null;
@@ -14,6 +16,8 @@ interface DietaryGoalsFormProps {
 }
 
 export function DietaryGoalsForm({ initialGoal, userProfile, onSave }: DietaryGoalsFormProps) {
+  const { isOnline } = useNetworkStatus();
+
   const {
     register,
     handleSubmit,
@@ -31,6 +35,11 @@ export function DietaryGoalsForm({ initialGoal, userProfile, onSave }: DietaryGo
   });
 
   const onSubmitHandler = async (data: DietaryGoalsFormValues) => {
+    if (!isOnline) {
+      toast.error("Połącz się z internetem, aby zapisać dane.");
+      return;
+    }
+
     try {
       // Dodaj datę rozpoczęcia (dzisiaj)
       const today = new Date().toISOString().split("T")[0];
@@ -124,10 +133,11 @@ export function DietaryGoalsForm({ initialGoal, userProfile, onSave }: DietaryGo
         </div>
 
         <div className="flex justify-end pt-4">
-          <Button type="submit" disabled={isSubmitting}>
+          <Button type="submit" disabled={isSubmitting || !isOnline}>
             {isSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
           </Button>
         </div>
+        {!isOnline && <p className="text-sm text-destructive">Połącz się z internetem, aby zapisać dane.</p>}
       </form>
     </div>
   );

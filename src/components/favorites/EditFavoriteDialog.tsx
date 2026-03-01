@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { FavoriteMealDto, UpdateFavoriteCommand } from "@/types";
 import { editFavoriteFormSchema, type EditFavoriteFormValues } from "./schemas";
+import { useNetworkStatus } from "@/components/hooks/useNetworkStatus";
+import { toast } from "sonner";
 
 interface EditFavoriteDialogProps {
   isOpen: boolean;
@@ -23,6 +25,8 @@ interface EditFavoriteDialogProps {
 }
 
 export function EditFavoriteDialog({ isOpen, favorite, onClose, onSubmit }: EditFavoriteDialogProps) {
+  const { isOnline } = useNetworkStatus();
+
   const {
     register,
     handleSubmit,
@@ -56,6 +60,11 @@ export function EditFavoriteDialog({ isOpen, favorite, onClose, onSubmit }: Edit
   }, [favorite, isOpen, reset]);
 
   const handleFormSubmit = async (data: EditFavoriteFormValues) => {
+    if (!isOnline) {
+      toast.error("Połącz się z internetem, aby zapisać dane.");
+      return;
+    }
+
     await onSubmit(data);
     onClose();
   };
@@ -113,10 +122,11 @@ export function EditFavoriteDialog({ isOpen, favorite, onClose, onSubmit }: Edit
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Anuluj
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !isOnline}>
               {isSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
             </Button>
           </DialogFooter>
+          {!isOnline && <p className="text-sm text-destructive">Połącz się z internetem, aby zapisać dane.</p>}
         </form>
       </DialogContent>
     </Dialog>

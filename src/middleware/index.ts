@@ -16,6 +16,11 @@ const PUBLIC_PATHS = [
 ];
 
 export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
+  // Route offline jest prerenderowana statycznie i nie powinna wymagać sesji.
+  if (url.pathname === "/offline" || url.pathname === "/offline/") {
+    return next();
+  }
+
   // Create Supabase server instance with cookie handling
   const supabase = createSupabaseServerInstance({
     cookies,
@@ -29,7 +34,7 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
+  if (user?.email) {
     locals.user = {
       email: user.email,
       id: user.id,

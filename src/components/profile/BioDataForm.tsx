@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { bioDataSchema, type BioDataFormValues } from "./schemas";
 import type { ProfileDto, UpdateProfileCommand } from "@/types";
+import { useNetworkStatus } from "@/components/hooks/useNetworkStatus";
+import { toast } from "sonner";
 
 interface BioDataFormProps {
   initialData: ProfileDto;
@@ -13,6 +15,8 @@ interface BioDataFormProps {
 }
 
 export function BioDataForm({ initialData, onSave }: BioDataFormProps) {
+  const { isOnline } = useNetworkStatus();
+
   const {
     register,
     handleSubmit,
@@ -31,6 +35,11 @@ export function BioDataForm({ initialData, onSave }: BioDataFormProps) {
   const gender = watch("gender");
 
   const onSubmitHandler = async (data: BioDataFormValues) => {
+    if (!isOnline) {
+      toast.error("Połącz się z internetem, aby zapisać dane.");
+      return;
+    }
+
     try {
       await onSave(data);
     } catch (error) {
@@ -70,10 +79,11 @@ export function BioDataForm({ initialData, onSave }: BioDataFormProps) {
       </div>
 
       <div className="flex justify-end pt-4">
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || !isOnline}>
           {isSubmitting ? "Zapisywanie..." : "Zapisz zmiany"}
         </Button>
       </div>
+      {!isOnline && <p className="text-sm text-destructive">Połącz się z internetem, aby zapisać dane.</p>}
     </form>
   );
 }

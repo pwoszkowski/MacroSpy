@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { FavoriteMealDto, CreateMealCommand } from "@/types";
 import { logFavoriteFormSchema, type LogFavoriteFormValues } from "./schemas";
+import { useNetworkStatus } from "@/components/hooks/useNetworkStatus";
+import { toast } from "sonner";
 
 interface LogFavoriteDialogProps {
   isOpen: boolean;
@@ -24,6 +26,8 @@ interface LogFavoriteDialogProps {
 }
 
 export function LogFavoriteDialog({ isOpen, favorite, onClose, onSubmit }: LogFavoriteDialogProps) {
+  const { isOnline } = useNetworkStatus();
+
   const {
     register,
     handleSubmit,
@@ -59,6 +63,11 @@ export function LogFavoriteDialog({ isOpen, favorite, onClose, onSubmit }: LogFa
   }, [favorite, isOpen, reset]);
 
   const handleFormSubmit = async (data: LogFavoriteFormValues) => {
+    if (!isOnline) {
+      toast.error("Połącz się z internetem, aby zapisać dane.");
+      return;
+    }
+
     await onSubmit({
       name: data.name,
       calories: data.calories,
@@ -129,10 +138,11 @@ export function LogFavoriteDialog({ isOpen, favorite, onClose, onSubmit }: LogFa
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Anuluj
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !isOnline}>
               {isSubmitting ? "Dodawanie..." : "Dodaj"}
             </Button>
           </DialogFooter>
+          {!isOnline && <p className="text-sm text-destructive">Połącz się z internetem, aby zapisać dane.</p>}
         </form>
       </DialogContent>
     </Dialog>

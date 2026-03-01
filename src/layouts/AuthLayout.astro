@@ -1,5 +1,8 @@
 ---
 import "../styles/global.css";
+import { NetworkStatus } from "../components/NetworkStatus";
+import { ReloadPrompt } from "../components/ReloadPrompt";
+import { ToastProvider } from "../components/ToastProvider";
 
 interface Props {
   title?: string;
@@ -14,6 +17,10 @@ const { title = "MacroSpy - Logowanie" } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#09090b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <script is:inline>
@@ -44,6 +51,9 @@ const { title = "MacroSpy - Logowanie" } = Astro.props;
         </div>
       </main>
     </div>
+    <ReloadPrompt client:load />
+    <NetworkStatus client:load />
+    <ToastProvider client:load />
   </body>
 </html>
 

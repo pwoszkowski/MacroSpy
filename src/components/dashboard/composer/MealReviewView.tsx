@@ -7,6 +7,8 @@ import type { MealCandidateViewModel, InteractionLog } from "./types";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNetworkStatus } from "@/components/hooks/useNetworkStatus";
+import { toast } from "sonner";
 
 interface MealReviewViewProps {
   candidate: MealCandidateViewModel;
@@ -54,8 +56,18 @@ export function MealReviewView({
   isSaving,
   showConsumedAtInput = false,
 }: MealReviewViewProps) {
+  const { isOnline } = useNetworkStatus();
   const isProcessing = isRefining || isSaving;
   const isManualEntry = !candidate.assistant_response && !candidate.ai_context;
+
+  const handleSave = async () => {
+    if (!isOnline) {
+      toast.error("Połącz się z internetem, aby zapisać dane.");
+      return;
+    }
+
+    await onSave();
+  };
 
   return (
     <div className="flex flex-col gap-4 p-4" data-test-id="meal-review-view">
@@ -116,8 +128,8 @@ export function MealReviewView({
           Anuluj
         </Button>
         <Button
-          onClick={onSave}
-          disabled={isProcessing || !candidate.name.trim()}
+          onClick={handleSave}
+          disabled={isProcessing || !candidate.name.trim() || !isOnline}
           className="flex-1"
           data-test-id="save-meal-button"
         >
@@ -131,6 +143,7 @@ export function MealReviewView({
           )}
         </Button>
       </div>
+      {!isOnline && <p className="text-sm text-destructive">Połącz się z internetem, aby zapisać dane.</p>}
     </div>
   );
 }

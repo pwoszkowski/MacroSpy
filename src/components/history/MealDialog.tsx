@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label";
 import { mealFormSchema, type MealFormValues } from "./schemas";
 import type { MealDto } from "@/types";
 import { format } from "date-fns";
+import { useNetworkStatus } from "@/components/hooks/useNetworkStatus";
+import { toast } from "sonner";
 
 interface MealDialogProps {
   isOpen: boolean;
@@ -32,6 +34,7 @@ interface MealDialogProps {
 export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate, mode = "create" }: MealDialogProps) {
   const isEditMode = mode === "edit";
   const isDuplicateMode = mode === "duplicate";
+  const { isOnline } = useNetworkStatus();
 
   const {
     register,
@@ -102,6 +105,11 @@ export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate
   const submitLabel = isEditMode ? "Zapisz zmiany" : "Dodaj posiłek";
 
   const handleFormSubmit = async (data: MealFormValues) => {
+    if (!isOnline) {
+      toast.error("Połącz się z internetem, aby zapisać dane.");
+      return;
+    }
+
     try {
       // Convert to ISO string for API
       const formattedData = {
@@ -111,8 +119,8 @@ export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate
       await onSubmit(formattedData);
       onClose();
     } catch (error) {
-      // Error is handled by parent component
-      console.error("Error submitting meal:", error);
+      // Error is handled by parent component.
+      void error;
     }
   };
 
@@ -256,10 +264,11 @@ export function MealDialog({ isOpen, onClose, onSubmit, initialData, defaultDate
             <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
               Anuluj
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !isOnline}>
               {isSubmitting ? "Zapisywanie..." : submitLabel}
             </Button>
           </DialogFooter>
+          {!isOnline && <p className="text-sm text-destructive">Połącz się z internetem, aby zapisać dane.</p>}
         </form>
       </DialogContent>
     </Dialog>

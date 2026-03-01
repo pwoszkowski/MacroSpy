@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { measurementFormSchema, type MeasurementFormValues } from "./schemas";
+import { useNetworkStatus } from "@/components/hooks/useNetworkStatus";
+import { toast } from "sonner";
 
 interface MeasurementFormProps {
   onSubmit: (data: MeasurementFormValues) => Promise<void>;
@@ -11,6 +13,8 @@ interface MeasurementFormProps {
 }
 
 export function MeasurementForm({ onSubmit, onCancel }: MeasurementFormProps) {
+  const { isOnline } = useNetworkStatus();
+
   const {
     register,
     handleSubmit,
@@ -26,6 +30,11 @@ export function MeasurementForm({ onSubmit, onCancel }: MeasurementFormProps) {
   });
 
   const onSubmitHandler = async (data: MeasurementFormValues) => {
+    if (!isOnline) {
+      toast.error("Połącz się z internetem, aby zapisać dane.");
+      return;
+    }
+
     try {
       await onSubmit(data);
     } catch (error) {
@@ -88,10 +97,11 @@ export function MeasurementForm({ onSubmit, onCancel }: MeasurementFormProps) {
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
           Anuluj
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || !isOnline}>
           {isSubmitting ? "Zapisywanie..." : "Zapisz"}
         </Button>
       </div>
+      {!isOnline && <p className="text-sm text-destructive">Połącz się z internetem, aby zapisać dane.</p>}
     </form>
   );
 }
