@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <clipPath id="circleMask">
+      <circle cx="250" cy="250" r="210" />
+    </clipPath>
+
+    <path id="fork" d="
+      M 192 500 
+      L 192 270 
+      C 192 240, 170 230, 170 200 
+      L 170 115 
+      A 7 7 0 0 1 184 115 
+      L 184 190 
+      A 7 7 0 0 0 198 190 
+      L 198 115 
+      A 7 7 0 0 1 212 115 
+      L 212 190 
+      A 7 7 0 0 0 226 190 
+      L 226 115 
+      A 7 7 0 0 1 240 115 
+      L 240 200 
+      C 240 230, 218 240, 218 270 
+      L 218 500 
+      Z" />
+
+    <path id="knife" d="
+      M 260 500 
+      L 260 125 
+      C 260 105, 280 100, 290 120 
+      C 315 160, 315 220, 286 270 
+      L 286 500 
+      Z" />
+
+  </defs>
+
+  <rect width="100%" height="100%" fill="#000000" opacity="0" />
+
+  <g transform="translate(250, 250) scale(-1.1, 1.1) rotate(45)">
+    <path d="M -37.5 0 L -37.5 240 A 37.5 37.5 0 0 0 37.5 240 L 37.5 0 Z" fill="#FFFFFF" />
+    <path d="M -15 0 L -15 274.4 A 37.5 37.5 0 0 0 37.5 240 L 37.5 0 Z" fill="#FFFFFF" />
+  </g>
+
+  <g clip-path="url(#circleMask)">
+    <rect width="500" height="500" fill="#FFFFFF" />
+    
+<g transform="translate(-85, -30) scale(1.4, 1.4)">
+    <use href="#fork" x="8" y="8" fill="#000000" opacity="0.3" />
+    <use href="#knife" x="8" y="8" fill="#000000" opacity="0.3" />
+    <use href="#fork" fill="#000000" />
+    <use href="#knife" fill="#000000" />
+</g>
+  </g>
+</svg>

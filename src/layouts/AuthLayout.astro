@@ -13,7 +13,7 @@ const { title = "MacroSpy - Logowanie" } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <script is:inline>
@@ -32,9 +32,7 @@ const { title = "MacroSpy - Logowanie" } = Astro.props;
       {/* Logo w górnej części */}
       <header class="flex justify-center pt-8 pb-4 md:pt-12 md:pb-8">
         <div class="flex items-center space-x-2">
-          <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span class="text-primary-foreground font-bold text-lg">M</span>
-          </div>
+          <img src="/favicon.svg" alt="Logo MacroSpy" class="w-8 h-8" />
           <h1 class="text-xl md:text-2xl font-bold">MacroSpy</h1>
         </div>
       </header>
