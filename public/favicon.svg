@@ -33,21 +33,21 @@
 
   </defs>
 
-  <rect width="100%" height="100%" fill="#000000" opacity="0" />
+  <rect width="100%" height="100%" fill="#FFFFFF" opacity="0" />
 
   <g transform="translate(250, 250) scale(-1.1, 1.1) rotate(45)">
-    <path d="M -37.5 0 L -37.5 240 A 37.5 37.5 0 0 0 37.5 240 L 37.5 0 Z" fill="#FFFFFF" />
-    <path d="M -15 0 L -15 274.4 A 37.5 37.5 0 0 0 37.5 240 L 37.5 0 Z" fill="#FFFFFF" />
+    <path d="M -37.5 0 L -37.5 240 A 37.5 37.5 0 0 0 37.5 240 L 37.5 0 Z" fill="#000000" />
+    <path d="M -15 0 L -15 274.4 A 37.5 37.5 0 0 0 37.5 240 L 37.5 0 Z" fill="#000000" />
   </g>
 
   <g clip-path="url(#circleMask)">
-    <rect width="500" height="500" fill="#FFFFFF" />
+    <rect width="500" height="500" fill="#000000" />
     
 <g transform="translate(-85, -30) scale(1.4, 1.4)">
-    <use href="#fork" x="8" y="8" fill="#000000" opacity="0.3" />
-    <use href="#knife" x="8" y="8" fill="#000000" opacity="0.3" />
-    <use href="#fork" fill="#000000" />
-    <use href="#knife" fill="#000000" />
+    <use href="#fork" x="8" y="8" fill="#FFFFFF" opacity="0.2" />
+    <use href="#knife" x="8" y="8" fill="#FFFFFF" opacity="0.2" />
+    <use href="#fork" fill="#FFFFFF" />
+    <use href="#knife" fill="#FFFFFF" />
 </g>
   </g>
 </svg>

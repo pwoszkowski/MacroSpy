@@ -38,6 +38,21 @@ Traditional calorie counting apps often lead to user burnout due to the tedious 
 - **CI/CD**: GitHub Actions
 - **Hosting**: DigitalOcean (Dockerized)
 
+## PWA Capabilities
+
+MacroSpy includes production-ready PWA support:
+
+- **Installable App**: Web App Manifest with app icons (`192`, `512`, `maskable`, `apple-touch-icon`).
+- **Offline Fallback Page**: Dedicated `/offline` route when navigation cannot be resolved from network/cache.
+- **Runtime Caching (Workbox)**:
+  - `CacheFirst` for static assets (JS/CSS/fonts/icons),
+  - `NetworkFirst` for navigations and Supabase read endpoints,
+  - `StaleWhileRevalidate` for external images.
+- **Network UX**:
+  - global offline banner + toast notifications,
+  - save actions disabled while offline (meal, measurement, favorites, profile forms).
+- **Update Prompt**: app shows a refresh prompt when a new Service Worker version is available.
+
 ## Getting Started Locally
 
 ### Prerequisites
